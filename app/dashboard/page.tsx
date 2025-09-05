@@ -429,9 +429,27 @@ export default function DashboardPage() {
               const lead: Partial<Lead> = {};
               const rowArray = row as unknown[];
               
+              // Special debug for discom-related headers
+              console.log('=== ROW PROCESSING DEBUG ===');
+              console.log('Row index:', index);
+              console.log('Headers:', headers);
+              console.log('Row data:', rowArray);
+              
               headers.forEach((header, headerIndex) => {
                 const value = rowArray[headerIndex] || '';
                 console.log('Mapping header "' + header + '" (index ' + headerIndex + ') to value:', value, '(type: ' + typeof value + ')');
+                
+                // Special debug for discom headers
+                if (header && header.toLowerCase().includes('discom')) {
+                  console.log('=== DISCOM HEADER FOUND ===');
+                  console.log('Header:', header);
+                  console.log('Header lowercase:', header.toLowerCase());
+                  console.log('Value:', value);
+                  console.log('Value type:', typeof value);
+                  console.log('Value length:', value ? value.toString().length : 'undefined');
+                  console.log('=== END DISCOM HEADER DEBUG ===');
+                }
+                
                 mapHeaderToField(lead, header, value);
               });
 
@@ -1081,7 +1099,7 @@ export default function DashboardPage() {
         console.log('leadData.discom:', leadData.discom);
         console.log('leadData.discom type:', typeof leadData.discom);
         console.log('leadData.discom length:', leadData.discom ? leadData.discom.length : 'undefined');
-        
+
         const newLead: Lead = {
           id: crypto.randomUUID(),
           kva: leadData.kva || '',
@@ -1763,16 +1781,16 @@ export default function DashboardPage() {
             )}
           </div>
           
-          <button
-            onClick={() => handleSelectAll(!selectAll)}
-            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-              selectAll 
-                ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {selectAll ? 'Deselect All' : 'Select All'}
-          </button>
+              <button
+                onClick={() => handleSelectAll(!selectAll)}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                  selectAll 
+                    ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {selectAll ? 'Deselect All' : 'Select All'}
+              </button>
             {selectedLeads.size > 0 && (
               <>
                 <span className="text-sm text-gray-600">
