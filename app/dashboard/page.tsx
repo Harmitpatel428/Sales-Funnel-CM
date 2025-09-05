@@ -30,6 +30,8 @@ export default function DashboardPage() {
   const [showEmptyStatusNotification, setShowEmptyStatusNotification] = useState(false);
   const [emptyStatusMessage, setEmptyStatusMessage] = useState('');
   const [discomFilter, setDiscomFilter] = useState<string>('');
+  const [showExportPasswordModal, setShowExportPasswordModal] = useState(false);
+  const [exportPassword, setExportPassword] = useState('');
 
   // Create a stable reference for activeFilters to prevent infinite loops
   const activeFiltersKey = useMemo(() => {
@@ -1294,8 +1296,22 @@ export default function DashboardPage() {
     return importedCount;
   };
   
-  // Export to Excel
-  const handleExportExcel = async () => {
+  // Show export password modal
+  const handleExportExcel = () => {
+    setShowExportPasswordModal(true);
+    setExportPassword('');
+  };
+
+  // Actual export function with password verification
+  const performExport = async () => {
+    // Password verification - you can change this password
+    const EXPORT_PASSWORD = 'admin123'; // Change this to your desired password
+    
+    if (exportPassword !== EXPORT_PASSWORD) {
+      showToastNotification('Incorrect password. Please try again.', 'error');
+      return;
+    }
+
     try {
       // Dynamic import to avoid turbopack issues
       const XLSX = await import('xlsx');
@@ -1368,6 +1384,9 @@ export default function DashboardPage() {
       // Generate Excel file and download
       XLSX.writeFile(wb, `leads-export-${new Date().toISOString().split('T')[0]}.xlsx`);
       
+      // Close modal and show success message
+      setShowExportPasswordModal(false);
+      setExportPassword('');
       showToastNotification(`Successfully exported ${leadsToExport.length} leads to Excel format`, 'success');
     } catch (error) {
       console.error('Export error:', error);
@@ -2630,6 +2649,81 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
                 className="px-6 py-3 text-sm font-bold bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white hover:from-rose-600 hover:via-pink-600 hover:to-rose-700 rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5"
               >
                 Delete {leadsToDelete.length} Leads
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Export Password Modal */}
+      {showExportPasswordModal && (
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-900/95 via-gray-900/90 to-black/95 backdrop-blur-xl flex items-center justify-center z-[60] p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-700 ease-out border border-white/20">
+            {/* Modal Header */}
+            <div className="flex justify-center items-center p-6 bg-gradient-to-br from-slate-50 via-white to-gray-50 rounded-t-3xl">
+              <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-inner">
+                    <svg className="w-7 h-7 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6 text-center bg-gradient-to-br from-white via-slate-50/50 to-gray-50/30">
+              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-slate-800 via-gray-700 to-slate-800 bg-clip-text text-transparent">
+                Export Leads
+              </h3>
+              <p className="text-slate-600 mb-6 text-base font-medium">
+                Please enter the password to export leads data
+              </p>
+              
+              {/* Password Input */}
+              <div className="mb-6">
+                <input
+                  type="password"
+                  value={exportPassword}
+                  onChange={(e) => setExportPassword(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && performExport()}
+                  placeholder="Enter password"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 text-center font-medium text-lg"
+                  autoFocus
+                />
+              </div>
+              
+              {/* Security Notice */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-2xl p-4 mb-6 shadow-sm">
+                <div className="flex items-center justify-center space-x-3 text-blue-700 text-sm font-semibold">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>This action requires authorization to protect sensitive data.</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex justify-center space-x-4 p-6 bg-gradient-to-br from-slate-50 via-white to-gray-50 rounded-b-3xl">
+              <button
+                onClick={() => {
+                  setShowExportPasswordModal(false);
+                  setExportPassword('');
+                }}
+                className="px-6 py-3 text-sm font-bold text-slate-700 bg-white/80 backdrop-blur-sm border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={performExport}
+                className="px-6 py-3 text-sm font-bold bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-600 text-white hover:from-blue-600 hover:via-indigo-600 hover:to-blue-700 rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5"
+              >
+                Export Leads
               </button>
             </div>
           </div>
