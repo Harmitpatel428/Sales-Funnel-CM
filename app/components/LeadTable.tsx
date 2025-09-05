@@ -228,7 +228,7 @@ function LeadTable({
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-16"
+              className="px-0.1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-1"
               onClick={() => handleSort('status')}
             >
               Status{renderSortIndicator('status')}

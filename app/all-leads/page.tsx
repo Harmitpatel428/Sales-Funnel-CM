@@ -1227,8 +1227,7 @@ export default function AllLeadsPage() {
             onLeadClick={handleLeadClick}
             selectedLeads={selectedLeads}
             onLeadSelection={handleSelectLead}
-            showActions={true}
-            actionButtons={renderActionButtons}
+            showActions={false}
             emptyMessage="No leads found in the system"
           />
         </div>
