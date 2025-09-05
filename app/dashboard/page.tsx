@@ -1659,7 +1659,7 @@ export default function DashboardPage() {
                 setDiscomFilter(value);
                 if (value === '') {
                   setActiveFilters({
-                    status: [] // Clear all filters when selecting "All Discoms"
+                    status: ['New'] // Show all "New" leads from all discoms when selecting "All Discoms"
                   });
                 } else {
                   setActiveFilters(prev => ({
