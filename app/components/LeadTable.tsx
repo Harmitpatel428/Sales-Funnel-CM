@@ -295,7 +295,7 @@ function LeadTable({
                   <div className="text-sm text-gray-500">{lead.discom || 'N/A'}</div>
                 </td>
                 <td className="px-1 py-4 whitespace-nowrap">
-                  <div className="text-xs text-gray-500 max-w-20 truncate">
+                  <div className="text-sm text-gray-500 max-w-20 truncate">
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
