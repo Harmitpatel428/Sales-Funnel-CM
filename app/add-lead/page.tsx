@@ -172,14 +172,12 @@ export default function AddLeadPage() {
       newErrors.clientName = 'Client name is required';
     }
 
-    // Validate mobile numbers - at least one mobile number is required
+    // Validate mobile numbers - mobile numbers are optional but must be valid if provided
     const hasValidMobileNumber = formData.mobileNumbers.some(mobile => 
       mobile.number.trim() && /^[\d\s\-\+\(\)]+$/.test(mobile.number.trim())
     );
     
-    if (!hasValidMobileNumber) {
-      newErrors.mobileNumbers = 'At least one mobile number is required';
-    }
+    // Mobile numbers are now optional - no validation error if none provided
     
     // Validate individual mobile numbers
     formData.mobileNumbers.forEach((mobile, index) => {
@@ -782,7 +780,7 @@ export default function AddLeadPage() {
             {/* Mobile Numbers Section */}
             <div className="md:col-span-2 space-y-4">
               <label className="block text-sm font-medium text-gray-700">
-                Mobile Numbers <span className="text-red-500">*</span>
+                Mobile Numbers
               </label>
               <div className="space-y-3">
                 {formData.mobileNumbers.map((mobile, index) => (
