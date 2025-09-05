@@ -924,10 +924,10 @@ export default function DashboardPage() {
           console.log('Value:', value);
           console.log('Value type:', typeof value);
           console.log('String value:', String(value));
-          lead.discom = String(value);
+        lead.discom = String(value);
           console.log('Mapped discom:', lead.discom);
           console.log('=== END DISCOM MAPPING DEBUG ===');
-          break;
+        break;
       case 'gidc':
       case 'gidc number':
       case 'gidc no':
@@ -1115,28 +1115,6 @@ export default function DashboardPage() {
     console.log('=== END TESTING DISCOM IMPORT ===');
   };
 
-  // Debug function to check current leads and discom values
-  const debugCurrentLeads = () => {
-    console.log('=== CURRENT LEADS DEBUG ===');
-    console.log('Total leads:', leads.length);
-    console.log('All leads:', leads);
-    
-    const discomValues = leads.map(lead => ({
-      kva: lead.kva,
-      discom: lead.discom,
-      discomType: typeof lead.discom,
-      discomLength: lead.discom ? lead.discom.length : 'undefined'
-    }));
-    
-    console.log('Discom values in all leads:', discomValues);
-    
-    const dgvclLeads = leads.filter(lead => lead.discom === 'DGVCL');
-    const pgvclLeads = leads.filter(lead => lead.discom === 'PGVCL');
-    
-    console.log('DGVCL leads:', dgvclLeads);
-    console.log('PGVCL leads:', pgvclLeads);
-    console.log('=== END CURRENT LEADS DEBUG ===');
-  };
 
   // Import leads into the system
   const importLeads = async (leadsToImport: Partial<Lead>[]) => {
@@ -1611,77 +1589,6 @@ export default function DashboardPage() {
             </label>
           </div>
           
-          {/* Debug Button */}
-          <button
-            onClick={debugCurrentLeads}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Debug Leads</span>
-          </button>
-          
-          {/* Test DGVCL Button */}
-          <button
-            onClick={() => {
-              const testLead: Lead = {
-                id: crypto.randomUUID(),
-                kva: 'TEST-DGVCL',
-                consumerNumber: 'TEST123',
-                company: 'Test Company',
-                clientName: 'Test Client',
-                discom: 'DGVCL',
-                mobileNumber: '9876543210',
-                mobileNumbers: [{ id: '1', number: '9876543210', name: '', isMain: true }],
-                companyLocation: 'Test Location',
-                unitType: 'New',
-                status: 'New',
-                lastActivityDate: '',
-                followUpDate: '',
-                notes: 'Test lead for DGVCL filter',
-                isDone: false,
-                isDeleted: false,
-                isUpdated: false,
-                activities: [],
-                mandateStatus: 'Pending',
-                documentStatus: 'Pending Documents',
-                connectionDate: '',
-                gidc: '',
-                gstNumber: ''
-              };
-              addLead(testLead);
-              console.log('Added test DGVCL lead:', testLead);
-            }}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            <span>Add Test DGVCL</span>
-          </button>
-          
-          {/* Test Filter Button */}
-          <button
-            onClick={() => {
-              console.log('=== TESTING DISCOM FILTER ===');
-              console.log('Current discomFilter:', discomFilter);
-              console.log('Current activeFilters:', activeFilters);
-              setDiscomFilter('DGVCL');
-              setActiveFilters(prev => ({
-                ...prev,
-                discom: 'DGVCL'
-              }));
-              console.log('Set filter to DGVCL');
-              console.log('=== END TESTING DISCOM FILTER ===');
-            }}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <span>Test DGVCL Filter</span>
-          </button>
           
           {/* Export Button */}
           <button
