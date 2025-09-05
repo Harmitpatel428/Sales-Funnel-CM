@@ -573,6 +573,20 @@ export default function DashboardPage() {
       console.log('🎯 STATUS HEADER DETECTED:', headerLower);
     }
     
+    // Special handling for discom headers - check if header contains "discom" in any case
+    if (headerLower.includes('discom')) {
+      console.log('=== DISCOM HEADER DETECTED ===');
+      console.log('Original header:', header);
+      console.log('Header lowercase:', headerLower);
+      console.log('Value:', value);
+      console.log('Value type:', typeof value);
+      console.log('String value:', String(value));
+      lead.discom = String(value);
+      console.log('Mapped discom:', lead.discom);
+      console.log('=== END DISCOM MAPPING DEBUG ===');
+      return; // Exit early to avoid switch statement
+    }
+    
     switch (headerLower) {
       // Your Excel column headers - exact matches
       case 'con.no':
@@ -893,42 +907,18 @@ export default function DashboardPage() {
           lead.documentStatus = 'Pending Documents';
         }
         break;
-              case 'discom':
-        case 'Discom':
-        case 'DISCOM':
-        case 'discom name':
-        case 'Discom Name':
-        case 'DISCOM NAME':
-        case 'discomname':
-        case 'DiscomName':
-        case 'DISCOMNAME':
-        case 'discom_name':
-        case 'Discom_Name':
-        case 'DISCOM_NAME':
-        case 'distribution company':
-        case 'Distribution Company':
-        case 'DISTRIBUTION COMPANY':
-        case 'distributioncompany':
-        case 'DistributionCompany':
-        case 'DISTRIBUTIONCOMPANY':
-        case 'distribution_company':
-        case 'Distribution_Company':
-        case 'DISTRIBUTION_COMPANY':
-        case 'utility company':
-        case 'Utility Company':
-        case 'UTILITY COMPANY':
-        case 'utilitycompany':
-        case 'UtilityCompany':
-        case 'UTILITYCOMPANY':
-        case 'utility_company':
-        case 'Utility_Company':
-        case 'UTILITY_COMPANY':
-        case 'discoms':
-        case 'Discoms':
-        case 'DISCOMS':
-        case 'discom names':
-        case 'Discom Names':
-        case 'DISCOM NAMES':
+      case 'discom':
+      case 'discom name':
+      case 'discomname':
+      case 'discom_name':
+      case 'distribution company':
+      case 'distributioncompany':
+      case 'distribution_company':
+      case 'utility company':
+      case 'utilitycompany':
+      case 'utility_company':
+      case 'discoms':
+      case 'discom names':
           console.log('=== DISCOM MAPPING DEBUG ===');
           console.log('Header:', header);
           console.log('Value:', value);
