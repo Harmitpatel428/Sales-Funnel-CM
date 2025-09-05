@@ -1329,6 +1329,7 @@ export default function DashboardPage() {
         'Discom',
         'GIDC',
         'GST Number',
+        'Unit Type',
         'Main Mobile Number', 
         'Lead Status', 
         'Last Discussion', 
@@ -1362,6 +1363,7 @@ export default function DashboardPage() {
           lead.discom || '', // Discom
           lead.gidc || '', // GIDC
           lead.gstNumber || '', // GST Number
+          lead.unitType || 'New', // Unit Type
           mainMobileDisplay, // Main Mobile Number (with contact name if available)
           lead.status || 'New', // Lead Status
           lead.notes || '', // Last Discussion
