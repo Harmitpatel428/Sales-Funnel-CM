@@ -1665,7 +1665,8 @@ export default function DashboardPage() {
                 } else {
                   setActiveFilters(prev => ({
                     ...prev,
-                    discom: value
+                    discom: value,
+                    status: ['New'] // Automatically show New status when discom is selected
                   }));
                 }
               }}
