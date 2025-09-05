@@ -228,7 +228,7 @@ function LeadTable({
             </th>
             <th 
               scope="col" 
-              className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               onClick={() => handleSort('status')}
             >
               Status{renderSortIndicator('status')}
@@ -299,7 +299,7 @@ function LeadTable({
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
-                <td className="px-2 py-4 whitespace-nowrap">
+                <td className="px-1 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
