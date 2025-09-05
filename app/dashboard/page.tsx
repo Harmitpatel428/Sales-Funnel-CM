@@ -198,7 +198,7 @@ export default function DashboardPage() {
     };
   }, [leads]);
 
-  // Calculate status counts with memoization - include ALL leads (including updated ones)
+  // Calculate status counts with memoization - use filtered leads based on current filters
   const statusCounts = useMemo(() => {
     const counts = {
       'New': 0,
@@ -214,10 +214,61 @@ export default function DashboardPage() {
 
     console.log('=== STATUS COUNTS DEBUG ===');
     console.log('Total leads:', leads.length);
+    console.log('Current activeFilters:', activeFilters);
     
-    leads.forEach(lead => {
-      console.log(`Lead ${lead.kva}: status="${lead.status}", isDone=${lead.isDone}, isDeleted=${lead.isDeleted}`);
-      if (!lead.isDone && !lead.isDeleted && lead.status in counts) {
+    // Create a temporary filter object that excludes status filtering to get leads for status counts
+    const tempFilters = { ...activeFilters };
+    delete tempFilters.status; // Remove status filter to count all statuses
+    
+    // Get filtered leads (excluding status filter)
+    const filteredLeadsForCounts = leads.filter(lead => {
+      // Apply all filters except status
+      if (lead.isDone || lead.isDeleted) return false;
+      
+      // Apply discom filter if active
+      if (tempFilters.discom && tempFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(tempFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
+      // Apply follow-up date filters if active
+      if (tempFilters.followUpDateStart && lead.followUpDate < tempFilters.followUpDateStart) return false;
+      if (tempFilters.followUpDateEnd && lead.followUpDate > tempFilters.followUpDateEnd) return false;
+      
+      // Apply search filter if active
+      if (tempFilters.searchTerm) {
+        const searchTerm = tempFilters.searchTerm.toLowerCase();
+        const searchableText = [
+          lead.kva,
+          lead.clientName,
+          lead.company,
+          lead.mobileNumber,
+          lead.consumerNumber,
+          lead.notes
+        ].join(' ').toLowerCase();
+        
+        if (/^\d+$/.test(tempFilters.searchTerm)) {
+          // Phone number search
+          const allMobileNumbers = [
+            lead.mobileNumber,
+            ...(lead.mobileNumbers || []).map(m => m.number)
+          ].filter((num): num is string => Boolean(num)); // Type guard to ensure only strings
+          if (!allMobileNumbers.some(num => num.includes(tempFilters.searchTerm!))) return false;
+        } else {
+          // Text search
+          if (!searchableText.includes(searchTerm)) return false;
+        }
+      }
+      
+      return true;
+    });
+    
+    console.log('Filtered leads for status counts:', filteredLeadsForCounts.length);
+    
+    filteredLeadsForCounts.forEach(lead => {
+      console.log(`Lead ${lead.kva}: status="${lead.status}", discom="${lead.discom}"`);
+      if (lead.status in counts) {
         counts[lead.status as keyof typeof counts]++;
         console.log(`Incremented count for status: ${lead.status}`);
       }
@@ -227,7 +278,7 @@ export default function DashboardPage() {
     console.log('=== END STATUS COUNTS DEBUG ===');
 
     return counts;
-  }, [leads]);
+  }, [leads, activeFilters]);
 
   const { dueToday, upcoming, overdue, followUpMandate } = summaryStats;
 
