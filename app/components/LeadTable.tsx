@@ -294,13 +294,13 @@ function LeadTable({
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{lead.discom || 'N/A'}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
+                <td className="px-0.5 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500 max-w-16 truncate">
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
                 <td className="px-0.8 py-2 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-50 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
                 </td>
