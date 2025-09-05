@@ -527,17 +527,17 @@ export default function AllLeadsPage() {
       case 'phone2':
         console.log('*** MOBILE NUMBER 2 MAPPING ***');
         console.log('Setting mobileNumber2 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 2) {
+              if (!lead.mobileNumbers) lead.mobileNumbers = [];
+              if (lead.mobileNumbers.length < 2) {
           lead.mobileNumbers.push({ id: '2', number: String(value), name: '', isMain: false });
-        } else if (lead.mobileNumbers[1]) {
-          lead.mobileNumbers[1] = { 
-            id: lead.mobileNumbers[1].id, 
+              } else if (lead.mobileNumbers[1]) {
+                lead.mobileNumbers[1] = { 
+                  id: lead.mobileNumbers[1].id, 
             number: String(value), 
-            name: lead.mobileNumbers[1].name, 
-            isMain: lead.mobileNumbers[1].isMain 
-          };
-        }
+                  name: lead.mobileNumbers[1].name, 
+                  isMain: lead.mobileNumbers[1].isMain 
+                };
+              }
         break;
       case 'mobile number 3':
       case 'mobile number3':
@@ -546,51 +546,51 @@ export default function AllLeadsPage() {
       case 'phone3':
         console.log('*** MOBILE NUMBER 3 MAPPING ***');
         console.log('Setting mobileNumber3 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 3) {
+              if (!lead.mobileNumbers) lead.mobileNumbers = [];
+              if (lead.mobileNumbers.length < 3) {
           lead.mobileNumbers.push({ id: '3', number: String(value), name: '', isMain: false });
-        } else if (lead.mobileNumbers[2]) {
-          lead.mobileNumbers[2] = { 
-            id: lead.mobileNumbers[2].id, 
+              } else if (lead.mobileNumbers[2]) {
+                lead.mobileNumbers[2] = { 
+                  id: lead.mobileNumbers[2].id, 
             number: String(value), 
-            name: lead.mobileNumbers[2].name, 
-            isMain: lead.mobileNumbers[2].isMain 
-          };
-        }
+                  name: lead.mobileNumbers[2].name, 
+                  isMain: lead.mobileNumbers[2].isMain 
+                };
+              }
         break;
       case 'contact name 2':
       case 'contact name2':
       case 'contact2':
         console.log('*** CONTACT NAME 2 MAPPING ***');
         console.log('Setting contact name 2 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 2) {
+              if (!lead.mobileNumbers) lead.mobileNumbers = [];
+              if (lead.mobileNumbers.length < 2) {
           lead.mobileNumbers.push({ id: '2', number: '', name: String(value), isMain: false });
-        } else if (lead.mobileNumbers[1]) {
-          lead.mobileNumbers[1] = { 
-            id: lead.mobileNumbers[1].id, 
-            number: lead.mobileNumbers[1].number, 
+              } else if (lead.mobileNumbers[1]) {
+                lead.mobileNumbers[1] = { 
+                  id: lead.mobileNumbers[1].id, 
+                  number: lead.mobileNumbers[1].number, 
             name: String(value), 
-            isMain: lead.mobileNumbers[1].isMain 
-          };
-        }
+                  isMain: lead.mobileNumbers[1].isMain 
+                };
+              }
         break;
       case 'contact name 3':
       case 'contact name3':
       case 'contact3':
         console.log('*** CONTACT NAME 3 MAPPING ***');
         console.log('Setting contact name 3 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 3) {
+              if (!lead.mobileNumbers) lead.mobileNumbers = [];
+              if (lead.mobileNumbers.length < 3) {
           lead.mobileNumbers.push({ id: '3', number: '', name: String(value), isMain: false });
-        } else if (lead.mobileNumbers[2]) {
-          lead.mobileNumbers[2] = { 
-            id: lead.mobileNumbers[2].id, 
-            number: lead.mobileNumbers[2].number, 
+              } else if (lead.mobileNumbers[2]) {
+                lead.mobileNumbers[2] = { 
+                  id: lead.mobileNumbers[2].id, 
+                  number: lead.mobileNumbers[2].number, 
             name: String(value), 
-            isMain: lead.mobileNumbers[2].isMain 
-          };
-        }
+                  isMain: lead.mobileNumbers[2].isMain 
+                };
+              }
         break;
       case 'lead status':
       case 'leadstatus':
@@ -602,7 +602,7 @@ export default function AllLeadsPage() {
         console.log('Status value: "' + String(value) + '"');
         const statusValue = String(value).toLowerCase().trim();
         if (statusValue === 'new') {
-          lead.status = 'New';
+              lead.status = 'New';
           console.log('✅ Mapped to New');
         } else if (statusValue === 'cnr') {
           lead.status = 'CNR';
@@ -611,7 +611,7 @@ export default function AllLeadsPage() {
           lead.status = 'Busy';
           console.log('✅ Mapped to Busy');
         } else if (statusValue === 'follow-up' || statusValue === 'followup' || statusValue === 'follow up') {
-          lead.status = 'Follow-up';
+              lead.status = 'Follow-up';
           console.log('✅ Mapped to Follow-up');
         } else if (statusValue === 'deal close' || statusValue === 'dealclose' || statusValue === 'deal_close') {
           lead.status = 'Deal Close';
@@ -642,11 +642,11 @@ export default function AllLeadsPage() {
           } else if (statusValue.includes('busy')) {
             lead.status = 'Busy';
             console.log('✅ Flexible mapping: Busy');
-          } else if (statusValue.includes('follow')) {
-            lead.status = 'Follow-up';
+            } else if (statusValue.includes('follow')) {
+              lead.status = 'Follow-up';
             console.log('✅ Flexible mapping: Follow-up');
           } else if (statusValue.includes('deal') || statusValue.includes('close')) {
-            lead.status = 'Deal Close';
+              lead.status = 'Deal Close';
             console.log('✅ Flexible mapping: Deal Close');
           } else if (statusValue.includes('work') || statusValue.includes('allot')) {
             lead.status = 'Work Alloted';
@@ -663,7 +663,7 @@ export default function AllLeadsPage() {
           } else if (statusValue.includes('other')) {
             lead.status = 'Others';
             console.log('✅ Flexible mapping: Others');
-          } else {
+            } else {
             lead.status = 'New'; // Default fallback
             console.log('⚠️ Default mapping: New');
           }
@@ -838,7 +838,7 @@ export default function AllLeadsPage() {
 
             console.log('All leads processed:', leads);
             resolve(leads);
-          } catch (error) {
+    } catch (error) {
             console.error('Excel parsing error:', error);
             reject(new Error(`Error parsing Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`));
           }
