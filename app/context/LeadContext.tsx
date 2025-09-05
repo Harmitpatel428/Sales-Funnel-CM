@@ -207,13 +207,11 @@ export function LeadProvider({ children }: { children: ReactNode }) {
         return false;
       }
       
-      // For main dashboard (no status filter), only show leads that are NOT updated
-      // This ensures updated leads are removed from the main dashboard view
+      // For main dashboard (no status filter), show NO leads at all
+      // User must select a status to see any leads
       if (!filters.status || filters.status.length === 0) {
-        if (lead.isUpdated) {
-          console.log(`Lead ${lead.kva} filtered out: isUpdated=true (main dashboard)`);
-          return false; // Hide updated leads from main dashboard
-        }
+        console.log(`Lead ${lead.kva} filtered out: no status selected (main dashboard)`);
+        return false; // Hide ALL leads when no status is selected
       }
       
       // Filter by status
