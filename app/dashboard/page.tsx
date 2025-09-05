@@ -209,7 +209,8 @@ export default function DashboardPage() {
       'Work Alloted': 0,
       'Hotlead': 0,
       'Mandate Sent': 0,
-      'Documentation': 0
+      'Documentation': 0,
+      'Others': 0
     };
 
     console.log('=== STATUS COUNTS DEBUG ===');
@@ -883,6 +884,8 @@ export default function DashboardPage() {
           statusValue.includes('documentation')
         ) {
           lead.status = 'Documentation';
+        } else if (statusValue === 'others' || statusValue === 'other') {
+          lead.status = 'Others';
         } else if (statusValue.includes('year') || statusValue.includes('exp') || statusValue.includes('service')) {
           lead.status = 'Busy';
         } else {
@@ -918,6 +921,9 @@ export default function DashboardPage() {
             } else if (statusValue.includes('hot') || statusValue.includes('lead')) {
               lead.status = 'Hotlead';
               console.log('✅ Flexible mapping: Hotlead');
+            } else if (statusValue.includes('other')) {
+              lead.status = 'Others';
+              console.log('✅ Flexible mapping: Others');
             } else {
               lead.status = 'New';
               console.log('❌ UNMATCHED STATUS VALUE:', statusValue);
@@ -1816,6 +1822,23 @@ export default function DashboardPage() {
                   {statusCounts['Hotlead']}
                 </span>
               </button>
+              <button
+                onClick={() => handleStatusFilter('Others')}
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
+                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Others'
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-gray-600 hover:bg-gray-700 text-white'
+                }`}
+              >
+                Others
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
+                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Others'
+                    ? 'bg-gray-900 text-gray-100'
+                    : 'bg-gray-500 text-white'
+                }`}>
+                  {statusCounts['Others']}
+                </span>
+              </button>
             </div>
             </div>
           </div>
@@ -1952,6 +1975,7 @@ export default function DashboardPage() {
                   <option value="Hotlead">Hotlead</option>
                   <option value="Mandate Sent">Mandate Sent</option>
                   <option value="Documentation">Documentation</option>
+                  <option value="Others">Others</option>
                 </select>
                 <button
                   onClick={handleBulkDelete}
@@ -2248,6 +2272,7 @@ export default function DashboardPage() {
                           selectedLead.status === 'Deal Close' ? 'bg-green-100 text-green-800' :
                           selectedLead.status === 'Work Alloted' ? 'bg-indigo-100 text-indigo-800' :
                           selectedLead.status === 'Hotlead' ? 'bg-red-100 text-red-800' :
+                          selectedLead.status === 'Others' ? 'bg-gray-100 text-gray-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
                           {selectedLead.status}
