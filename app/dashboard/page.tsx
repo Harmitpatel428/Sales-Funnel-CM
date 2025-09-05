@@ -376,8 +376,41 @@ export default function DashboardPage() {
       console.log('=== IMPORT COMPLETE ===');
       console.log('Imported count returned:', importedCount);
       
-      // Show success notification
-      showToastNotification(`Successfully imported ${importedCount} leads from ${file.name}`, 'success');
+      // Auto-filter by the most common status after import
+      if (importedCount > 0) {
+        const statusCounts = parsedLeads.reduce((acc, lead) => {
+          const status = lead.status || 'New';
+          acc[status] = (acc[status] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        
+        // Find the most common status
+        const statusEntries = Object.entries(statusCounts);
+        const mostCommonStatus = statusEntries.length > 0 
+          ? statusEntries.reduce((a, b) => {
+              const aCount = a[1] || 0;
+              const bCount = b[1] || 0;
+              return aCount > bCount ? a : b;
+            })[0] as Lead['status']
+          : 'New' as Lead['status'];
+        
+        console.log('Most common status in imported leads:', mostCommonStatus);
+        console.log('Status distribution:', statusCounts);
+        
+        // Set the filter to show the most common status
+        setActiveFilters(prev => ({
+          ...prev,
+          status: [mostCommonStatus]
+        }));
+        
+        // Show success notification with status info
+        showToastNotification(
+          `Successfully imported ${importedCount} leads from ${file.name}. Showing ${mostCommonStatus} leads (${statusCounts[mostCommonStatus]} leads).`, 
+          'success'
+        );
+      } else {
+        showToastNotification(`No leads were imported from ${file.name}`, 'error');
+      }
       
       // Clear the file input
       event.target.value = '';
