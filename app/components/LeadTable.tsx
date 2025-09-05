@@ -160,7 +160,7 @@ function LeadTable({
           <tr>
             {onLeadSelection && (
               <th scope="col" className="px-0.5 py-3 text-left w-10">
-                <div className="w-10 h-8 flex items-center justify-center">
+                <div className="w-8 h-8 flex items-center justify-center">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -264,7 +264,7 @@ function LeadTable({
               >
                 {onLeadSelection && (
                   <td className="px-0.5 py-2 whitespace-nowrap">
-                    <div className="w-12 h-8 flex items-center justify-center">
+                    <div className="w-9 h-8 flex items-center justify-center">
                       <input
                         type="checkbox"
                         checked={selectedLeads.has(lead.id)}
