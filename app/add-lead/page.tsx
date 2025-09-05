@@ -905,6 +905,7 @@ export default function AddLeadPage() {
                 <option value="Hotlead">Hotlead</option>
                 <option value="Mandate Sent">Mandate Sent</option>
                 <option value="Documentation">Documentation</option>
+                <option value="Others">Others</option>
               </select>
             </div>
             
