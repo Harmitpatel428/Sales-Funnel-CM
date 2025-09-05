@@ -231,9 +231,21 @@ export function LeadProvider({ children }: { children: ReactNode }) {
       }
       
       // Filter by discom
-      if (filters.discom && filters.discom !== '' && lead.discom !== filters.discom) {
-        console.log(`Lead ${lead.kva} filtered out: discom "${lead.discom}" doesn't match filter "${filters.discom}"`);
-        return false;
+      if (filters.discom && filters.discom !== '') {
+        console.log(`=== DISCOM FILTER DEBUG ===`);
+        console.log(`Lead ${lead.kva} discom: "${lead.discom}" (type: ${typeof lead.discom})`);
+        console.log(`Filter discom: "${filters.discom}" (type: ${typeof filters.discom})`);
+        console.log(`Exact match: ${lead.discom === filters.discom}`);
+        console.log(`Trimmed match: ${lead.discom?.trim() === filters.discom?.trim()}`);
+        console.log(`Case-insensitive match: ${lead.discom?.toLowerCase() === filters.discom?.toLowerCase()}`);
+        
+        if (lead.discom !== filters.discom) {
+          console.log(`Lead ${lead.kva} filtered out: discom "${lead.discom}" doesn't match filter "${filters.discom}"`);
+          console.log(`=== END DISCOM FILTER DEBUG ===`);
+          return false;
+        }
+        console.log(`Lead ${lead.kva} passed discom filter`);
+        console.log(`=== END DISCOM FILTER DEBUG ===`);
       }
       
       // Search term (search in name, company, email, notes, etc.)
