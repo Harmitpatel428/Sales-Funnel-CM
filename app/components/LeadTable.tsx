@@ -160,7 +160,7 @@ function LeadTable({
           <tr>
             {onLeadSelection && (
               <th scope="col" className="px-0.5 py-3 text-left w-10">
-                <div className="w-8 h-8 flex items-center justify-center">
+                <div className="w-10 h-8 flex items-center justify-center">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -264,7 +264,7 @@ function LeadTable({
               >
                 {onLeadSelection && (
                   <td className="px-0.5 py-2 whitespace-nowrap">
-                    <div className="w-8 h-8 flex items-center justify-center">
+                    <div className="w-12 h-8 flex items-center justify-center">
                       <input
                         type="checkbox"
                         checked={selectedLeads.has(lead.id)}
@@ -285,11 +285,11 @@ function LeadTable({
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500 max-w-16 truncate">{lead.consumerNumber}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-gray-500 max-w-28 truncate" title={lead.company}>{lead.company}</div>
+                <td className="px-0 py-2 whitespace-nowrap">
+                  <div className="text-sm text-gray-500 min-w-15 max-w-50 truncate" title={lead.company}>{lead.company}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-gray-500 max-w-34 truncate" title={lead.clientName}>{lead.clientName}</div>
+                <td className="px-0 py-2 whitespace-nowrap">
+                  <div className="text-sm text-gray-500 min-w-5 max-w-45 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{lead.discom || 'N/A'}</div>
