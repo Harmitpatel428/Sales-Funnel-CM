@@ -1614,7 +1614,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Status Filter Buttons */}
-          <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-4 rounded-lg shadow-lg border border-slate-600/30 mb-6 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-4 rounded-lg shadow-lg border border-slate-600/30 mb-6 relative overflow-hidden min-h-fit">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-cyan-500/5"></div>
             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"></div>
             <div className="relative">
@@ -1622,17 +1622,17 @@ export default function DashboardPage() {
               <h3 className="text-lg font-semibold text-white">Filter by Status</h3>
               <span className="text-sm text-white">Click any status to filter leads</span>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center justify-center gap-2 flex-wrap">
               <button
                 onClick={() => handleStatusFilter('New')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'New'
                     ? 'bg-blue-800 text-white'
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
                 }`}
               >
                 New
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'New'
                     ? 'bg-blue-900 text-blue-100'
                     : 'bg-blue-500 text-white'
@@ -1642,14 +1642,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('CNR')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'CNR'
                     ? 'bg-orange-800 text-white'
                     : 'bg-orange-600 hover:bg-orange-700 text-white'
                 }`}
               >
                 CNR
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'CNR'
                     ? 'bg-orange-900 text-orange-100'
                     : 'bg-orange-500 text-white'
@@ -1659,14 +1659,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Busy')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Busy'
                     ? 'bg-yellow-800 text-white'
                     : 'bg-yellow-600 hover:bg-yellow-700 text-white'
                 }`}
               >
                 Busy
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Busy'
                     ? 'bg-yellow-900 text-yellow-100'
                     : 'bg-yellow-500 text-white'
@@ -1676,14 +1676,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Follow-up')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Follow-up'
                     ? 'bg-purple-800 text-white'
                     : 'bg-purple-600 hover:bg-purple-700 text-white'
                 }`}
               >
                 Follow-up
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Follow-up'
                     ? 'bg-purple-900 text-purple-100'
                     : 'bg-purple-500 text-white'
@@ -1693,14 +1693,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Deal Close')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Deal Close'
                     ? 'bg-green-800 text-white'
                     : 'bg-green-600 hover:bg-green-700 text-white'
                 }`}
               >
                 Deal Close
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Deal Close'
                     ? 'bg-green-900 text-green-100'
                     : 'bg-green-500 text-white'
@@ -1710,14 +1710,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Work Alloted')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Work Alloted'
                     ? 'bg-indigo-800 text-white'
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 }`}
               >
                 Work Alloted
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Work Alloted'
                     ? 'bg-indigo-900 text-indigo-100'
                     : 'bg-indigo-500 text-white'
@@ -1727,14 +1727,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Hotlead')}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Hotlead'
                     ? 'bg-red-800 text-white'
                     : 'bg-red-600 hover:bg-red-700 text-white'
                 }`}
               >
                 Hotlead
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Hotlead'
                     ? 'bg-red-900 text-red-100'
                     : 'bg-red-500 text-white'
