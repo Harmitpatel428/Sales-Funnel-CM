@@ -350,224 +350,590 @@ export default function AllLeadsPage() {
   // File input ref for import
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Import function (copied from dashboard)
-  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data);
-      const sheetName = workbook.SheetNames[0];
-      if (!sheetName) {
-        alert('The file does not contain any worksheets.');
-        return;
-      }
-      const worksheet = workbook.Sheets[sheetName];
-      if (!worksheet) {
-        alert('The worksheet could not be read.');
-        return;
-      }
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-      if (jsonData.length < 2) {
-        alert('The file appears to be empty or has no data rows.');
-        return;
-      }
-
-      const headers = jsonData[0] as string[];
-      const rows = jsonData.slice(1) as string[][];
-
-      const newLeads: Lead[] = [];
-
-      rows.forEach((row, index) => {
-        if (row.every(cell => !cell || cell.toString().trim() === '')) return;
-
-        const lead: Lead = {
-          id: `imported-${Date.now()}-${index}`,
-          clientName: '',
-          company: '',
-          mobileNumber: '',
-          mobileNumbers: [],
-          consumerNumber: '',
-          kva: '',
-          connectionDate: '',
-          companyLocation: '',
-          notes: '',
-          status: 'New',
-          unitType: 'New',
-          followUpDate: '',
-          lastActivityDate: new Date().toLocaleDateString('en-GB'),
-          isDone: false,
-          isDeleted: false,
-          isUpdated: false,
-          activities: [],
-          mandateStatus: 'Pending',
-          documentStatus: 'Pending Documents',
-          finalConclusion: ''
-        };
-
-        // Map headers to lead fields
-        headers.forEach((header, colIndex) => {
-          if (!header || colIndex >= row.length || colIndex < 0) return;
-
-          const value = row[colIndex];
-          if (!value || value.toString().trim() === '') return;
-
-          const headerLower = header.toString().toLowerCase().trim();
-          const valueStr = value.toString().trim();
-
-          // Map headers to lead properties
-          if (headerLower.includes('client') || headerLower.includes('name')) {
-            lead.clientName = valueStr;
-          } else if (headerLower.includes('company')) {
-            lead.company = valueStr;
-          } else if (headerLower.includes('mobile') || headerLower.includes('phone')) {
-            // Only allow numeric characters in mobile numbers, max 10 digits
-            const numericValue = valueStr.replace(/[^0-9]/g, '').slice(0, 10);
-            
-            if (headerLower.includes('2')) {
-              // Mobile Number 2
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 2) {
-                lead.mobileNumbers.push({
-                  id: `mobile-${Date.now()}-${index}-2`,
-                  number: numericValue,
-                  name: '',
-                  isMain: false
-                });
-              } else if (lead.mobileNumbers[1]) {
-                lead.mobileNumbers[1] = { 
-                  id: lead.mobileNumbers[1].id, 
-                  number: numericValue, 
-                  name: lead.mobileNumbers[1].name, 
-                  isMain: lead.mobileNumbers[1].isMain 
-                };
-              }
-            } else if (headerLower.includes('3')) {
-              // Mobile Number 3
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 3) {
-                lead.mobileNumbers.push({
-                  id: `mobile-${Date.now()}-${index}-3`,
-                  number: numericValue,
-                  name: '',
-                  isMain: false
-                });
-              } else if (lead.mobileNumbers[2]) {
-                lead.mobileNumbers[2] = { 
-                  id: lead.mobileNumbers[2].id, 
-                  number: numericValue, 
-                  name: lead.mobileNumbers[2].name, 
-                  isMain: lead.mobileNumbers[2].isMain 
-                };
-              }
-            } else {
-              // Main mobile number
-              lead.mobileNumber = numericValue;
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length === 0) {
-                lead.mobileNumbers.push({
-                  id: `mobile-${Date.now()}-${index}-1`,
-                  number: numericValue,
-                  name: '',
-                  isMain: true
-                });
-              }
-            }
-          } else if (headerLower.includes('contact') && headerLower.includes('name')) {
-            if (headerLower.includes('2')) {
-              // Contact Name 2
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 2) {
-                lead.mobileNumbers.push({
-                  id: `mobile-${Date.now()}-${index}-2`,
-                  number: '',
-                  name: valueStr,
-                  isMain: false
-                });
-              } else if (lead.mobileNumbers[1]) {
-                lead.mobileNumbers[1] = { 
-                  id: lead.mobileNumbers[1].id, 
-                  number: lead.mobileNumbers[1].number, 
-                  name: valueStr, 
-                  isMain: lead.mobileNumbers[1].isMain 
-                };
-              }
-            } else if (headerLower.includes('3')) {
-              // Contact Name 3
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 3) {
-                lead.mobileNumbers.push({
-                  id: `mobile-${Date.now()}-${index}-3`,
-                  number: '',
-                  name: valueStr,
-                  isMain: false
-                });
-              } else if (lead.mobileNumbers[2]) {
-                lead.mobileNumbers[2] = { 
-                  id: lead.mobileNumbers[2].id, 
-                  number: lead.mobileNumbers[2].number, 
-                  name: valueStr, 
-                  isMain: lead.mobileNumbers[2].isMain 
-                };
-              }
-            }
-          } else if (headerLower.includes('consumer') || headerLower.includes('con.no')) {
-            lead.consumerNumber = valueStr;
-          } else if (headerLower.includes('kva')) {
-            lead.kva = valueStr;
-          } else if (headerLower.includes('connection') && headerLower.includes('date')) {
-            lead.connectionDate = valueStr;
-          } else if (headerLower.includes('location') || headerLower.includes('address')) {
-            lead.companyLocation = valueStr;
-          } else if (headerLower.includes('notes') || headerLower.includes('discussion') || headerLower.includes('comment')) {
-            lead.notes = valueStr;
-          } else if (headerLower.includes('status') || headerLower.includes('old') || headerLower.includes('new')) {
-            // Handle status mapping
-            const statusValue = valueStr.toLowerCase();
-            if (statusValue.includes('mandate sent') || statusValue.includes('documentation')) {
-              lead.status = 'Mandate Sent';
-            } else if (statusValue.includes('contacted')) {
-              lead.status = 'New';
-            } else if (statusValue.includes('progress')) {
-              lead.status = 'Follow-up';
-            } else if (statusValue.includes('follow')) {
-              lead.status = 'Follow-up';
-            } else if (statusValue.includes('closed') || statusValue.includes('won')) {
-              lead.status = 'Deal Close';
-            } else {
-              lead.status = 'New';
-            }
-          } else if (headerLower.includes('unit') || headerLower.includes('type')) {
-            lead.unitType = valueStr as 'New' | 'Existing' | 'Other';
-          } else if (headerLower.includes('follow') && headerLower.includes('date')) {
-            lead.followUpDate = valueStr;
-          } else if (headerLower.includes('discom') || headerLower.includes('distribution') || headerLower.includes('utility')) {
-            lead.discom = valueStr;
-          }
-        });
-
-        // Only add if we have at least a client name
-        if (lead.clientName) {
-          newLeads.push(lead);
+  // Convert Excel serial date to readable date string in DD-MM-YYYY format
+  const convertExcelDate = (value: string | number | Date | null | undefined): string => {
+    if (!value) return '';
+    
+    // If it's already a string, return as is
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      
+      // Check if it's already in DD-MM-YYYY format
+      if (trimmed.match(/^\d{2}-\d{2}-\d{4}$/)) {
+        // Already in DD-MM-YYYY format, return as is
+        return trimmed;
+      } else if (trimmed.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        // Convert from YYYY-MM-DD to DD-MM-YYYY
+        const parts = trimmed.split('-');
+        const year = parts[0];
+        const month = parts[1];
+        const day = parts[2];
+        console.log(`Converting date format from YYYY-MM-DD: ${trimmed} to DD-MM-YYYY: ${day}-${month}-${year}`);
+        return `${day}-${month}-${year}`;
+      } else {
+        // Try to parse as date and convert
+        const date = new Date(trimmed);
+        if (!isNaN(date.getTime())) {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          return `${day}-${month}-${year}`;
         }
+        return trimmed; // Return original if can't parse
+      }
+    }
+    
+    // If it's a number (Excel serial date), convert it
+    if (typeof value === 'number') {
+      // Excel serial date (days since 1900-01-01, but Excel incorrectly treats 1900 as leap year)
+      const excelEpoch = new Date(1900, 0, 1);
+      const date = new Date(excelEpoch.getTime() + (value - 2) * 24 * 60 * 60 * 1000);
+      
+      if (!isNaN(date.getTime())) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        console.log(`Converting Excel serial date: ${value} to DD-MM-YYYY: ${day}-${month}-${year}`);
+        return `${day}-${month}-${year}`;
+      }
+    }
+    
+    // If it's a Date object
+    if (value instanceof Date) {
+      const day = String(value.getDate()).padStart(2, '0');
+      const month = String(value.getMonth() + 1).padStart(2, '0');
+      const year = value.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+    
+    return '';
+  };
+
+  // Set default values for required fields
+  const setDefaultValues = (lead: Partial<Lead>) => {
+    if (!lead.status) lead.status = 'New';
+    if (!lead.unitType) lead.unitType = 'New';
+    if (!lead.lastActivityDate) lead.lastActivityDate = new Date().toLocaleDateString('en-GB');
+    if (!lead.isDone) lead.isDone = false;
+    if (!lead.isDeleted) lead.isDeleted = false;
+    if (!lead.isUpdated) lead.isUpdated = false;
+    if (!lead.activities) lead.activities = [];
+    if (!lead.mandateStatus) lead.mandateStatus = 'Pending';
+    if (!lead.documentStatus) lead.documentStatus = 'Pending Documents';
+    if (!lead.mobileNumbers) lead.mobileNumbers = [];
+  };
+
+  // Map header to lead field - updated to match your Excel format exactly
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapHeaderToField = (lead: Partial<Lead>, header: string, value: any) => {
+    const headerLower = header.toLowerCase().trim();
+    console.log('=== MAPPING DEBUG ===');
+    console.log('Header: "' + header + '" -> "' + headerLower + '"');
+    console.log('Value: "' + value + '" (type: ' + typeof value + ')');
+    console.log('Value length: ' + (value ? value.toString().length : 'undefined'));
+    console.log('Is empty: ' + (!value || value === '' || value === null || value === undefined));
+    console.log('Processing header: ' + headerLower);
+    
+    // Check if this is a status-related header
+    const isStatusHeader = headerLower.includes('status') || 
+                          headerLower === 'status' || 
+                          headerLower === 'lead status' || 
+                          headerLower === 'current status' ||
+                          headerLower === 'leadstatus' ||
+                          headerLower === 'lead_status' ||
+                          headerLower === 'lead-status';
+    
+    if (isStatusHeader) {
+      console.log('🎯 STATUS HEADER DETECTED:', headerLower);
+    }
+    
+    // Special handling for discom headers - check if header contains "discom" in any case
+    if (headerLower.includes('discom')) {
+      console.log('=== DISCOM HEADER DETECTED ===');
+      console.log('Original header:', header);
+      console.log('Header lowercase:', headerLower);
+      console.log('Value:', value);
+      console.log('Value type:', typeof value);
+      console.log('String value:', String(value));
+      lead.discom = String(value);
+      console.log('Mapped discom:', lead.discom);
+      console.log('=== END DISCOM MAPPING DEBUG ===');
+      return; // Exit early to avoid switch statement
+    }
+    
+    switch (headerLower) {
+      // Your Excel column headers - exact matches
+      case 'con.no':
+      case 'con.no.':
+      case 'connection number':
+      case 'consumer number':
+      case 'consumernumber':
+        lead.consumerNumber = String(value);
+        break;
+      case 'kva':
+      case 'name':
+      case 'full name':
+      case 'lead name':
+      case 'contact name':
+        lead.kva = String(value);
+        break;
+      case 'connection date':
+      case 'connectiondate':
+      case 'email':
+      case 'email address':
+      case 'contact email':
+        console.log(`Setting connection date to: "${value}" (original: ${value})`);
+        lead.connectionDate = convertExcelDate(value);
+        console.log(`Connection date after setting: "${lead.connectionDate}"`);
+        break;
+      case 'company':
+      case 'company name':
+      case 'organization':
+        lead.company = String(value);
+        break;
+      case 'company location':
+      case 'companylocation':
+      case 'location':
+      case 'address':
+        lead.companyLocation = String(value);
+        break;
+      case 'client name':
+      case 'clientname':
+      case 'client':
+        lead.clientName = String(value);
+        break;
+      case 'mo.no':
+      case 'mo.no.':
+      case 'mo .no':
+      case 'mo .no.':
+      case 'mobile number':
+      case 'mobilenumber':
+      case 'mobile':
+      case 'phone':
+      case 'phone number':
+      case 'contact phone':
+      case 'telephone':
+      case 'main mobile number':
+        console.log('*** MOBILE NUMBER MAPPING ***');
+        console.log('Setting mobileNumber to: "' + String(value) + '"');
+        console.log('Original value: "' + value + '" (type: ' + typeof value + ')');
+        lead.mobileNumber = String(value);
+        console.log('Lead mobileNumber after setting: "' + lead.mobileNumber + '"');
+        break;
+      case 'mobile number 2':
+      case 'mobile number2':
+      case 'mobile2':
+      case 'phone 2':
+      case 'phone2':
+        console.log('*** MOBILE NUMBER 2 MAPPING ***');
+        console.log('Setting mobileNumber2 to: "' + String(value) + '"');
+        if (!lead.mobileNumbers) lead.mobileNumbers = [];
+        if (lead.mobileNumbers.length < 2) {
+          lead.mobileNumbers.push({ id: '2', number: String(value), name: '', isMain: false });
+        } else if (lead.mobileNumbers[1]) {
+          lead.mobileNumbers[1] = { 
+            id: lead.mobileNumbers[1].id, 
+            number: String(value), 
+            name: lead.mobileNumbers[1].name, 
+            isMain: lead.mobileNumbers[1].isMain 
+          };
+        }
+        break;
+      case 'mobile number 3':
+      case 'mobile number3':
+      case 'mobile3':
+      case 'phone 3':
+      case 'phone3':
+        console.log('*** MOBILE NUMBER 3 MAPPING ***');
+        console.log('Setting mobileNumber3 to: "' + String(value) + '"');
+        if (!lead.mobileNumbers) lead.mobileNumbers = [];
+        if (lead.mobileNumbers.length < 3) {
+          lead.mobileNumbers.push({ id: '3', number: String(value), name: '', isMain: false });
+        } else if (lead.mobileNumbers[2]) {
+          lead.mobileNumbers[2] = { 
+            id: lead.mobileNumbers[2].id, 
+            number: String(value), 
+            name: lead.mobileNumbers[2].name, 
+            isMain: lead.mobileNumbers[2].isMain 
+          };
+        }
+        break;
+      case 'contact name 2':
+      case 'contact name2':
+      case 'contact2':
+        console.log('*** CONTACT NAME 2 MAPPING ***');
+        console.log('Setting contact name 2 to: "' + String(value) + '"');
+        if (!lead.mobileNumbers) lead.mobileNumbers = [];
+        if (lead.mobileNumbers.length < 2) {
+          lead.mobileNumbers.push({ id: '2', number: '', name: String(value), isMain: false });
+        } else if (lead.mobileNumbers[1]) {
+          lead.mobileNumbers[1] = { 
+            id: lead.mobileNumbers[1].id, 
+            number: lead.mobileNumbers[1].number, 
+            name: String(value), 
+            isMain: lead.mobileNumbers[1].isMain 
+          };
+        }
+        break;
+      case 'contact name 3':
+      case 'contact name3':
+      case 'contact3':
+        console.log('*** CONTACT NAME 3 MAPPING ***');
+        console.log('Setting contact name 3 to: "' + String(value) + '"');
+        if (!lead.mobileNumbers) lead.mobileNumbers = [];
+        if (lead.mobileNumbers.length < 3) {
+          lead.mobileNumbers.push({ id: '3', number: '', name: String(value), isMain: false });
+        } else if (lead.mobileNumbers[2]) {
+          lead.mobileNumbers[2] = { 
+            id: lead.mobileNumbers[2].id, 
+            number: lead.mobileNumbers[2].number, 
+            name: String(value), 
+            isMain: lead.mobileNumbers[2].isMain 
+          };
+        }
+        break;
+      case 'lead status':
+      case 'leadstatus':
+      case 'status':
+      case 'current status':
+      case 'lead_status':
+      case 'lead-status':
+        console.log('*** STATUS MAPPING ***');
+        console.log('Status value: "' + String(value) + '"');
+        const statusValue = String(value).toLowerCase().trim();
+        if (statusValue === 'new') {
+          lead.status = 'New';
+          console.log('✅ Mapped to New');
+        } else if (statusValue === 'cnr') {
+          lead.status = 'CNR';
+          console.log('✅ Mapped to CNR');
+        } else if (statusValue === 'busy') {
+          lead.status = 'Busy';
+          console.log('✅ Mapped to Busy');
+        } else if (statusValue === 'follow-up' || statusValue === 'followup' || statusValue === 'follow up') {
+          lead.status = 'Follow-up';
+          console.log('✅ Mapped to Follow-up');
+        } else if (statusValue === 'deal close' || statusValue === 'dealclose' || statusValue === 'deal_close') {
+          lead.status = 'Deal Close';
+          console.log('✅ Mapped to Deal Close');
+        } else if (statusValue === 'work alloted' || statusValue === 'workalloted' || statusValue === 'work_alloted') {
+          lead.status = 'Work Alloted';
+          console.log('✅ Mapped to Work Alloted');
+        } else if (statusValue === 'hotlead' || statusValue === 'hot lead' || statusValue === 'hot_lead') {
+          lead.status = 'Hotlead';
+          console.log('✅ Mapped to Hotlead');
+        } else if (statusValue === 'mandate sent' || statusValue === 'mandatesent' || statusValue === 'mandate_sent') {
+          lead.status = 'Mandate Sent';
+          console.log('✅ Mapped to Mandate Sent');
+        } else if (statusValue === 'documentation') {
+          lead.status = 'Documentation';
+          console.log('✅ Mapped to Documentation');
+        } else if (statusValue === 'others' || statusValue === 'other') {
+          lead.status = 'Others';
+          console.log('✅ Mapped to Others');
+        } else {
+          // Flexible mapping for variations
+          if (statusValue.includes('new')) {
+            lead.status = 'New';
+            console.log('✅ Flexible mapping: New');
+          } else if (statusValue.includes('cnr')) {
+            lead.status = 'CNR';
+            console.log('✅ Flexible mapping: CNR');
+          } else if (statusValue.includes('busy')) {
+            lead.status = 'Busy';
+            console.log('✅ Flexible mapping: Busy');
+          } else if (statusValue.includes('follow')) {
+            lead.status = 'Follow-up';
+            console.log('✅ Flexible mapping: Follow-up');
+          } else if (statusValue.includes('deal') || statusValue.includes('close')) {
+            lead.status = 'Deal Close';
+            console.log('✅ Flexible mapping: Deal Close');
+          } else if (statusValue.includes('work') || statusValue.includes('allot')) {
+            lead.status = 'Work Alloted';
+            console.log('✅ Flexible mapping: Work Alloted');
+          } else if (statusValue.includes('hot')) {
+            lead.status = 'Hotlead';
+            console.log('✅ Flexible mapping: Hotlead');
+          } else if (statusValue.includes('mandate')) {
+            lead.status = 'Mandate Sent';
+            console.log('✅ Flexible mapping: Mandate Sent');
+          } else if (statusValue.includes('document')) {
+            lead.status = 'Documentation';
+            console.log('✅ Flexible mapping: Documentation');
+          } else if (statusValue.includes('other')) {
+            lead.status = 'Others';
+            console.log('✅ Flexible mapping: Others');
+          } else {
+            lead.status = 'New'; // Default fallback
+            console.log('⚠️ Default mapping: New');
+          }
+        }
+        break;
+      case 'unit type':
+      case 'unittype':
+      case 'unit_type':
+      case 'type':
+        console.log('*** UNIT TYPE MAPPING ***');
+        console.log('Unit type value: "' + String(value) + '"');
+        const unitTypeValue = String(value).toLowerCase().trim();
+        if (unitTypeValue === 'new') {
+          lead.unitType = 'New';
+          console.log('✅ Mapped to New');
+        } else if (unitTypeValue === 'existing') {
+          lead.unitType = 'Existing';
+          console.log('✅ Mapped to Existing');
+        } else if (unitTypeValue === 'other' || unitTypeValue === 'others') {
+          lead.unitType = 'Other';
+          console.log('✅ Mapped to Other');
+        } else {
+          lead.unitType = 'New'; // Default fallback
+          console.log('⚠️ Default mapping: New');
+        }
+        break;
+      case 'follow-up date':
+      case 'followup date':
+      case 'follow_up_date':
+      case 'followupdate':
+      case 'next follow-up':
+      case 'next followup':
+      case 'next_follow_up':
+      case 'nextfollowup':
+        console.log('*** FOLLOW-UP DATE MAPPING ***');
+        console.log('Follow-up date value: "' + String(value) + '"');
+        lead.followUpDate = convertExcelDate(value);
+        console.log('Follow-up date after setting: "' + lead.followUpDate + '"');
+        break;
+      case 'notes':
+      case 'discussion':
+      case 'last discussion':
+      case 'lastdiscussion':
+      case 'last_discussion':
+      case 'comments':
+      case 'comment':
+        lead.notes = String(value);
+        break;
+      case 'gidc':
+        lead.gidc = String(value);
+        break;
+      case 'gst number':
+      case 'gstnumber':
+      case 'gst_number':
+      case 'gst':
+        lead.gstNumber = String(value);
+        break;
+      case 'final conclusion':
+      case 'finalconclusion':
+      case 'final_conclusion':
+      case 'conclusion':
+        lead.finalConclusion = String(value);
+        break;
+      default:
+        console.log('⚠️ UNMAPPED HEADER: ' + headerLower);
+        break;
+    }
+    
+    console.log('=== END MAPPING DEBUG ===');
+  };
+
+  // Parse CSV file
+  const parseCSV = (content: string): Partial<Lead>[] => {
+    const lines = content.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    console.log('CSV Headers:', headers);
+
+    return lines.slice(1).map((line, index) => {
+      const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+      const lead: Partial<Lead> = {};
+
+      headers.forEach((header, index) => {
+        const value = values[index] || '';
+        mapHeaderToField(lead, header, value);
       });
 
-      if (newLeads.length > 0) {
-        setLeads(prev => [...prev, ...newLeads]);
-        alert(`Successfully imported ${newLeads.length} leads!`);
-      } else {
-        alert('No valid leads found in the file.');
-      }
+      // Set default values for required fields
+      setDefaultValues(lead);
+      return lead;
+    });
+  };
+
+  // Parse Excel file using xlsx library
+  const parseExcel = async (file: File): Promise<Partial<Lead>[]> => {
+    console.log('Starting Excel parsing...');
+    
+    try {
+      // Dynamic import to avoid turbopack issues
+      const XLSX = await import('xlsx');
+      console.log('XLSX library loaded successfully');
+      
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          try {
+            console.log('File read successfully, size:', e.target?.result);
+            const data = new Uint8Array(e.target?.result as ArrayBuffer);
+            console.log('Data converted to Uint8Array, length:', data.length);
+            
+            const workbook = XLSX.read(data, { type: 'array' });
+            console.log('Workbook read, sheet names:', workbook.SheetNames);
+            
+            // Get the first sheet
+            const sheetName = workbook.SheetNames[0];
+            if (!sheetName) {
+              reject(new Error('No sheets found in Excel file'));
+              return;
+            }
+            const worksheet = workbook.Sheets[sheetName];
+            if (!worksheet) {
+              reject(new Error('Could not load worksheet'));
+              return;
+            }
+            console.log('Worksheet loaded:', sheetName);
+            
+            // Convert to JSON with proper date handling
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+              header: 1,
+              raw: true, // Keep raw values to handle dates manually
+              defval: ''
+            });
+            console.log('JSON data:', jsonData);
+            
+            if (jsonData.length < 2) {
+              reject(new Error('No data rows found in Excel file'));
+              return;
+            }
+            
+            const headers = jsonData[0] as string[];
+            console.log('Excel Headers:', headers);
+            
+            const leads = jsonData.slice(1).map((row: any[], index: number) => {
+              const lead: Partial<Lead> = {};
+              
+              headers.forEach((header, colIndex) => {
+                const value = row[colIndex];
+                if (value !== undefined && value !== null && value !== '') {
+                  console.log(`Processing row ${index + 1}, header: "${header}", value: "${value}"`);
+                  
+                  // Special debug for discom headers
+                  if (header && header.toLowerCase().includes('discom')) {
+                    console.log('=== DISCOM HEADER DEBUG ===');
+                    console.log('Header:', header);
+                    console.log('Value:', value);
+                    console.log('Value type:', typeof value);
+                    console.log('Value length:', value ? value.toString().length : 'undefined');
+                    console.log('=== END DISCOM HEADER DEBUG ===');
+                  }
+                  
+                  mapHeaderToField(lead, header, value);
+                }
+              });
+
+              // Set default values for required fields
+              setDefaultValues(lead);
+              console.log('Processed lead:', lead);
+              return lead;
+            });
+
+            console.log('All leads processed:', leads);
+            resolve(leads);
+          } catch (error) {
+            console.error('Excel parsing error:', error);
+            reject(new Error(`Error parsing Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`));
+          }
+        };
+
+        reader.onerror = () => {
+          console.error('FileReader error');
+          reject(new Error('Failed to read file'));
+        };
+        
+        console.log('Starting file read...');
+        reader.readAsArrayBuffer(file);
+      });
     } catch (error) {
-      console.error('Error importing file:', error);
-      alert('Error importing file. Please check the file format and try again.');
+      console.error('Failed to load XLSX library:', error);
+      throw new Error('Failed to load Excel parsing library');
+    }
+  };
+
+  // Handle Excel/CSV import
+  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('=== EXCEL IMPORT STARTED ===');
+    const file = event.target.files?.[0];
+    if (!file) {
+      console.log('No file selected');
+      return;
     }
 
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    console.log('File selected:', file.name, file.type, file.size);
+
+    try {
+      let leads: Partial<Lead>[] = [];
+      
+      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+        console.log('Processing CSV file...');
+        const content = await file.text();
+        leads = parseCSV(content);
+      } else {
+        console.log('Processing Excel file...');
+        leads = await parseExcel(file);
+      }
+
+      console.log('Parsed leads:', leads);
+
+      // Filter out leads without client names
+      const validLeads = leads.filter(lead => lead.clientName && lead.clientName.trim() !== '');
+      console.log('Valid leads (with client names):', validLeads);
+
+      if (validLeads.length > 0) {
+        // Add unique IDs to leads
+        const leadsWithIds = validLeads.map((lead, index) => ({
+          ...lead,
+          id: `imported-${Date.now()}-${index}`,
+        })) as Lead[];
+
+        console.log('Leads with IDs:', leadsWithIds);
+
+        // Add leads to the system
+        setLeads(prev => [...prev, ...leadsWithIds]);
+        
+        // Show success notification
+        setShowToast(true);
+        setToastMessage(`Successfully imported ${validLeads.length} leads from ${file.name}`);
+        setToastType('success');
+        
+        // Auto-hide toast after 5 seconds
+        setTimeout(() => {
+          setShowToast(false);
+        }, 5000);
+      } else {
+        setShowToast(true);
+        setToastMessage(`No valid leads found in ${file.name}`);
+        setToastType('error');
+        
+        // Auto-hide toast after 5 seconds
+        setTimeout(() => {
+          setShowToast(false);
+        }, 5000);
+      }
+      
+      // Clear the file input
+      event.target.value = '';
+    } catch (error) {
+      console.error('=== IMPORT ERROR ===');
+      console.error('Import error:', error);
+      
+      // Show error notification
+      setShowToast(true);
+      setToastMessage(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setToastType('error');
+      
+      // Auto-hide toast after 5 seconds
+      setTimeout(() => {
+        setShowToast(false);
+      }, 5000);
     }
   };
 
