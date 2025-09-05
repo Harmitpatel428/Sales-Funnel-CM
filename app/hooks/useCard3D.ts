@@ -4,14 +4,16 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
 export const useCard3D = () => {
-  const cardRef = useRef<HTMLButtonElement>(null);
   const cursorBlobRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const card = cardRef.current;
     const cursorBlob = cursorBlobRef.current;
+    if (!cursorBlob) return;
+
+    // Get all cards with card-3d class
+    const cards = document.querySelectorAll('.card-3d') as NodeListOf<HTMLButtonElement>;
     
-    if (!card || !cursorBlob) return;
+    if (cards.length === 0) return;
 
     let mouseX = 0;
     let mouseY = 0;
@@ -19,6 +21,7 @@ export const useCard3D = () => {
     let blobY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
+      const card = e.currentTarget as HTMLButtonElement;
       const rect = card.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -69,7 +72,8 @@ export const useCard3D = () => {
       }
     };
 
-    const handleMouseLeave = () => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      const card = e.currentTarget as HTMLButtonElement;
       // Reset card to default state with elastic easing
       gsap.to(card, {
         rotationX: 0,
@@ -87,18 +91,22 @@ export const useCard3D = () => {
       cursorBlob.classList.remove('hidden');
     };
 
-    // Add event listeners
-    card.addEventListener('mousemove', handleMouseMove);
-    card.addEventListener('mouseleave', handleMouseLeave);
-    card.addEventListener('mouseenter', handleMouseEnter);
+    // Add event listeners to all cards
+    cards.forEach(card => {
+      card.addEventListener('mousemove', handleMouseMove);
+      card.addEventListener('mouseleave', handleMouseLeave);
+      card.addEventListener('mouseenter', handleMouseEnter);
+    });
 
     // Cleanup
     return () => {
-      card.removeEventListener('mousemove', handleMouseMove);
-      card.removeEventListener('mouseleave', handleMouseLeave);
-      card.removeEventListener('mouseenter', handleMouseEnter);
+      cards.forEach(card => {
+        card.removeEventListener('mousemove', handleMouseMove);
+        card.removeEventListener('mouseleave', handleMouseLeave);
+        card.removeEventListener('mouseenter', handleMouseEnter);
+      });
     };
   }, []);
 
-  return { cardRef, cursorBlobRef };
+  return { cursorBlobRef };
 };

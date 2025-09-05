@@ -6,7 +6,7 @@ import { useCard3D } from './hooks/useCard3D';
 
 export default function HomePage() {
   const router = useRouter();
-  const { cardRef, cursorBlobRef } = useCard3D();
+  const { cursorBlobRef } = useCard3D();
 
   const handleGetStarted = () => {
     router.push('/add-lead?from=home');
@@ -49,7 +49,6 @@ export default function HomePage() {
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 w-full">
           <button 
-            ref={cardRef}
             onClick={() => router.push('/dashboard')}
             className="card-3d bg-gray-900 rounded-xl shadow-md p-8 text-center border border-gray-700 hover:border-purple-500 hover:shadow-xl transition-all duration-200"
           >
