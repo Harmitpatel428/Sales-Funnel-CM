@@ -15,7 +15,9 @@
     "electron": "electron .",
     "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
     "build-electron": "next build --no-lint && electron-builder",
-    "dist": "npm run build-electron"
+    "dist": "npm run build-electron",
+    "auto-commit": "node auto-commit.js",
+    "auto-commit:start": "start-auto-commit.bat"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
