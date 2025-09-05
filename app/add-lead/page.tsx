@@ -172,11 +172,6 @@ export default function AddLeadPage() {
       newErrors.clientName = 'Client name is required';
     }
 
-    // Validate mobile numbers - mobile numbers are optional but must be valid if provided
-    const hasValidMobileNumber = formData.mobileNumbers.some(mobile => 
-      mobile.number.trim() && /^[\d\s\-\+\(\)]+$/.test(mobile.number.trim())
-    );
-    
     // Mobile numbers are now optional - no validation error if none provided
     
     // Validate individual mobile numbers
