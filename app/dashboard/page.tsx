@@ -1658,12 +1658,8 @@ export default function DashboardPage() {
                 const value = e.target.value;
                 setDiscomFilter(value);
                 if (value === '') {
-                  setActiveFilters(prev => {
-                    const { discom, ...rest } = prev;
-                    return {
-                      ...rest,
-                      status: [] // Clear status filter when selecting "All Discoms"
-                    };
+                  setActiveFilters({
+                    status: [] // Clear all filters when selecting "All Discoms"
                   });
                 } else {
                   setActiveFilters(prev => ({
