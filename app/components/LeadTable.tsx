@@ -289,18 +289,18 @@ function LeadTable({
                   <div className="text-sm text-gray-500 max-w-28 truncate" title={lead.company}>{lead.company}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-gray-500 max-w-24 truncate" title={lead.clientName}>{lead.clientName}</div>
+                  <div className="text-sm text-gray-500 max-w-34 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{lead.discom || 'N/A'}</div>
                 </td>
-                <td className="px-0.5 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500 max-w-16 truncate">
+                <td className="px-2 py-2 whitespace-nowrap">
+                  <div className="px-2 text-sm text-gray-500 max-w-24 truncate">
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
                 <td className="px-0.8 py-2 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full max-w-50 truncate ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
                 </td>
