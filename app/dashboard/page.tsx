@@ -1511,12 +1511,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Search and Bulk Actions */}
-      <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-          {/* Search Section */}
-          <div className="flex items-center gap-2 max-w-sm relative">
-            <div className="relative">
+      {/* Search Section */}
+      <div className="bg-white p-3 rounded-lg shadow-md mb-4">
+        <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+          {/* Search Input */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-none">
               <input
                 type="text"
                 placeholder="Search leads..."
@@ -1525,7 +1525,7 @@ export default function DashboardPage() {
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 onFocus={() => searchTerm.length >= 2 && setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-64 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black placeholder-gray-500 text-sm"
+                className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black placeholder-gray-500 text-sm"
               />
               
               {/* Search Suggestions Dropdown */}
@@ -1606,33 +1606,29 @@ export default function DashboardPage() {
               </button>
             )}
           </div>
+        </div>
+      </div>
 
-
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2 flex-wrap">
-          </div>
-
-          {/* Status Filter Buttons */}
-          <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-4 rounded-lg shadow-lg border border-slate-600/30 mb-6 relative overflow-hidden mx-auto w-fit">
+      {/* Status Filter Section */}
+      <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-3 rounded-lg shadow-lg border border-slate-600/30 mb-4 relative overflow-hidden mx-auto w-fit">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-cyan-500/5"></div>
             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"></div>
             <div className="relative">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-white">Filter by Status</h3>
-              <span className="text-sm text-white">Click any status to filter leads</span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <h3 className="text-base font-semibold text-white">Filter by Status</h3>
+              <span className="text-xs text-white/80">Click any status to filter leads</span>
             </div>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="flex items-center justify-center gap-1.5 flex-wrap">
               <button
                 onClick={() => handleStatusFilter('New')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'New'
                     ? 'bg-blue-800 text-white'
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
                 }`}
               >
                 New
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'New'
                     ? 'bg-blue-900 text-blue-100'
                     : 'bg-blue-500 text-white'
@@ -1642,14 +1638,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('CNR')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'CNR'
                     ? 'bg-orange-800 text-white'
                     : 'bg-orange-600 hover:bg-orange-700 text-white'
                 }`}
               >
                 CNR
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'CNR'
                     ? 'bg-orange-900 text-orange-100'
                     : 'bg-orange-500 text-white'
@@ -1659,14 +1655,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Busy')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Busy'
                     ? 'bg-yellow-800 text-white'
                     : 'bg-yellow-600 hover:bg-yellow-700 text-white'
                 }`}
               >
                 Busy
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Busy'
                     ? 'bg-yellow-900 text-yellow-100'
                     : 'bg-yellow-500 text-white'
@@ -1676,14 +1672,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Follow-up')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Follow-up'
                     ? 'bg-purple-800 text-white'
                     : 'bg-purple-600 hover:bg-purple-700 text-white'
                 }`}
               >
                 Follow-up
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Follow-up'
                     ? 'bg-purple-900 text-purple-100'
                     : 'bg-purple-500 text-white'
@@ -1693,14 +1689,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Deal Close')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Deal Close'
                     ? 'bg-green-800 text-white'
                     : 'bg-green-600 hover:bg-green-700 text-white'
                 }`}
               >
                 Deal Close
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Deal Close'
                     ? 'bg-green-900 text-green-100'
                     : 'bg-green-500 text-white'
@@ -1710,14 +1706,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Work Alloted')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Work Alloted'
                     ? 'bg-indigo-800 text-white'
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 }`}
               >
                 Work Alloted
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Work Alloted'
                     ? 'bg-indigo-900 text-indigo-100'
                     : 'bg-indigo-500 text-white'
@@ -1727,14 +1723,14 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => handleStatusFilter('Hotlead')}
-                className={`px-3 py-2 rounded-lg transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Hotlead'
                     ? 'bg-red-800 text-white'
                     : 'bg-red-600 hover:bg-red-700 text-white'
                 }`}
               >
                 Hotlead
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
                   activeFilters.status?.length === 1 && activeFilters.status[0] === 'Hotlead'
                     ? 'bg-red-900 text-red-100'
                     : 'bg-red-500 text-white'
@@ -1746,20 +1742,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Bulk Actions */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleSelectAll(!selectAll)}
-                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                  selectAll 
-                    ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {selectAll ? 'Deselect All' : 'Select All'}
-              </button>
-            </div>
+      {/* Bulk Actions Section */}
+      <div className="bg-white p-3 rounded-lg shadow-md mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={() => handleSelectAll(!selectAll)}
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              selectAll 
+                ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {selectAll ? 'Deselect All' : 'Select All'}
+          </button>
             {selectedLeads.size > 0 && (
               <>
                 <span className="text-sm text-gray-600">
@@ -1801,7 +1796,6 @@ export default function DashboardPage() {
                 </button>
               </>
             )}
-          </div>
         </div>
       </div>  
 
