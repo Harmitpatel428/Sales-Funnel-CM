@@ -1660,7 +1660,10 @@ export default function DashboardPage() {
                 if (value === '') {
                   setActiveFilters(prev => {
                     const { discom, ...rest } = prev;
-                    return rest;
+                    return {
+                      ...rest,
+                      status: [] // Clear status filter when selecting "All Discoms"
+                    };
                   });
                 } else {
                   setActiveFilters(prev => ({
