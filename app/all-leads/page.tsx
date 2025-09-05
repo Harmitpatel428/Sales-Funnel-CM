@@ -1037,51 +1037,28 @@ export default function AllLeadsPage() {
   const renderActionButtons = (lead: Lead) => (
     <div className="flex space-x-2">
       {!lead.isDeleted && (
-        <>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              localStorage.setItem('editingLead', JSON.stringify(lead));
-              router.push(`/add-lead?mode=edit&id=${lead.id}&from=all-leads`);
-            }}
-            className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-md transition-colors"
-          >
-            Edit
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick(lead);
-            }}
-            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors"
-          >
-            Delete
-          </button>
-        </>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            localStorage.setItem('editingLead', JSON.stringify(lead));
+            router.push(`/add-lead?mode=edit&id=${lead.id}&from=all-leads`);
+          }}
+          className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-md transition-colors"
+        >
+          Edit
+        </button>
       )}
       {lead.isDeleted && (
-        <>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleRestoreClick(lead);
-            }}
-            className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
-            title="Restore this lead to its original status"
-          >
-            Restore
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick(lead);
-            }}
-            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors"
-            title="Delete this lead permanently"
-          >
-            Delete
-          </button>
-        </>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRestoreClick(lead);
+          }}
+          className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
+          title="Restore this lead to its original status"
+        >
+          Restore
+        </button>
       )}
     </div>
   );
