@@ -299,7 +299,7 @@ function LeadTable({
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
+                <td className="px-0.8 py-2 whitespace-nowrap">
                   <span className={`px-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
