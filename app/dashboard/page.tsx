@@ -9,7 +9,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { leads, addLead, deleteLead, getFilteredLeads, updateLead } = useLeads();
   const [activeFilters, setActiveFilters] = useState<LeadFilters>({
-    status: [] // Show no leads by default - user must click a status button to see leads
+    status: ['New'] // Show "New" leads by default
   });
   const [isImporting, setIsImporting] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -1659,7 +1659,7 @@ export default function DashboardPage() {
                 setDiscomFilter(value);
                 if (value === '') {
                   setActiveFilters({
-                    status: [] // Clear all filters when selecting "All Discoms" - show no leads
+                    status: ['New'] // Show "New" leads from all discoms when selecting "All Discoms"
                   });
                 } else {
                   setActiveFilters(prev => ({
