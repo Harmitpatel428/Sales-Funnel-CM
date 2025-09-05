@@ -263,7 +263,7 @@ function LeadTable({
                 onClick={() => onLeadClick && onLeadClick(lead)}
               >
                 {onLeadSelection && (
-                  <td className="px-1 py-4 whitespace-nowrap">
+                  <td className="px-1 py-2 whitespace-nowrap">
                     <div className="w-8 h-8 flex items-center justify-center">
                       <input
                         type="checkbox"
@@ -276,42 +276,42 @@ function LeadTable({
                     </div>
                   </td>
                 )}
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{lead.kva}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{lead.connectionDate}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500 max-w-20 truncate">{lead.consumerNumber}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500 max-w-32 truncate" title={lead.company}>{lead.company}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500 max-w-28 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{lead.discom || 'N/A'}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500 max-w-20 truncate">
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <span className={`px-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{formatDate(lead.lastActivityDate)}</div>
                 </td>
-                <td className="px-1 py-4 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{formatDate(lead.followUpDate)}</div>
                 </td>
                 {showActions && (
-                  <td className="px-1 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-1 py-2 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                     {actionButtons && actionButtons(lead)}
                   </td>
                 )}
@@ -319,7 +319,7 @@ function LeadTable({
             ))
           ) : (
             <tr>
-              <td colSpan={getColumnSpan()} className="px-1 py-4 text-center text-sm text-gray-500">
+              <td colSpan={getColumnSpan()} className="px-1 py-2 text-center text-sm text-gray-500">
                 {emptyMessage}
               </td>
             </tr>
