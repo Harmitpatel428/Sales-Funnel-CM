@@ -300,7 +300,7 @@ function LeadTable({
                   </div>
                 </td>
                 <td className="px-0.8 py-2 whitespace-nowrap">
-                  <span className={`px-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
+                  <span className={`px-2 inline-flex text-xs leading-50 font-semibold rounded-full ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
                 </td>
