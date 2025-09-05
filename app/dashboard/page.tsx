@@ -1614,7 +1614,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Status Filter Buttons */}
-          <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-4 rounded-lg shadow-lg border border-slate-600/30 mb-6 relative overflow-hidden min-h-fit">
+          <div className="flex justify-center mb-6">
+            <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-4 rounded-lg shadow-lg border border-slate-600/30 relative overflow-hidden mx-auto">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-cyan-500/5"></div>
             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"></div>
             <div className="relative">
@@ -1742,6 +1743,7 @@ export default function DashboardPage() {
                   {statusCounts['Hotlead']}
                 </span>
               </button>
+            </div>
             </div>
             </div>
           </div>
