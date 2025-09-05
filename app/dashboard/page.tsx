@@ -2692,9 +2692,19 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
                   onChange={(e) => setExportPassword(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && performExport()}
                   placeholder="Enter password"
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 text-center font-medium text-lg"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 text-center font-medium text-lg text-black placeholder-black"
                   autoFocus
                 />
+              </div>
+              
+              {/* Warning Notice */}
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/50 rounded-2xl p-4 mb-4 shadow-sm">
+                <div className="flex items-center justify-center space-x-3 text-red-700 text-sm font-bold">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span>⚠️ STAY AWAY, IF YOU'RE NOT ADMIN ⚠️</span>
+                </div>
               </div>
               
               {/* Security Notice */}
