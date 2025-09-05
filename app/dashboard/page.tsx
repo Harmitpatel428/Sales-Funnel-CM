@@ -1036,6 +1036,8 @@ export default function DashboardPage() {
     console.log('=== SET DEFAULT VALUES DEBUG ===');
     console.log('Input lead mobileNumber: "' + lead.mobileNumber + '" (type: ' + typeof lead.mobileNumber + ')');
     console.log('Input lead consumerNumber: "' + lead.consumerNumber + '" (type: ' + typeof lead.consumerNumber + ')');
+    console.log('Input lead discom: "' + lead.discom + '" (type: ' + typeof lead.discom + ')');
+    console.log('Input lead discom length:', lead.discom ? lead.discom.length : 'undefined');
     
     const result: Lead = {
       ...lead,
@@ -1067,9 +1069,36 @@ export default function DashboardPage() {
     
     console.log('Output lead mobileNumber: "' + result.mobileNumber + '" (type: ' + typeof result.mobileNumber + ')');
     console.log('Output lead consumerNumber: "' + result.consumerNumber + '" (type: ' + typeof result.consumerNumber + ')');
+    console.log('Output lead discom: "' + result.discom + '" (type: ' + typeof result.discom + ')');
+    console.log('Output lead discom length:', result.discom ? result.discom.length : 'undefined');
     console.log('=== END SET DEFAULT VALUES DEBUG ===');
     
     return result;
+  };
+
+  // Test function to debug discom import issues
+  const testDiscomImport = () => {
+    console.log('=== TESTING DISCOM IMPORT ===');
+    const testLead = {
+      kva: 'TEST',
+      consumerNumber: '12345',
+      company: 'Test Company',
+      clientName: 'Test Client',
+      discom: 'DGVCL',
+      mobileNumber: '9876543210'
+    };
+    console.log('Test lead with DGVCL:', testLead);
+    
+    const testLead2 = {
+      kva: 'TEST2',
+      consumerNumber: '12346',
+      company: 'Test Company 2',
+      clientName: 'Test Client 2',
+      discom: 'PGVCL',
+      mobileNumber: '9876543211'
+    };
+    console.log('Test lead with PGVCL:', testLead2);
+    console.log('=== END TESTING DISCOM IMPORT ===');
   };
 
   // Import leads into the system
@@ -1078,6 +1107,10 @@ export default function DashboardPage() {
     console.log('Starting to import leads:', leadsToImport);
     console.log('Raw Excel data structure:', JSON.stringify(leadsToImport, null, 2));
     console.log('Current leads count before import:', leads.length);
+    
+    // Test discom import
+    testDiscomImport();
+    
     let importedCount = 0;
     
     for (const leadData of leadsToImport) {
@@ -1133,9 +1166,11 @@ export default function DashboardPage() {
         console.log('=== END CREATING NEW LEAD ===');
         console.log('Created new lead object:', newLead);
         console.log('Final Connection Date set to:', newLead.connectionDate);
+        console.log('About to add lead with discom:', newLead.discom);
         console.log('About to call addLead...');
         addLead(newLead);
         console.log('addLead called successfully');
+        console.log('Lead discom after adding:', newLead.discom);
         importedCount++;
         console.log('Lead added, total imported:', importedCount);
         console.log('Current leads count after this lead:', leads.length);
