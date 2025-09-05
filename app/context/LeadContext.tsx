@@ -230,17 +230,18 @@ export function LeadProvider({ children }: { children: ReactNode }) {
         return false;
       }
       
-      // Filter by discom
+      // Filter by discom - robust comparison
       if (filters.discom && filters.discom !== '') {
-        console.log(`=== DISCOM FILTER DEBUG ===`);
-        console.log(`Lead ${lead.kva} discom: "${lead.discom}" (type: ${typeof lead.discom})`);
-        console.log(`Filter discom: "${filters.discom}" (type: ${typeof filters.discom})`);
-        console.log(`Exact match: ${lead.discom === filters.discom}`);
-        console.log(`Trimmed match: ${lead.discom?.trim() === filters.discom?.trim()}`);
-        console.log(`Case-insensitive match: ${lead.discom?.toLowerCase() === filters.discom?.toLowerCase()}`);
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(filters.discom).trim().toUpperCase();
         
-        if (lead.discom !== filters.discom) {
-          console.log(`Lead ${lead.kva} filtered out: discom "${lead.discom}" doesn't match filter "${filters.discom}"`);
+        console.log(`=== DISCOM FILTER DEBUG ===`);
+        console.log(`Lead ${lead.kva} discom: "${lead.discom}" -> normalized: "${leadDiscom}"`);
+        console.log(`Filter discom: "${filters.discom}" -> normalized: "${filterDiscom}"`);
+        console.log(`Match: ${leadDiscom === filterDiscom}`);
+        
+        if (leadDiscom !== filterDiscom) {
+          console.log(`Lead ${lead.kva} filtered out: discom "${leadDiscom}" doesn't match filter "${filterDiscom}"`);
           console.log(`=== END DISCOM FILTER DEBUG ===`);
           return false;
         }

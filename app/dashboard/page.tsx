@@ -1661,6 +1661,28 @@ export default function DashboardPage() {
             <span>Add Test DGVCL</span>
           </button>
           
+          {/* Test Filter Button */}
+          <button
+            onClick={() => {
+              console.log('=== TESTING DISCOM FILTER ===');
+              console.log('Current discomFilter:', discomFilter);
+              console.log('Current activeFilters:', activeFilters);
+              setDiscomFilter('DGVCL');
+              setActiveFilters(prev => ({
+                ...prev,
+                discom: 'DGVCL'
+              }));
+              console.log('Set filter to DGVCL');
+              console.log('=== END TESTING DISCOM FILTER ===');
+            }}
+            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            <span>Test DGVCL Filter</span>
+          </button>
+          
           {/* Export Button */}
           <button
             onClick={handleExportExcel}
