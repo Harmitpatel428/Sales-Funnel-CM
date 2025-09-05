@@ -877,9 +877,24 @@ export default function DashboardPage() {
         break;
       case 'discom':
       case 'discom name':
+      case 'discomname':
+      case 'discom_name':
       case 'distribution company':
+      case 'distributioncompany':
+      case 'distribution_company':
       case 'utility company':
+      case 'utilitycompany':
+      case 'utility_company':
+      case 'discoms':
+      case 'discom names':
+        console.log('=== DISCOM MAPPING DEBUG ===');
+        console.log('Header:', header);
+        console.log('Value:', value);
+        console.log('Value type:', typeof value);
+        console.log('String value:', String(value));
         lead.discom = String(value);
+        console.log('Mapped discom:', lead.discom);
+        console.log('=== END DISCOM MAPPING DEBUG ===');
         break;
       case 'gidc':
       case 'gidc number':
@@ -1062,6 +1077,11 @@ export default function DashboardPage() {
         // Parse mobile numbers from the imported data (handles multiple numbers in one field)
         const mobileNumbers = parseMobileNumbers(leadData.mobileNumber || '', leadData.clientName || '');
 
+        console.log('=== LEAD CREATION DEBUG ===');
+        console.log('leadData.discom:', leadData.discom);
+        console.log('leadData.discom type:', typeof leadData.discom);
+        console.log('leadData.discom length:', leadData.discom ? leadData.discom.length : 'undefined');
+        
         const newLead: Lead = {
           id: crypto.randomUUID(),
           kva: leadData.kva || '',
@@ -1086,6 +1106,9 @@ export default function DashboardPage() {
           mandateStatus: leadData.mandateStatus || 'Pending',
           ...(leadData.documentStatus && { documentStatus: leadData.documentStatus })
         };
+        
+        console.log('newLead.discom:', newLead.discom);
+        console.log('=== END LEAD CREATION DEBUG ===');
         
         console.log('Final newLead.mobileNumber: "' + newLead.mobileNumber + '" (type: ' + typeof newLead.mobileNumber + ')');
         console.log('Final newLead.consumerNumber: "' + newLead.consumerNumber + '" (type: ' + typeof newLead.consumerNumber + ')');
