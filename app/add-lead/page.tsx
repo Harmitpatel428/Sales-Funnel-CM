@@ -989,50 +989,68 @@ export default function AddLeadPage() {
                   placeholder="DD-MM-YYYY"
                   disabled={isSubmitting}
                 />
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Create a hidden date input
-                    const dateInput = document.createElement('input');
-                    dateInput.type = 'date';
-                    dateInput.style.position = 'absolute';
-                    dateInput.style.left = '-9999px';
-                    dateInput.style.opacity = '0';
-                    
-                    // Set minimum date to today
-                    const today = new Date().toISOString().split('T')[0];
-                    if (today) {
-                      dateInput.min = today;
-                    }
-                    
-                    // Handle date selection
-                    dateInput.onchange = (e) => {
-                      const target = e.target as HTMLInputElement;
-                      if (target.value) {
-                        // Convert YYYY-MM-DD to DD-MM-YYYY
-                        const [year, month, day] = target.value.split('-');
-                        const formattedDate = `${day}-${month}-${year}`;
-                        setFormData(prev => ({
-                          ...prev,
-                          lastActivityDate: formattedDate
-                        }));
-                      }
-                      // Remove the input from DOM
-                      document.body.removeChild(dateInput);
-                    };
-                    
-                    // Add to DOM and trigger click
-                    document.body.appendChild(dateInput);
-                    dateInput.click();
-                  }}
-                  disabled={isSubmitting}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                  title="Choose date"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </button>
+                 <button
+                   type="button"
+                   onClick={async () => {
+                     try {
+                       // Create a hidden date input
+                       const dateInput = document.createElement('input');
+                       dateInput.type = 'date';
+                       dateInput.style.position = 'fixed';
+                       dateInput.style.top = '-1000px';
+                       dateInput.style.left = '-1000px';
+                       dateInput.style.opacity = '0';
+                       dateInput.style.pointerEvents = 'none';
+                       
+                       // Set minimum date to today
+                       const today = new Date().toISOString().split('T')[0];
+                       if (today) {
+                         dateInput.min = today;
+                       }
+                       
+                       // Handle date selection
+                       dateInput.addEventListener('change', (e) => {
+                         const target = e.target as HTMLInputElement;
+                         if (target.value) {
+                           // Convert YYYY-MM-DD to DD-MM-YYYY
+                           const [year, month, day] = target.value.split('-');
+                           const formattedDate = `${day}-${month}-${year}`;
+                           setFormData(prev => ({
+                             ...prev,
+                             lastActivityDate: formattedDate
+                           }));
+                         }
+                         // Remove the input from DOM
+                         if (document.body.contains(dateInput)) {
+                           document.body.removeChild(dateInput);
+                         }
+                       });
+                       
+                       // Add to DOM
+                       document.body.appendChild(dateInput);
+                       
+                       // Force focus and show picker
+                       dateInput.focus();
+                       
+                       // Try modern showPicker method first
+                       if ('showPicker' in dateInput) {
+                         await (dateInput as any).showPicker();
+                       } else {
+                         // Fallback: trigger click
+                         (dateInput as HTMLInputElement).click();
+                       }
+                     } catch (error) {
+                       console.error('Date picker error:', error);
+                     }
+                   }}
+                   disabled={isSubmitting}
+                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer z-10"
+                   title="Choose date"
+                 >
+                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                   </svg>
+                 </button>
               </div>
             </div>
             
@@ -1057,58 +1075,76 @@ export default function AddLeadPage() {
                   disabled={isSubmitting}
                   maxLength={10}
                 />
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Create a hidden date input
-                    const dateInput = document.createElement('input');
-                    dateInput.type = 'date';
-                    dateInput.style.position = 'absolute';
-                    dateInput.style.left = '-9999px';
-                    dateInput.style.opacity = '0';
-                    
-                    // Set minimum date to today
-                    const today = new Date().toISOString().split('T')[0];
-                    if (today) {
-                      dateInput.min = today;
-                    }
-                    
-                    // Handle date selection
-                    dateInput.onchange = (e) => {
-                      const target = e.target as HTMLInputElement;
-                      if (target.value) {
-                        // Convert YYYY-MM-DD to DD-MM-YYYY
-                        const [year, month, day] = target.value.split('-');
-                        const formattedDate = `${day}-${month}-${year}`;
-                        setFormData(prev => ({
-                          ...prev,
-                          followUpDate: formattedDate
-                        }));
-                        // Clear error if exists
-                        if (errors.followUpDate) {
-                          setErrors(prev => {
-                            const newErrors = { ...prev };
-                            delete newErrors.followUpDate;
-                            return newErrors;
-                          });
-                        }
-                      }
-                      // Remove the input from DOM
-                      document.body.removeChild(dateInput);
-                    };
-                    
-                    // Add to DOM and trigger click
-                    document.body.appendChild(dateInput);
-                    dateInput.click();
-                  }}
-                  disabled={isSubmitting}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                  title="Choose date"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </button>
+                 <button
+                   type="button"
+                   onClick={async () => {
+                     try {
+                       // Create a hidden date input
+                       const dateInput = document.createElement('input');
+                       dateInput.type = 'date';
+                       dateInput.style.position = 'fixed';
+                       dateInput.style.top = '-1000px';
+                       dateInput.style.left = '-1000px';
+                       dateInput.style.opacity = '0';
+                       dateInput.style.pointerEvents = 'none';
+                       
+                       // Set minimum date to today
+                       const today = new Date().toISOString().split('T')[0];
+                       if (today) {
+                         dateInput.min = today;
+                       }
+                       
+                       // Handle date selection
+                       dateInput.addEventListener('change', (e) => {
+                         const target = e.target as HTMLInputElement;
+                         if (target.value) {
+                           // Convert YYYY-MM-DD to DD-MM-YYYY
+                           const [year, month, day] = target.value.split('-');
+                           const formattedDate = `${day}-${month}-${year}`;
+                           setFormData(prev => ({
+                             ...prev,
+                             followUpDate: formattedDate
+                           }));
+                           // Clear error if exists
+                           if (errors.followUpDate) {
+                             setErrors(prev => {
+                               const newErrors = { ...prev };
+                               delete newErrors.followUpDate;
+                               return newErrors;
+                             });
+                           }
+                         }
+                         // Remove the input from DOM
+                         if (document.body.contains(dateInput)) {
+                           document.body.removeChild(dateInput);
+                         }
+                       });
+                       
+                       // Add to DOM
+                       document.body.appendChild(dateInput);
+                       
+                       // Force focus and show picker
+                       dateInput.focus();
+                       
+                       // Try modern showPicker method first
+                       if ('showPicker' in dateInput) {
+                         await (dateInput as any).showPicker();
+                       } else {
+                         // Fallback: trigger click
+                         (dateInput as HTMLInputElement).click();
+                       }
+                     } catch (error) {
+                       console.error('Date picker error:', error);
+                     }
+                   }}
+                   disabled={isSubmitting}
+                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer z-10"
+                   title="Choose date"
+                 >
+                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                   </svg>
+                 </button>
               </div>
               {errors.followUpDate && (
                 <p className="text-sm text-red-600 flex items-center">
