@@ -1140,6 +1140,7 @@ export default function AllLeadsPage() {
         
         // Format main mobile number (phone number only, no contact name)
         const mainMobileDisplay = mainMobile.number || '';
+        console.log('🔍 Export Debug - Lead:', lead.clientName, 'Main Mobile:', mainMobileDisplay);
         
         return [
           lead.consumerNumber || '',
