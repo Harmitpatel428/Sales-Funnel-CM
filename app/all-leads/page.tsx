@@ -197,18 +197,6 @@ export default function AllLeadsPage() {
   //   setPasswordError('');
   // };
 
-  // Restore function to restore deleted leads
-  const handleRestoreClick = (lead: Lead) => {
-    if (lead.isDeleted) {
-      // Restore the lead by setting isDeleted to false
-      setLeads(prev => 
-        prev.map(l => l.id === lead.id ? { ...l, isDeleted: false } : l)
-      );
-      
-      // Show success message
-      alert(`Lead "${lead.clientName}" has been restored successfully!`);
-    }
-  };
 
   const handlePasswordSubmit = () => {
     if (password === DELETE_PASSWORD) {

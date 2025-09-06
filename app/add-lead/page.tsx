@@ -945,29 +945,66 @@ export default function AddLeadPage() {
                 Last Activity Date
               </label>
               <div className="relative">
-                <input
-                  type="date"
-                  id="lastActivityDate"
-                  name="lastActivityDate"
-                  value={formData.lastActivityDate ? (() => {
-                    // Convert DD-MM-YYYY to YYYY-MM-DD for date input
-                    const [day, month, year] = formData.lastActivityDate.split('-');
-                    return `${year}-${month}-${day}`;
-                  })() : ''}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      // Convert YYYY-MM-DD to DD-MM-YYYY
-                      const [year, month, day] = e.target.value.split('-');
-                      const formattedDate = `${day}-${month}-${year}`;
-                      setFormData(prev => ({
-                        ...prev,
-                        lastActivityDate: formattedDate
-                      }));
-                    }
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
-                  disabled={isSubmitting}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="lastActivityDate"
+                    name="lastActivityDate"
+                    value={formData.lastActivityDate}
+                    onChange={handleChange}
+                    onClick={() => {
+                      // Create and trigger native date picker
+                      const dateInput = document.createElement('input');
+                      dateInput.type = 'date';
+                      dateInput.style.position = 'absolute';
+                      dateInput.style.left = '-9999px';
+                      dateInput.style.opacity = '0';
+                      dateInput.style.pointerEvents = 'none';
+                      
+                      // Set current value if exists
+                      if (formData.lastActivityDate) {
+                        const [day, month, year] = formData.lastActivityDate.split('-');
+                        dateInput.value = `${year}-${month}-${day}`;
+                      }
+                      
+                      // Handle date selection
+                      dateInput.onchange = (e) => {
+                        const target = e.target as HTMLInputElement;
+                        if (target.value) {
+                          const [year, month, day] = target.value.split('-');
+                          const formattedDate = `${day}-${month}-${year}`;
+                          setFormData(prev => ({
+                            ...prev,
+                            lastActivityDate: formattedDate
+                          }));
+                        }
+                        document.body.removeChild(dateInput);
+                      };
+                      
+                      // Add to DOM and trigger
+                      document.body.appendChild(dateInput);
+                      dateInput.focus();
+                      try {
+                        if ('showPicker' in dateInput) {
+                          (dateInput as any).showPicker();
+                        } else {
+                          (dateInput as HTMLInputElement).click();
+                        }
+                      } catch (error) {
+                        (dateInput as HTMLInputElement).click();
+                      }
+                    }}
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black cursor-pointer"
+                    placeholder="Click to select date (DD-MM-YYYY)"
+                    disabled={isSubmitting}
+                    readOnly
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -979,40 +1016,82 @@ export default function AddLeadPage() {
                 )}
               </label>
               <div className="relative">
-                <input
-                  type="date"
-                  id="followUpDate"
-                  name="followUpDate"
-                  value={formData.followUpDate ? (() => {
-                    // Convert DD-MM-YYYY to YYYY-MM-DD for date input
-                    const [day, month, year] = formData.followUpDate.split('-');
-                    return `${year}-${month}-${day}`;
-                  })() : ''}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      // Convert YYYY-MM-DD to DD-MM-YYYY
-                      const [year, month, day] = e.target.value.split('-');
-                      const formattedDate = `${day}-${month}-${year}`;
-                      setFormData(prev => ({
-                        ...prev,
-                        followUpDate: formattedDate
-                      }));
-                      // Clear error if exists
-                      if (errors.followUpDate) {
-                        setErrors(prev => {
-                          const newErrors = { ...prev };
-                          delete newErrors.followUpDate;
-                          return newErrors;
-                        });
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="followUpDate"
+                    name="followUpDate"
+                    value={formData.followUpDate}
+                    onChange={handleChange}
+                    onClick={() => {
+                      // Create and trigger native date picker
+                      const dateInput = document.createElement('input');
+                      dateInput.type = 'date';
+                      dateInput.style.position = 'absolute';
+                      dateInput.style.left = '-9999px';
+                      dateInput.style.opacity = '0';
+                      dateInput.style.pointerEvents = 'none';
+                      
+                      // Set minimum date to today
+                      const today = new Date().toISOString().split('T')[0];
+                      if (today) {
+                        dateInput.min = today;
                       }
-                    }
-                  }}
-                  min={new Date().toISOString().split('T')[0]}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
-                    errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
-                  disabled={isSubmitting}
-                />
+                      
+                      // Set current value if exists
+                      if (formData.followUpDate) {
+                        const [day, month, year] = formData.followUpDate.split('-');
+                        dateInput.value = `${year}-${month}-${day}`;
+                      }
+                      
+                      // Handle date selection
+                      dateInput.onchange = (e) => {
+                        const target = e.target as HTMLInputElement;
+                        if (target.value) {
+                          const [year, month, day] = target.value.split('-');
+                          const formattedDate = `${day}-${month}-${year}`;
+                          setFormData(prev => ({
+                            ...prev,
+                            followUpDate: formattedDate
+                          }));
+                          // Clear error if exists
+                          if (errors.followUpDate) {
+                            setErrors(prev => {
+                              const newErrors = { ...prev };
+                              delete newErrors.followUpDate;
+                              return newErrors;
+                            });
+                          }
+                        }
+                        document.body.removeChild(dateInput);
+                      };
+                      
+                      // Add to DOM and trigger
+                      document.body.appendChild(dateInput);
+                      dateInput.focus();
+                      try {
+                        if ('showPicker' in dateInput) {
+                          (dateInput as any).showPicker();
+                        } else {
+                          (dateInput as HTMLInputElement).click();
+                        }
+                      } catch (error) {
+                        (dateInput as HTMLInputElement).click();
+                      }
+                    }}
+                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black cursor-pointer ${
+                      errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Click to select date (DD-MM-YYYY)"
+                    disabled={isSubmitting}
+                    readOnly
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
               {errors.followUpDate && (
                 <p className="text-sm text-red-600 flex items-center">
