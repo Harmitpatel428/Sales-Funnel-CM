@@ -861,6 +861,27 @@ export default function AllLeadsPage() {
         lead.followUpDate = convertExcelDate(value);
         console.log('Follow-up date after setting: "' + lead.followUpDate + '"');
         break;
+      case 'last activity date':
+      case 'lastactivitydate':
+      case 'last_activity_date':
+      case 'last activity':
+      case 'lastactivity':
+      case 'last_activity':
+      case 'activity date':
+      case 'activitydate':
+      case 'activity_date':
+      case 'last call date':
+      case 'lastcalldate':
+      case 'last_call_date':
+      case 'last contact date':
+      case 'lastcontactdate':
+      case 'last_contact_date':
+        console.log('*** LAST ACTIVITY DATE MAPPING ***');
+        console.log('Last activity date value: "' + String(value) + '"');
+        console.log('Last activity date value type:', typeof value);
+        lead.lastActivityDate = convertExcelDate(value);
+        console.log('Last activity date after setting: "' + lead.lastActivityDate + '"');
+        break;
       case 'notes':
       case 'discussion':
       case 'last discussion':
@@ -1043,6 +1064,16 @@ export default function AllLeadsPage() {
                     console.log('Value type:', typeof value);
                     console.log('Value length:', value ? value.toString().length : 'undefined');
                     console.log('=== END FOLLOW-UP DATE HEADER DEBUG ===');
+                  }
+                  
+                  // Special debug for last activity date headers
+                  if (header && (header.toLowerCase().includes('activity') || header.toLowerCase().includes('last'))) {
+                    console.log('=== LAST ACTIVITY DATE HEADER DEBUG ===');
+                    console.log('Header:', header);
+                    console.log('Value:', value);
+                    console.log('Value type:', typeof value);
+                    console.log('Value length:', value ? value.toString().length : 'undefined');
+                    console.log('=== END LAST ACTIVITY DATE HEADER DEBUG ===');
                   }
                   
                   mapHeaderToField(lead, header, value);
