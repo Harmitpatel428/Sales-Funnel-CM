@@ -340,15 +340,23 @@ export default function AllLeadsPage() {
 
   // Convert Excel serial date to readable date string in DD-MM-YYYY format
   const convertExcelDate = (value: string | number | Date | null | undefined): string => {
-    if (!value) return '';
+    console.log('=== CONVERT EXCEL DATE DEBUG ===');
+    console.log('Input value:', value);
+    console.log('Input type:', typeof value);
+    
+    if (!value) {
+      console.log('Empty value, returning empty string');
+      return '';
+    }
     
     // If it's already a string, return as is
     if (typeof value === 'string') {
       const trimmed = value.trim();
+      console.log('Trimmed string:', trimmed);
       
       // Check if it's already in DD-MM-YYYY format
       if (trimmed.match(/^\d{2}-\d{2}-\d{4}$/)) {
-        // Already in DD-MM-YYYY format, return as is
+        console.log('Already in DD-MM-YYYY format:', trimmed);
         return trimmed;
       } else if (trimmed.match(/^\d{4}-\d{2}-\d{2}$/)) {
         // Convert from YYYY-MM-DD to DD-MM-YYYY
@@ -356,8 +364,21 @@ export default function AllLeadsPage() {
         const year = parts[0];
         const month = parts[1];
         const day = parts[2];
-        console.log(`Converting date format from YYYY-MM-DD: ${trimmed} to DD-MM-YYYY: ${day}-${month}-${year}`);
-        return `${day}-${month}-${year}`;
+        const converted = `${day}-${month}-${year}`;
+        console.log(`Converting date format from YYYY-MM-DD: ${trimmed} to DD-MM-YYYY: ${converted}`);
+        return converted;
+      } else if (trimmed.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+        // Handle MM/DD/YYYY or DD/MM/YYYY format
+        const parts = trimmed.split('/');
+        if (parts.length === 3) {
+          // Assume DD/MM/YYYY format
+          const day = parts[0].padStart(2, '0');
+          const month = parts[1].padStart(2, '0');
+          const year = parts[2];
+          const converted = `${day}-${month}-${year}`;
+          console.log(`Converting date format from DD/MM/YYYY: ${trimmed} to DD-MM-YYYY: ${converted}`);
+          return converted;
+        }
       } else {
         // Try to parse as date and convert
         const date = new Date(trimmed);
@@ -365,8 +386,11 @@ export default function AllLeadsPage() {
           const day = String(date.getDate()).padStart(2, '0');
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const year = date.getFullYear();
-          return `${day}-${month}-${year}`;
+          const converted = `${day}-${month}-${year}`;
+          console.log(`Converting parsed date: ${trimmed} to DD-MM-YYYY: ${converted}`);
+          return converted;
         }
+        console.log('Could not parse date, returning original:', trimmed);
         return trimmed; // Return original if can't parse
       }
     }
@@ -811,8 +835,22 @@ export default function AllLeadsPage() {
       case 'next followup':
       case 'next_follow_up':
       case 'nextfollowup':
+      case 'follow up date':
+      case 'followup':
+      case 'follow-up':
+      case 'next follow up':
+      case 'next follow-up date':
+      case 'next followup date':
+      case 'next_follow_up_date':
+      case 'nextfollowupdate':
+      case 'followupdate':
+      case 'follow_up':
+      case 'followup_date':
+      case 'next_followup':
+      case 'nextfollowup_date':
         console.log('*** FOLLOW-UP DATE MAPPING ***');
         console.log('Follow-up date value: "' + String(value) + '"');
+        console.log('Follow-up date value type:', typeof value);
         lead.followUpDate = convertExcelDate(value);
         console.log('Follow-up date after setting: "' + lead.followUpDate + '"');
         break;
@@ -957,8 +995,9 @@ export default function AllLeadsPage() {
             // Convert to JSON with proper date handling
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
               header: 1,
-              raw: true, // Keep raw values to handle dates manually
-              defval: ''
+              raw: false, // Convert dates to strings for better handling
+              defval: '',
+              dateNF: 'dd-mm-yyyy' // Specify date format
             });
             console.log('JSON data:', jsonData);
             
@@ -987,6 +1026,16 @@ export default function AllLeadsPage() {
                     console.log('Value type:', typeof value);
                     console.log('Value length:', value ? value.toString().length : 'undefined');
                     console.log('=== END DISCOM HEADER DEBUG ===');
+                  }
+                  
+                  // Special debug for follow-up date headers
+                  if (header && (header.toLowerCase().includes('follow') || header.toLowerCase().includes('next'))) {
+                    console.log('=== FOLLOW-UP DATE HEADER DEBUG ===');
+                    console.log('Header:', header);
+                    console.log('Value:', value);
+                    console.log('Value type:', typeof value);
+                    console.log('Value length:', value ? value.toString().length : 'undefined');
+                    console.log('=== END FOLLOW-UP DATE HEADER DEBUG ===');
                   }
                   
                   mapHeaderToField(lead, header, value);
