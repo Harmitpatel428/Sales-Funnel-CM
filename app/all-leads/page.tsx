@@ -370,7 +370,7 @@ export default function AllLeadsPage() {
       } else if (trimmed.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
         // Handle MM/DD/YYYY or DD/MM/YYYY format
         const parts = trimmed.split('/');
-        if (parts.length === 3) {
+        if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
           // Assume DD/MM/YYYY format
           const day = parts[0].padStart(2, '0');
           const month = parts[1].padStart(2, '0');
@@ -397,6 +397,7 @@ export default function AllLeadsPage() {
     
     // If it's a number (Excel serial date), convert it
     if (typeof value === 'number') {
+      console.log('Processing number value:', value);
       // Excel serial date (days since 1900-01-01, but Excel incorrectly treats 1900 as leap year)
       const excelEpoch = new Date(1900, 0, 1);
       const date = new Date(excelEpoch.getTime() + (value - 2) * 24 * 60 * 60 * 1000);
@@ -405,19 +406,25 @@ export default function AllLeadsPage() {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        console.log(`Converting Excel serial date: ${value} to DD-MM-YYYY: ${day}-${month}-${year}`);
-        return `${day}-${month}-${year}`;
+        const converted = `${day}-${month}-${year}`;
+        console.log(`Converting Excel serial date: ${value} to DD-MM-YYYY: ${converted}`);
+        return converted;
       }
     }
     
     // If it's a Date object
     if (value instanceof Date) {
+      console.log('Processing Date object:', value);
       const day = String(value.getDate()).padStart(2, '0');
       const month = String(value.getMonth() + 1).padStart(2, '0');
       const year = value.getFullYear();
-      return `${day}-${month}-${year}`;
+      const converted = `${day}-${month}-${year}`;
+      console.log(`Converting Date object to DD-MM-YYYY: ${converted}`);
+      return converted;
     }
     
+    console.log('Could not convert value, returning empty string');
+    console.log('=== END CONVERT EXCEL DATE DEBUG ===');
     return '';
   };
 
