@@ -1213,8 +1213,8 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            {/* Modal Content */}
-                    <div className="space-y-3">
+              {/* Modal Content */}
+              <div className="space-y-3">
                 {/* Main Information Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {/* Basic Info */}
@@ -1236,9 +1236,9 @@ export default function DashboardPage() {
                           </svg>
                         )}
                       </button>
-                      </div>
+                    </div>
                     <p className="text-sm font-medium text-gray-900">{selectedLead.clientName}</p>
-                      </div>
+                  </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-gray-600">Company</label>
@@ -1257,9 +1257,9 @@ export default function DashboardPage() {
                           </svg>
                         )}
                       </button>
-                                      </div>
+                    </div>
                     <p className="text-sm font-medium text-gray-900">{selectedLead.company}</p>
-                                </div>
+                  </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-gray-600">Consumer Number</label>
@@ -1278,9 +1278,9 @@ export default function DashboardPage() {
                           </svg>
                         )}
                       </button>
-                              </div>
+                    </div>
                     <p className="text-sm font-medium text-gray-900">{selectedLead.consumerNumber || 'N/A'}</p>
-                          </div>
+                  </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-gray-600">KVA</label>
@@ -1299,9 +1299,9 @@ export default function DashboardPage() {
                           </svg>
                         )}
                       </button>
-                      </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.kva}</p>
                     </div>
+                    <p className="text-sm font-medium text-gray-900">{selectedLead.kva}</p>
+                  </div>
                   
                   {/* Contact Info */}
                   <div className="bg-gray-50 p-3 rounded-md">
