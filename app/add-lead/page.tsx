@@ -186,9 +186,31 @@ export default function AddLeadPage() {
       newErrors.connectionDate = 'Please enter a valid connection date (DD-MM-YYYY)';
     }
 
-    // Date validation
-    if (formData.followUpDate && formData.followUpDate < new Date().toISOString().split('T')[0]!) {
-      newErrors.followUpDate = 'Follow-up date cannot be in the past';
+    // Date validation for DD-MM-YYYY format
+    if (formData.followUpDate && formData.followUpDate.trim() !== '') {
+      // Validate DD-MM-YYYY format
+      if (!/^\d{2}-\d{2}-\d{4}$/.test(formData.followUpDate)) {
+        newErrors.followUpDate = 'Please enter a valid follow-up date (DD-MM-YYYY)';
+      } else {
+        // Check if date is in the past
+        try {
+          const dateParts = formData.followUpDate.split('-');
+          if (dateParts.length === 3 && dateParts[0] && dateParts[1] && dateParts[2]) {
+            const day = dateParts[0];
+            const month = dateParts[1];
+            const year = dateParts[2];
+            const followUpDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (followUpDate < today) {
+              newErrors.followUpDate = 'Follow-up date cannot be in the past';
+            }
+          }
+        } catch {
+          newErrors.followUpDate = 'Please enter a valid follow-up date (DD-MM-YYYY)';
+        }
+      }
     }
 
     // Required fields for specific statuses
@@ -282,6 +304,41 @@ export default function AddLeadPage() {
       setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors.connectionDate;
+        return newErrors;
+      });
+    }
+  };
+
+  // Handle follow-up date changes with auto-formatting
+  const handleFollowUpDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    let value = e.target.value;
+    
+    // Allow user to delete dashes, but auto-add them back
+    // Remove all non-numeric characters first
+    const numericValue = value.replace(/[^0-9]/g, '');
+    
+    // Auto-format with dashes based on numeric length
+    let formattedValue = '';
+    if (numericValue.length >= 1) {
+      formattedValue = numericValue.slice(0, 2);
+      if (numericValue.length >= 3) {
+        formattedValue += '-' + numericValue.slice(2, 4);
+        if (numericValue.length >= 5) {
+          formattedValue += '-' + numericValue.slice(4, 8);
+        }
+      }
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      followUpDate: formattedValue
+    }));
+
+    // Clear error for this field
+    if (errors.followUpDate) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.followUpDate;
         return newErrors;
       });
     }
@@ -914,12 +971,13 @@ export default function AddLeadPage() {
                 Last Activity Date
               </label>
               <input
-                type="date"
+                type="text"
                 id="lastActivityDate"
                 name="lastActivityDate"
                 value={formData.lastActivityDate}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                placeholder="DD-MM-YYYY"
                 disabled={isSubmitting}
               />
             </div>
@@ -932,16 +990,17 @@ export default function AddLeadPage() {
                 )}
               </label>
               <input
-                type="date"
+                type="text"
                 id="followUpDate"
                 name="followUpDate"
                 value={formData.followUpDate}
-                onChange={handleChange}
-                min={new Date().toISOString().split('T')[0]}
+                onChange={handleFollowUpDateChange}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
                   errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
+                placeholder="DD-MM-YYYY"
                 disabled={isSubmitting}
+                maxLength={10}
               />
               {errors.followUpDate && (
                 <p className="text-sm text-red-600 flex items-center">
