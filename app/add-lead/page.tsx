@@ -279,12 +279,13 @@ export default function AddLeadPage() {
     console.log('🔍 Mobile number change:', { index, value, numericValue, leadsCount: leads.length });
     
     setFormData(prev => {
-      const updatedMobileNumbers = prev.mobileNumbers.map((mobile, i) => 
+      let updatedMobileNumbers = prev.mobileNumbers.map((mobile, i) => 
         i === index ? { ...mobile, number: numericValue } : mobile
       );
 
       // Auto-detect client name from first mobile number if it's complete (10 digits)
       let updatedClientName = prev.clientName;
+      
       if (index === 0 && numericValue.length === 10 && !prev.clientName.trim()) {
         console.log('🎯 Auto-detection triggered for mobile:', numericValue);
         console.log('📊 Available leads:', leads.length);
@@ -314,6 +315,13 @@ export default function AddLeadPage() {
         if (existingLead) {
           console.log('🎉 Auto-populating client name:', existingLead.clientName);
           updatedClientName = existingLead.clientName;
+          
+          // Also auto-populate the first mobile number's name if it's empty
+          if (updatedMobileNumbers[0] && !updatedMobileNumbers[0].name.trim()) {
+            updatedMobileNumbers = updatedMobileNumbers.map((mobile, i) => 
+              i === 0 ? { ...mobile, name: existingLead.clientName } : mobile
+            );
+          }
         } else {
           console.log('❌ No matching lead found for mobile:', numericValue);
         }
@@ -691,44 +699,73 @@ export default function AddLeadPage() {
   console.log('Available leads for auto-detection:', leads.length);
 
 
-  // Manual trigger for auto-detection (for testing)
+  // Manual trigger for auto-detection (for first mobile number only)
   const triggerAutoDetection = () => {
-    if (formData.mobileNumbers[0]?.number?.length === 10) {
-      console.log('🔧 Manual trigger: Attempting auto-detection for mobile:', formData.mobileNumbers[0].number);
+    console.log('🔧 Auto-Detect button clicked!');
+    console.log('📱 First mobile number:', formData.mobileNumbers[0]?.number);
+    console.log('📊 Available leads:', leads.length);
+    
+    // Check if first mobile number exists and is complete
+    const firstMobileNumber = formData.mobileNumbers[0]?.number?.trim();
+    
+    if (!firstMobileNumber) {
+      alert('Please enter a mobile number in the first contact box');
+      return;
+    }
+    
+    if (firstMobileNumber.length !== 10) {
+      alert('Please enter a complete 10-digit mobile number');
+      return;
+    }
+    
+    console.log('🔍 Searching for mobile number:', firstMobileNumber);
+    
+    // Search through all leads for matching mobile number
+    const existingLead = leads.find(lead => {
+      console.log('🔍 Checking lead:', lead.clientName, 'with mobile:', lead.mobileNumber);
       
-      const existingLead = leads.find(lead => {
-        // Check main mobile number (backward compatibility)
-        if (lead.mobileNumber && lead.mobileNumber.trim() === formData.mobileNumbers[0]?.number) {
-          console.log('✅ Manual: Found match in main mobile number:', lead.clientName);
+      // Check main mobile number (backward compatibility)
+      if (lead.mobileNumber && lead.mobileNumber.trim() === firstMobileNumber) {
+        console.log('✅ Found match in main mobile number:', lead.clientName);
+        return true;
+      }
+      
+      // Check mobile numbers array
+      if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
+        const hasMatch = lead.mobileNumbers.some(m => {
+          console.log('🔍 Checking mobile in array:', m.number);
+          return m.number && m.number.trim() === firstMobileNumber;
+        });
+        if (hasMatch) {
+          console.log('✅ Found match in mobile numbers array:', lead.clientName);
           return true;
         }
-        
-        // Check mobile numbers array
-        if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
-          const hasMatch = lead.mobileNumbers.some(m => 
-            m.number && m.number.trim() === formData.mobileNumbers[0]?.number
-          );
-          if (hasMatch) {
-            console.log('✅ Manual: Found match in mobile numbers array:', lead.clientName);
-            return true;
-          }
-        }
-        
-        return false;
-      });
+      }
       
-      if (existingLead) {
-        console.log('🎉 Manual: Auto-populating client name:', existingLead.clientName);
+      return false;
+    });
+    
+    if (existingLead) {
+      console.log('🎉 Auto-populating client name:', existingLead.clientName);
+      setFormData(prev => ({
+        ...prev,
+        clientName: existingLead.clientName
+      }));
+      
+      // Also auto-populate the first mobile number's name if it's empty
+      if (formData.mobileNumbers[0] && !formData.mobileNumbers[0].name.trim()) {
         setFormData(prev => ({
           ...prev,
-          clientName: existingLead.clientName
+          mobileNumbers: prev.mobileNumbers.map((mobile, index) => 
+            index === 0 ? { ...mobile, name: existingLead.clientName } : mobile
+          )
         }));
-      } else {
-        console.log('❌ Manual: No matching lead found for mobile:', formData.mobileNumbers[0].number);
-        alert('No matching lead found for this mobile number');
       }
+      
+      alert(`✅ Client name auto-detected: ${existingLead.clientName}`);
     } else {
-      alert('Please enter a complete 10-digit mobile number first');
+      console.log('❌ No matching lead found for mobile:', firstMobileNumber);
+      alert('❌ No matching lead found for this mobile number');
     }
   };
 
