@@ -145,6 +145,44 @@ export default function AddLeadPage() {
     setIsHydrated(true);
   }, []);
 
+  // Auto-detect client name when leads are loaded and first mobile number is complete
+  useEffect(() => {
+    if (leads.length > 0 && formData.mobileNumbers[0]?.number?.length === 10 && !formData.clientName.trim()) {
+      console.log('🔄 useEffect: Attempting auto-detection for mobile:', formData.mobileNumbers[0].number);
+      
+      const existingLead = leads.find(lead => {
+        // Check main mobile number (backward compatibility)
+        if (lead.mobileNumber && lead.mobileNumber.trim() === formData.mobileNumbers[0]?.number) {
+          console.log('✅ useEffect: Found match in main mobile number:', lead.clientName);
+          return true;
+        }
+        
+        // Check mobile numbers array
+        if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
+          const hasMatch = lead.mobileNumbers.some(m => 
+            m.number && m.number.trim() === formData.mobileNumbers[0]?.number
+          );
+          if (hasMatch) {
+            console.log('✅ useEffect: Found match in mobile numbers array:', lead.clientName);
+            return true;
+          }
+        }
+        
+        return false;
+      });
+      
+      if (existingLead) {
+        console.log('🎉 useEffect: Auto-populating client name:', existingLead.clientName);
+        setFormData(prev => ({
+          ...prev,
+          clientName: existingLead.clientName
+        }));
+      } else {
+        console.log('❌ useEffect: No matching lead found for mobile:', formData.mobileNumbers[0].number);
+      }
+    }
+  }, [leads, formData.mobileNumbers[0]?.number, formData.clientName]);
+
   // Generate UUID function
   const generateId = (): string => {
     if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
@@ -652,43 +690,6 @@ export default function AddLeadPage() {
   console.log('Current form data mobile numbers:', formData.mobileNumbers);
   console.log('Available leads for auto-detection:', leads.length);
 
-  // Auto-detect client name when leads are loaded and first mobile number is complete
-  useEffect(() => {
-    if (leads.length > 0 && formData.mobileNumbers[0]?.number?.length === 10 && !formData.clientName.trim()) {
-      console.log('🔄 useEffect: Attempting auto-detection for mobile:', formData.mobileNumbers[0].number);
-      
-      const existingLead = leads.find(lead => {
-        // Check main mobile number (backward compatibility)
-        if (lead.mobileNumber && lead.mobileNumber.trim() === formData.mobileNumbers[0]?.number) {
-          console.log('✅ useEffect: Found match in main mobile number:', lead.clientName);
-          return true;
-        }
-        
-        // Check mobile numbers array
-        if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
-          const hasMatch = lead.mobileNumbers.some(m => 
-            m.number && m.number.trim() === formData.mobileNumbers[0]?.number
-          );
-          if (hasMatch) {
-            console.log('✅ useEffect: Found match in mobile numbers array:', lead.clientName);
-            return true;
-          }
-        }
-        
-        return false;
-      });
-      
-      if (existingLead) {
-        console.log('🎉 useEffect: Auto-populating client name:', existingLead.clientName);
-        setFormData(prev => ({
-          ...prev,
-          clientName: existingLead.clientName
-        }));
-      } else {
-        console.log('❌ useEffect: No matching lead found for mobile:', formData.mobileNumbers[0].number);
-      }
-    }
-  }, [leads, formData.mobileNumbers[0]?.number, formData.clientName]);
 
   // Manual trigger for auto-detection (for testing)
   const triggerAutoDetection = () => {
