@@ -1179,15 +1179,17 @@ export default function DashboardPage() {
 
       
       {/* Lead Table */}
-      <div data-lead-table className="sticky top-0 z-10 bg-white">
-        <LeadTable 
-          filters={activeFilters} 
-          onLeadClick={handleLeadClick}
-          selectedLeads={selectedLeads}
-          onLeadSelection={handleLeadSelection}
-          selectAll={selectAll}
-          onSelectAll={handleSelectAll}
-        />
+      <div data-lead-table className="relative">
+        <div className="sticky top-0 z-10 bg-white shadow-sm rounded-lg">
+          <LeadTable 
+            filters={activeFilters} 
+            onLeadClick={handleLeadClick}
+            selectedLeads={selectedLeads}
+            onLeadSelection={handleLeadSelection}
+            selectAll={selectAll}
+            onSelectAll={handleSelectAll}
+          />
+        </div>
       </div>
 
       {/* Lead Detail Modal */}
