@@ -992,8 +992,20 @@ export default function AddLeadPage() {
                 <button
                   type="button"
                   onClick={() => {
+                    // Create a hidden date input
                     const dateInput = document.createElement('input');
                     dateInput.type = 'date';
+                    dateInput.style.position = 'absolute';
+                    dateInput.style.left = '-9999px';
+                    dateInput.style.opacity = '0';
+                    
+                    // Set minimum date to today
+                    const today = new Date().toISOString().split('T')[0];
+                    if (today) {
+                      dateInput.min = today;
+                    }
+                    
+                    // Handle date selection
                     dateInput.onchange = (e) => {
                       const target = e.target as HTMLInputElement;
                       if (target.value) {
@@ -1005,11 +1017,16 @@ export default function AddLeadPage() {
                           lastActivityDate: formattedDate
                         }));
                       }
+                      // Remove the input from DOM
+                      document.body.removeChild(dateInput);
                     };
+                    
+                    // Add to DOM and trigger click
+                    document.body.appendChild(dateInput);
                     dateInput.click();
                   }}
                   disabled={isSubmitting}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   title="Choose date"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1043,8 +1060,20 @@ export default function AddLeadPage() {
                 <button
                   type="button"
                   onClick={() => {
+                    // Create a hidden date input
                     const dateInput = document.createElement('input');
                     dateInput.type = 'date';
+                    dateInput.style.position = 'absolute';
+                    dateInput.style.left = '-9999px';
+                    dateInput.style.opacity = '0';
+                    
+                    // Set minimum date to today
+                    const today = new Date().toISOString().split('T')[0];
+                    if (today) {
+                      dateInput.min = today;
+                    }
+                    
+                    // Handle date selection
                     dateInput.onchange = (e) => {
                       const target = e.target as HTMLInputElement;
                       if (target.value) {
@@ -1064,11 +1093,16 @@ export default function AddLeadPage() {
                           });
                         }
                       }
+                      // Remove the input from DOM
+                      document.body.removeChild(dateInput);
                     };
+                    
+                    // Add to DOM and trigger click
+                    document.body.appendChild(dateInput);
                     dateInput.click();
                   }}
                   disabled={isSubmitting}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   title="Choose date"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
