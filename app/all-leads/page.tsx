@@ -434,6 +434,13 @@ export default function AllLeadsPage() {
     console.log('Is empty: ' + (!value || value === '' || value === null || value === undefined));
     console.log('Processing header: ' + headerLower);
     
+    // Debug for exact export format headers
+    if (header === 'Mobile Number 2' || header === 'Contact Name 2') {
+      console.log('🎯 EXACT EXPORT FORMAT HEADER DETECTED:', header);
+      console.log('🎯 HEADER LOWER:', headerLower);
+      console.log('🎯 VALUE:', value);
+    }
+    
     // Check if this is a status-related header
     const isStatusHeader = headerLower.includes('status') || 
                           headerLower === 'status' || 
@@ -525,72 +532,190 @@ export default function AllLeadsPage() {
       case 'mobile2':
       case 'phone 2':
       case 'phone2':
+      case 'mobile no 2':
+      case 'mobile no. 2':
+      case 'mobile no2':
+      case 'contact number 2':
+      case 'contact no 2':
+      case 'mobile no 2':
+      case 'mobile no. 2':
+      case 'mobile no2':
+      case 'mobile 2':
+      case 'mobile2':
+      case 'phone no 2':
+      case 'phone no. 2':
+      case 'phone no2':
+      case 'phone 2':
+      case 'phone2':
+      case 'tel 2':
+      case 'tel2':
+      case 'telephone 2':
+      case 'telephone2':
         console.log('*** MOBILE NUMBER 2 MAPPING ***');
         console.log('Setting mobileNumber2 to: "' + String(value) + '"');
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 2) {
-          lead.mobileNumbers.push({ id: '2', number: String(value), name: '', isMain: false });
-              } else if (lead.mobileNumbers[1]) {
-                lead.mobileNumbers[1] = { 
-                  id: lead.mobileNumbers[1].id, 
-            number: String(value), 
-                  name: lead.mobileNumbers[1].name, 
-                  isMain: lead.mobileNumbers[1].isMain 
-                };
-              }
+        console.log('Current lead.mobileNumber:', lead.mobileNumber);
+        console.log('Current lead.mobileNumbers:', lead.mobileNumbers);
+        
+        // Initialize mobileNumbers array if it doesn't exist
+        if (!lead.mobileNumbers) {
+          lead.mobileNumbers = [];
+          console.log('Initialized mobileNumbers array');
+        }
+        
+        // Always ensure we have at least 2 slots
+        while (lead.mobileNumbers.length < 2) {
+                lead.mobileNumbers.push({
+            id: String(lead.mobileNumbers.length + 1), 
+            number: '', 
+                  name: '',
+            isMain: lead.mobileNumbers.length === 0 
+          });
+          console.log('Added slot', lead.mobileNumbers.length, 'isMain:', lead.mobileNumbers[lead.mobileNumbers.length - 1].isMain);
+        }
+        
+        // Set the second mobile number (index 1)
+        lead.mobileNumbers[1] = { 
+          id: '2', 
+          number: String(value), 
+          name: lead.mobileNumbers[1]?.name || '', 
+                  isMain: false
+        };
+        console.log('Set mobile number 2:', lead.mobileNumbers[1]);
+        
+        // If we have a main mobile number but no entry in slot 0, add it
+        if (lead.mobileNumber && (!lead.mobileNumbers[0] || !lead.mobileNumbers[0].number)) {
+          lead.mobileNumbers[0] = { 
+            id: '1', 
+            number: lead.mobileNumber, 
+                  name: '',
+                  isMain: true
+          };
+          console.log('Added main mobile number to slot 0:', lead.mobileNumbers[0]);
+        }
+        
+        console.log('Final mobileNumbers array:', lead.mobileNumbers);
         break;
       case 'mobile number 3':
       case 'mobile number3':
       case 'mobile3':
       case 'phone 3':
       case 'phone3':
+      case 'mobile no 3':
+      case 'mobile no. 3':
+      case 'mobile no3':
+      case 'contact number 3':
+      case 'contact no 3':
         console.log('*** MOBILE NUMBER 3 MAPPING ***');
         console.log('Setting mobileNumber3 to: "' + String(value) + '"');
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 3) {
-          lead.mobileNumbers.push({ id: '3', number: String(value), name: '', isMain: false });
-              } else if (lead.mobileNumbers[2]) {
-                lead.mobileNumbers[2] = { 
-                  id: lead.mobileNumbers[2].id, 
-            number: String(value), 
-                  name: lead.mobileNumbers[2].name, 
-                  isMain: lead.mobileNumbers[2].isMain 
-                };
-              }
+        if (!lead.mobileNumbers) {
+          // Initialize with main mobile number if it exists
+          lead.mobileNumbers = [];
+          if (lead.mobileNumber) {
+            lead.mobileNumbers.push({ id: '1', number: lead.mobileNumber, name: '', isMain: true });
+          }
+        }
+        // Ensure we have at least 3 slots
+        while (lead.mobileNumbers.length < 3) {
+          lead.mobileNumbers.push({ id: String(lead.mobileNumbers.length + 1), number: '', name: '', isMain: false });
+        }
+        // Set the third mobile number
+        lead.mobileNumbers[2] = { 
+          id: '3', 
+          number: String(value), 
+          name: lead.mobileNumbers[2]?.name || '', 
+                  isMain: false
+        };
         break;
       case 'contact name 2':
       case 'contact name2':
       case 'contact2':
+      case 'name 2':
+      case 'name2':
+      case 'contact person 2':
+      case 'person name 2':
+      case 'contact person2':
+      case 'contact 2':
+      case 'contact2':
+      case 'person 2':
+      case 'person2':
+      case 'contact person name 2':
+      case 'contact person name2':
+      case 'person contact 2':
+      case 'person contact2':
+      case 'contact person name 2':
+      case 'contact person name2':
         console.log('*** CONTACT NAME 2 MAPPING ***');
         console.log('Setting contact name 2 to: "' + String(value) + '"');
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 2) {
-          lead.mobileNumbers.push({ id: '2', number: '', name: String(value), isMain: false });
-              } else if (lead.mobileNumbers[1]) {
-                lead.mobileNumbers[1] = { 
-                  id: lead.mobileNumbers[1].id, 
-                  number: lead.mobileNumbers[1].number, 
-            name: String(value), 
-                  isMain: lead.mobileNumbers[1].isMain 
-                };
-              }
+        console.log('Current lead.mobileNumber:', lead.mobileNumber);
+        console.log('Current lead.mobileNumbers:', lead.mobileNumbers);
+        
+        // Initialize mobileNumbers array if it doesn't exist
+        if (!lead.mobileNumbers) {
+          lead.mobileNumbers = [];
+          console.log('Initialized mobileNumbers array');
+        }
+        
+        // Always ensure we have at least 2 slots
+        while (lead.mobileNumbers.length < 2) {
+                lead.mobileNumbers.push({
+            id: String(lead.mobileNumbers.length + 1), 
+                  number: '',
+            name: '', 
+            isMain: lead.mobileNumbers.length === 0 
+          });
+          console.log('Added slot', lead.mobileNumbers.length, 'isMain:', lead.mobileNumbers[lead.mobileNumbers.length - 1].isMain);
+        }
+        
+        // Set the second contact name (index 1)
+        lead.mobileNumbers[1] = { 
+          id: '2', 
+          number: lead.mobileNumbers[1]?.number || '', 
+          name: String(value), 
+          isMain: false 
+        };
+        console.log('Set contact name 2:', lead.mobileNumbers[1]);
+        
+        // If we have a main mobile number but no entry in slot 0, add it
+        if (lead.mobileNumber && (!lead.mobileNumbers[0] || !lead.mobileNumbers[0].number)) {
+          lead.mobileNumbers[0] = { 
+            id: '1', 
+            number: lead.mobileNumber, 
+            name: '', 
+            isMain: true 
+          };
+          console.log('Added main mobile number to slot 0:', lead.mobileNumbers[0]);
+        }
+        
+        console.log('Final mobileNumbers array:', lead.mobileNumbers);
         break;
       case 'contact name 3':
       case 'contact name3':
       case 'contact3':
+      case 'name 3':
+      case 'name3':
+      case 'contact person 3':
+      case 'person name 3':
+      case 'contact person3':
         console.log('*** CONTACT NAME 3 MAPPING ***');
         console.log('Setting contact name 3 to: "' + String(value) + '"');
-              if (!lead.mobileNumbers) lead.mobileNumbers = [];
-              if (lead.mobileNumbers.length < 3) {
-          lead.mobileNumbers.push({ id: '3', number: '', name: String(value), isMain: false });
-              } else if (lead.mobileNumbers[2]) {
-                lead.mobileNumbers[2] = { 
-                  id: lead.mobileNumbers[2].id, 
-                  number: lead.mobileNumbers[2].number, 
-            name: String(value), 
-                  isMain: lead.mobileNumbers[2].isMain 
-                };
-              }
+        if (!lead.mobileNumbers) {
+          // Initialize with main mobile number if it exists
+          lead.mobileNumbers = [];
+          if (lead.mobileNumber) {
+            lead.mobileNumbers.push({ id: '1', number: lead.mobileNumber, name: '', isMain: true });
+          }
+        }
+        // Ensure we have at least 3 slots
+        while (lead.mobileNumbers.length < 3) {
+          lead.mobileNumbers.push({ id: String(lead.mobileNumbers.length + 1), number: '', name: '', isMain: false });
+        }
+        // Set the third contact name
+        lead.mobileNumbers[2] = { 
+          id: '3', 
+          number: lead.mobileNumbers[2]?.number || '', 
+          name: String(value), 
+          isMain: false 
+        };
         break;
       case 'lead status':
       case 'leadstatus':
@@ -708,9 +833,17 @@ export default function AllLeadsPage() {
       case 'last discussion':
       case 'lastdiscussion':
       case 'last_discussion':
+      case 'last-discussion':
+      case 'call notes':
       case 'comments':
       case 'comment':
-        lead.notes = String(value);
+      case 'description':
+        // If notes already exist, append the new value
+        if (lead.notes) {
+          lead.notes = `${lead.notes} | ${String(value)}`;
+        } else {
+          lead.notes = String(value);
+        }
         break;
       case 'gidc':
         lead.gidc = String(value);
@@ -730,6 +863,47 @@ export default function AllLeadsPage() {
       default:
         console.log('⚠️ UNMAPPED HEADER: ' + headerLower);
         break;
+    }
+    
+    // Fallback: Check for partial matches for mobile number 2 and contact name 2
+    if (headerLower.includes('mobile') && headerLower.includes('2') && !headerLower.includes('name')) {
+      console.log('🔄 FALLBACK: Mobile Number 2 detected via partial match:', headerLower);
+      if (!lead.mobileNumbers) {
+        lead.mobileNumbers = [];
+        if (lead.mobileNumber) {
+          lead.mobileNumbers.push({ id: '1', number: lead.mobileNumber, name: '', isMain: true });
+        }
+      }
+      while (lead.mobileNumbers.length < 2) {
+        lead.mobileNumbers.push({ id: String(lead.mobileNumbers.length + 1), number: '', name: '', isMain: false });
+      }
+      lead.mobileNumbers[1] = { 
+        id: '2', 
+        number: String(value), 
+        name: lead.mobileNumbers[1]?.name || '', 
+        isMain: false 
+      };
+      return;
+    }
+    
+    if (headerLower.includes('contact') && headerLower.includes('2') && headerLower.includes('name')) {
+      console.log('🔄 FALLBACK: Contact Name 2 detected via partial match:', headerLower);
+      if (!lead.mobileNumbers) {
+        lead.mobileNumbers = [];
+        if (lead.mobileNumber) {
+          lead.mobileNumbers.push({ id: '1', number: lead.mobileNumber, name: '', isMain: true });
+        }
+      }
+      while (lead.mobileNumbers.length < 2) {
+        lead.mobileNumbers.push({ id: String(lead.mobileNumbers.length + 1), number: '', name: '', isMain: false });
+      }
+      lead.mobileNumbers[1] = { 
+        id: '2', 
+        number: lead.mobileNumbers[1]?.number || '', 
+        name: String(value), 
+        isMain: false 
+      };
+      return;
     }
     
     console.log('=== END MAPPING DEBUG ===');
@@ -1037,28 +1211,28 @@ export default function AllLeadsPage() {
   const renderActionButtons = (lead: Lead) => (
     <div className="flex space-x-2">
       {!lead.isDeleted && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            localStorage.setItem('editingLead', JSON.stringify(lead));
-            router.push(`/add-lead?mode=edit&id=${lead.id}&from=all-leads`);
-          }}
-          className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-md transition-colors"
-        >
-          Edit
-        </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              localStorage.setItem('editingLead', JSON.stringify(lead));
+              router.push(`/add-lead?mode=edit&id=${lead.id}&from=all-leads`);
+            }}
+            className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-md transition-colors"
+          >
+            Edit
+          </button>
       )}
       {lead.isDeleted && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleRestoreClick(lead);
-          }}
-          className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
-          title="Restore this lead to its original status"
-        >
-          Restore
-        </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRestoreClick(lead);
+            }}
+            className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
+            title="Restore this lead to its original status"
+          >
+            Restore
+          </button>
       )}
     </div>
   );

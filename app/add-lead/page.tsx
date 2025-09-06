@@ -777,17 +777,17 @@ export default function AddLeadPage() {
               <label className="block text-sm font-medium text-gray-700">
                 Mobile Numbers
               </label>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {formData.mobileNumbers.map((mobile, index) => (
-                  <div key={mobile.id} className="space-y-2">
-                    <div className="flex items-center space-x-3">
+                  <div key={mobile.id} className="space-y-1">
+                    <div className="flex items-center space-x-2">
                       <div className="flex-1">
                         <input
                           type="text"
                           value={mobile.name}
                           onChange={(e) => handleMobileNameChange(index, e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
-                          placeholder={`Contact Name ${index + 1} (Optional)`}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                          placeholder={`Contact ${index + 1}`}
                           disabled={isSubmitting}
                         />
                       </div>
@@ -796,10 +796,10 @@ export default function AddLeadPage() {
                           type="text"
                           value={mobile.number}
                           onChange={(e) => handleMobileNumberChange(index, e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                          className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
                             errors[`mobileNumber_${index}` as keyof typeof formData] ? 'border-red-500 bg-red-50' : 'border-gray-300'
                           }`}
-                          placeholder={`Mobile Number ${index + 1}`}
+                          placeholder={`Mobile ${index + 1}`}
                           disabled={isSubmitting}
                           pattern="[0-9]*"
                           inputMode="numeric"
@@ -809,21 +809,21 @@ export default function AddLeadPage() {
                         type="button"
                         onClick={() => handleMainMobileNumberChange(index)}
                         disabled={isSubmitting}
-                        className={`flex items-center space-x-2 px-4 py-3 rounded-lg border-2 transition-all duration-200 ${
+                        className={`flex items-center space-x-1 px-2 py-2 text-xs rounded-md border transition-all duration-200 ${
                           mobile.isMain
                             ? 'border-purple-500 bg-purple-50 text-purple-700'
                             : 'border-gray-300 bg-white text-gray-600 hover:border-purple-300 hover:bg-purple-25'
                         }`}
                       >
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        <div className={`w-3 h-3 rounded-full border flex items-center justify-center ${
                           mobile.isMain ? 'border-purple-500 bg-purple-500' : 'border-gray-400'
                         }`}>
                           {mobile.isMain && (
-                            <div className="w-2 h-2 rounded-full bg-white"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                           )}
                         </div>
-                        <span className="text-sm font-medium">
-                          {mobile.isMain ? 'Main' : 'Set as Main'}
+                        <span className="font-medium">
+                          {mobile.isMain ? 'Main' : 'Main'}
                         </span>
                       </button>
                     </div>

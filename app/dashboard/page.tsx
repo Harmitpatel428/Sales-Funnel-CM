@@ -1,17 +1,16 @@
 ﻿'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useLeads, Lead, LeadFilters, MobileNumber } from '../context/LeadContext';
+import { useLeads, Lead, LeadFilters } from '../context/LeadContext';
 import LeadTable from '../components/LeadTable';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { leads, addLead, deleteLead, getFilteredLeads, updateLead } = useLeads();
+  const { leads, deleteLead, getFilteredLeads, updateLead } = useLeads();
   const [activeFilters, setActiveFilters] = useState<LeadFilters>({
     status: ['New'] // Show "New" leads by default
   });
-  const [isImporting, setIsImporting] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -334,967 +333,17 @@ export default function DashboardPage() {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Handle Excel/CSV import
-  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('=== EXCEL IMPORT STARTED ===');
-    const file = event.target.files?.[0];
-    if (!file) {
-      console.log('No file selected');
-      return;
-    }
-
-    console.log('File selected:', file.name, file.type, file.size);
-    setIsImporting(true);
-
-    try {
-      // Check file type
-      if (!file.name.match(/\.(csv|xlsx?|xlsm)$/i)) {
-        throw new Error('Please select a valid Excel (.xlsx, .xls, .xlsm) or CSV file');
-      }
-
-      let parsedLeads: Partial<Lead>[] = [];
-
-      if (file.name.endsWith('.csv')) {
-        console.log('Processing CSV file...');
-        // Handle CSV files
-        const text = await file.text();
-        parsedLeads = parseCSV(text);
-      } else {
-        console.log('Processing Excel file...');
-        // Handle Excel files (.xlsx, .xls, .xlsm)
-        parsedLeads = await parseExcel(file);
-      }
-
-      console.log('=== PARSING COMPLETE ===');
-      console.log('Parsed leads count:', parsedLeads.length);
-      console.log('Parsed leads:', parsedLeads);
-
-      if (parsedLeads.length === 0) {
-        throw new Error('No valid leads found in the file');
-      }
-
-      console.log('=== STARTING IMPORT ===');
-      // Import the leads
-      const importedCount = await importLeads(parsedLeads);
-      console.log('=== IMPORT COMPLETE ===');
-      console.log('Imported count returned:', importedCount);
-      
-      // Auto-filter by the most common status after import
-      if (importedCount > 0) {
-        const statusCounts = parsedLeads.reduce((acc, lead) => {
-          const status = lead.status || 'New';
-          acc[status] = (acc[status] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-        
-        // Find the most common status
-        const statusEntries = Object.entries(statusCounts);
-        const mostCommonStatus = statusEntries.length > 0 
-          ? statusEntries.reduce((a, b) => {
-              const aCount = a[1] || 0;
-              const bCount = b[1] || 0;
-              return aCount > bCount ? a : b;
-            })[0] as Lead['status']
-          : 'New' as Lead['status'];
-        
-        console.log('Most common status in imported leads:', mostCommonStatus);
-        console.log('Status distribution:', statusCounts);
-        
-        // Set the filter to show the most common status
-        setActiveFilters(prev => ({
-          ...prev,
-          status: [mostCommonStatus]
-        }));
-        
-        // Show success notification with status info
-        showToastNotification(
-          `Successfully imported ${importedCount} leads from ${file.name}. Showing ${mostCommonStatus} leads (${statusCounts[mostCommonStatus]} leads).`, 
-          'success'
-        );
-      } else {
-        showToastNotification(`No leads were imported from ${file.name}`, 'error');
-      }
-      
-      // Clear the file input
-      event.target.value = '';
-    } catch (error) {
-      console.error('=== IMPORT ERROR ===');
-      console.error('Import error:', error);
-      
-      // Show error notification
-      showToastNotification(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
-    } finally {
-      setIsImporting(false);
-      console.log('=== IMPORT PROCESS ENDED ===');
-    }
-  };
-
-  // Parse CSV content
-  const parseCSV = (csvText: string): Partial<Lead>[] => {
-    const lines = csvText.split('\n').filter(line => line.trim());
-    if (lines.length < 2) throw new Error('CSV file must have at least a header and one data row');
-
-    const headers = lines[0]!.split(',').map(h => h.trim().replace(/"/g, ''));
-    const dataRows = lines.slice(1);
-
-    return dataRows.map(row => {
-      const values = row.split(',').map(v => v.trim().replace(/"/g, ''));
-      const lead: Partial<Lead> = {};
-
-      headers.forEach((header, index) => {
-        const value = values[index] || '';
-        mapHeaderToField(lead, header, value);
-      });
-
-      // Set default values for required fields
-      setDefaultValues(lead);
-      return lead;
-    });
-  };
-
-  // Parse Excel file using xlsx library
-  const parseExcel = async (file: File): Promise<Partial<Lead>[]> => {
-    console.log('Starting Excel parsing...');
-    
-    try {
-      // Dynamic import to avoid turbopack issues
-      const XLSX = await import('xlsx');
-      console.log('XLSX library loaded successfully');
-      
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-          try {
-            console.log('File read successfully, size:', e.target?.result);
-            const data = new Uint8Array(e.target?.result as ArrayBuffer);
-            console.log('Data converted to Uint8Array, length:', data.length);
-            
-            const workbook = XLSX.read(data, { type: 'array' });
-            console.log('Workbook read, sheet names:', workbook.SheetNames);
-            
-            // Get the first sheet
-            const sheetName = workbook.SheetNames[0];
-            if (!sheetName) {
-              reject(new Error('No sheets found in Excel file'));
-              return;
-            }
-            const worksheet = workbook.Sheets[sheetName];
-            if (!worksheet) {
-              reject(new Error('Could not load worksheet'));
-              return;
-            }
-            console.log('Worksheet loaded:', sheetName);
-            
-            // Convert to JSON with proper date handling
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-              header: 1,
-              raw: true, // Keep raw values to handle dates manually
-              defval: ''
-            });
-            console.log('JSON data:', jsonData);
-            
-            if (jsonData.length < 2) {
-              reject(new Error('Excel file must have at least a header and one data row'));
-              return;
-            }
-
-            const headers = jsonData[0] as string[];
-            const dataRows = jsonData.slice(1);
-            console.log('=== EXCEL HEADERS DEBUG ===');
-            console.log('All headers found in Excel:', headers);
-            console.log('Headers count:', headers.length);
-            headers.forEach((header, index) => {
-              console.log('Header ' + index + ': "' + header + '" (length: ' + (header ? header.length : 'undefined') + ')');
-              console.log('Header ' + index + ' lowercase: "' + (header ? header.toLowerCase() : 'undefined') + '"');
-            });
-            console.log('Data rows count:', dataRows.length);
-            console.log('=== END EXCEL HEADERS DEBUG ===');
-
-            const leads = dataRows.map((row: unknown, index: number) => {
-              console.log('Processing row ' + index + ':', row);
-              const lead: Partial<Lead> = {};
-              const rowArray = row as unknown[];
-              
-              // Special debug for discom-related headers
-              console.log('=== ROW PROCESSING DEBUG ===');
-              console.log('Row index:', index);
-              console.log('Headers:', headers);
-              console.log('Row data:', rowArray);
-              
-              headers.forEach((header, headerIndex) => {
-                const value = rowArray[headerIndex] || '';
-                console.log('Mapping header "' + header + '" (index ' + headerIndex + ') to value:', value, '(type: ' + typeof value + ')');
-                
-                // Special debug for discom headers
-                if (header && (header.toLowerCase().includes('discom') || header.includes('Discom') || header.includes('DISCOM'))) {
-                  console.log('=== DISCOM HEADER FOUND ===');
-                  console.log('Header:', header);
-                  console.log('Header lowercase:', header.toLowerCase());
-                  console.log('Value:', value);
-                  console.log('Value type:', typeof value);
-                  console.log('Value length:', value ? value.toString().length : 'undefined');
-                  console.log('=== END DISCOM HEADER DEBUG ===');
-                }
-                
-                mapHeaderToField(lead, header, value);
-              });
-
-              // Set default values for required fields
-              setDefaultValues(lead);
-              console.log('Processed lead:', lead);
-              return lead;
-            });
-
-            console.log('All leads processed:', leads);
-            resolve(leads);
-          } catch (error) {
-            console.error('Excel parsing error:', error);
-            reject(new Error(`Error parsing Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`));
-          }
-        };
-
-        reader.onerror = () => {
-          console.error('FileReader error');
-          reject(new Error('Failed to read file'));
-        };
-        
-        console.log('Starting file read...');
-        reader.readAsArrayBuffer(file);
-      });
-    } catch (error) {
-      console.error('Failed to load XLSX library:', error);
-      throw new Error('Failed to load Excel parsing library');
-    }
-  };
-
-  // Convert Excel serial date to readable date string in DD-MM-YYYY format
-  const convertExcelDate = (value: string | number | Date | null | undefined): string => {
-    if (!value) return '';
-    
-    // If it's already a string, return as is
-    if (typeof value === 'string') {
-      const trimmed = value.trim();
-      
-      // Check if it's already in DD-MM-YYYY format
-      if (trimmed.match(/^\d{2}-\d{2}-\d{4}$/)) {
-        // Already in DD-MM-YYYY format, return as is
-        return trimmed;
-      } else if (trimmed.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        // Convert from YYYY-MM-DD to DD-MM-YYYY
-        const parts = trimmed.split('-');
-        const year = parts[0];
-        const month = parts[1];
-        const day = parts[2];
-        console.log(`Converting date format from YYYY-MM-DD: ${trimmed} to DD-MM-YYYY: ${day}-${month}-${year}`);
-        return `${day}-${month}-${year}`;
-      } else if (trimmed.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-        // Convert from DD/MM/YYYY to DD-MM-YYYY
-        const parts = trimmed.split('/');
-        const day = parts[0];
-        const month = parts[1];
-        const year = parts[2];
-        console.log(`Converting date format from DD/MM/YYYY: ${trimmed} to DD-MM-YYYY: ${day}-${month}-${year}`);
-        return `${day}-${month}-${year}`;
-      }
-      
-      return trimmed;
-    }
-    
-    // If it's a number (Excel serial date), convert it
-    if (typeof value === 'number') {
-      try {
-        // Excel dates are days since 1900-01-01, convert to milliseconds
-        // Note: Excel incorrectly treats 1900 as a leap year, so we subtract 1 day
-        const excelEpoch = new Date(1900, 0, 1);
-        const date = new Date(excelEpoch.getTime() + (value - 1) * 24 * 60 * 60 * 1000);
-        
-        // Check if the date is valid
-        if (isNaN(date.getTime())) return '';
-        
-        // Format as DD-MM-YYYY
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        
-        console.log(`Converted Excel date ${value} to: ${day}-${month}-${year}`);
-        return `${day}-${month}-${year}`;
-      } catch (error) {
-        console.error('Error converting Excel date:', error);
-        return '';
-      }
-    }
-    
-    // If it's a Date object, format it
-    if (value instanceof Date) {
-      const year = value.getFullYear();
-      const month = String(value.getMonth() + 1).padStart(2, '0');
-      const day = String(value.getDate()).padStart(2, '0');
-      return `${day}-${month}-${year}`;
-    }
-    
-    return '';
-  };
-
-  // Map header to lead field - updated to match your Excel format exactly
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapHeaderToField = (lead: Partial<Lead>, header: string, value: any) => {
-    const headerLower = header.toLowerCase().trim();
-    console.log('=== MAPPING DEBUG ===');
-    console.log('Header: "' + header + '" -> "' + headerLower + '"');
-    console.log('Value: "' + value + '" (type: ' + typeof value + ')');
-    console.log('Value length: ' + (value ? value.toString().length : 'undefined'));
-    console.log('Is empty: ' + (!value || value === '' || value === null || value === undefined));
-    console.log('Processing header: ' + headerLower);
-    
-    // Check if this is a status-related header
-    const isStatusHeader = headerLower.includes('status') || 
-                          headerLower === 'status' || 
-                          headerLower === 'lead status' || 
-                          headerLower === 'current status' ||
-                          headerLower === 'leadstatus' ||
-                          headerLower === 'lead_status' ||
-                          headerLower === 'lead-status';
-    
-    if (isStatusHeader) {
-      console.log('🎯 STATUS HEADER DETECTED:', headerLower);
-    }
-    
-    // Special handling for discom headers - check if header contains "discom" in any case
-    if (headerLower.includes('discom')) {
-      console.log('=== DISCOM HEADER DETECTED ===');
-      console.log('Original header:', header);
-      console.log('Header lowercase:', headerLower);
-      console.log('Value:', value);
-      console.log('Value type:', typeof value);
-      console.log('String value:', String(value));
-      lead.discom = String(value);
-      console.log('Mapped discom:', lead.discom);
-      console.log('=== END DISCOM MAPPING DEBUG ===');
-      return; // Exit early to avoid switch statement
-    }
-    
-    switch (headerLower) {
-      // Your Excel column headers - exact matches
-      case 'con.no':
-      case 'con.no.':
-      case 'connection number':
-      case 'consumer number':
-      case 'consumernumber':
-        lead.consumerNumber = String(value);
-        break;
-      case 'kva':
-      case 'name':
-      case 'full name':
-      case 'lead name':
-      case 'contact name':
-        lead.kva = String(value);
-        break;
-      case 'connection date':
-      case 'connectiondate':
-      case 'email':
-      case 'email address':
-      case 'contact email':
-        console.log(`Setting connection date to: "${value}" (original: ${value})`);
-        lead.connectionDate = convertExcelDate(value);
-        console.log(`Connection date after setting: "${lead.connectionDate}"`);
-        break;
-      case 'company':
-      case 'company name':
-      case 'organization':
-        lead.company = String(value);
-        break;
-      case 'company location':
-      case 'companylocation':
-      case 'location':
-      case 'address':
-        lead.companyLocation = String(value);
-        break;
-      case 'client name':
-      case 'clientname':
-      case 'client':
-        lead.clientName = String(value);
-        break;
-      case 'mo.no':
-      case 'mo.no.':
-      case 'mo .no':
-      case 'mo .no.':
-      case 'mobile number':
-      case 'mobilenumber':
-      case 'mobile':
-      case 'phone':
-      case 'phone number':
-      case 'contact phone':
-      case 'telephone':
-      case 'main mobile number':
-        console.log('*** MOBILE NUMBER MAPPING ***');
-        console.log('Setting mobileNumber to: "' + String(value) + '"');
-        console.log('Original value: "' + value + '" (type: ' + typeof value + ')');
-        lead.mobileNumber = String(value);
-        console.log('Lead mobileNumber after setting: "' + lead.mobileNumber + '"');
-        break;
-      case 'mobile number 2':
-      case 'mobile number2':
-      case 'mobile2':
-      case 'phone 2':
-      case 'phone2':
-        console.log('*** MOBILE NUMBER 2 MAPPING ***');
-        console.log('Setting mobileNumber2 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 2) {
-          lead.mobileNumbers.push({ id: '2', number: String(value), name: '', isMain: false });
-        } else if (lead.mobileNumbers[1]) {
-          lead.mobileNumbers[1] = { 
-            id: lead.mobileNumbers[1].id, 
-            number: String(value), 
-            name: lead.mobileNumbers[1].name, 
-            isMain: lead.mobileNumbers[1].isMain 
-          };
-        }
-        break;
-      case 'contact name 2':
-      case 'contact name2':
-      case 'contact2':
-      case 'name 2':
-      case 'name2':
-        console.log('*** CONTACT NAME 2 MAPPING ***');
-        console.log('Setting contactName2 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 2) {
-          lead.mobileNumbers.push({ id: '2', number: '', name: String(value), isMain: false });
-        } else if (lead.mobileNumbers[1]) {
-          lead.mobileNumbers[1] = { 
-            id: lead.mobileNumbers[1].id, 
-            number: lead.mobileNumbers[1].number, 
-            name: String(value), 
-            isMain: lead.mobileNumbers[1].isMain 
-          };
-        }
-        break;
-      case 'mobile number 3':
-      case 'mobile number3':
-      case 'mobile3':
-      case 'phone 3':
-      case 'phone3':
-        console.log('*** MOBILE NUMBER 3 MAPPING ***');
-        console.log('Setting mobileNumber3 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 3) {
-          lead.mobileNumbers.push({ id: '3', number: String(value), name: '', isMain: false });
-        } else if (lead.mobileNumbers[2]) {
-          lead.mobileNumbers[2] = { 
-            id: lead.mobileNumbers[2].id, 
-            number: String(value), 
-            name: lead.mobileNumbers[2].name, 
-            isMain: lead.mobileNumbers[2].isMain 
-          };
-        }
-        break;
-      case 'contact name 3':
-      case 'contact name3':
-      case 'contact3':
-      case 'name 3':
-      case 'name3':
-        console.log('*** CONTACT NAME 3 MAPPING ***');
-        console.log('Setting contactName3 to: "' + String(value) + '"');
-        if (!lead.mobileNumbers) lead.mobileNumbers = [];
-        if (lead.mobileNumbers.length < 3) {
-          lead.mobileNumbers.push({ id: '3', number: '', name: String(value), isMain: false });
-        } else if (lead.mobileNumbers[2]) {
-          lead.mobileNumbers[2] = { 
-            id: lead.mobileNumbers[2].id, 
-            number: lead.mobileNumbers[2].number, 
-            name: String(value), 
-            isMain: lead.mobileNumbers[2].isMain 
-          };
-        }
-        break;
-      case 'old //new':
-      case 'old/new':
-      case 'unit type':
-      case 'unittype':
-        // Map to unitType field
-        const unitTypeValue = String(value).toLowerCase();
-        if (unitTypeValue === 'new' || unitTypeValue === 'existing' || unitTypeValue === 'other') {
-          lead.unitType = String(value) as Lead['unitType'];
-        } else if (unitTypeValue.includes('year') || unitTypeValue.includes('exp') || unitTypeValue.includes('service')) {
-          lead.unitType = 'Existing'; // Map old/existing connections to "Existing"
-        } else {
-          lead.unitType = 'New';
-        }
-        break;
-      case 'status':
-      case 'current status':
-      case 'lead status':
-      case 'leadstatus':
-      case 'lead_status':
-      case 'lead-status':
-      case 'lead status':
-      case 'leadstatus':
-      case 'lead_status':
-      case 'lead-status':
-      case 'status':
-      case 'current status':
-      case 'lead status':
-      case 'leadstatus':
-      case 'lead_status':
-      case 'lead-status':
-        console.log('*** STATUS HEADER MATCHED ***');
-        // Map your status values to valid enum values
-        const statusValue = String(value).toLowerCase().trim();
-        console.log('=== STATUS MAPPING DEBUG ===');
-        console.log('Original status value:', value);
-        console.log('Lowercase status value:', statusValue);
-        console.log('Header being processed:', header);
-        
-        // Comprehensive status mapping with multiple variations
-        if (statusValue === 'new') {
-          lead.status = 'New';
-        } else if (statusValue === 'cnr') {
-          lead.status = 'CNR';
-        } else if (statusValue === 'busy') {
-          lead.status = 'Busy';
-        } else if (statusValue === 'follow-up' || statusValue === 'follow up' || statusValue === 'followup') {
-          lead.status = 'Follow-up';
-        } else if (statusValue === 'deal close' || statusValue === 'dealclose' || statusValue === 'deal_close') {
-          lead.status = 'Deal Close';
-        } else if (statusValue === 'work alloted' || statusValue === 'workalloted' || statusValue === 'work_alloted') {
-          lead.status = 'Work Alloted';
-        } else if (statusValue === 'hotlead' || statusValue === 'hot lead' || statusValue === 'hot_lead') {
-          lead.status = 'Hotlead';
-        } else if (
-          statusValue === 'mandate sent' || 
-          statusValue === 'mandate sent & documentation' || 
-          statusValue === 'mandate sent and documentation' || 
-          statusValue === 'mandate sent & doc' || 
-          statusValue === 'mandate sent and doc' || 
-          statusValue === 'mandatesent' || 
-          statusValue === 'mandate_sent' || 
-          statusValue === 'mandate-sent' ||
-          statusValue === 'mandate sent ' ||
-          statusValue === ' mandate sent' ||
-          statusValue === 'mandate sent.' ||
-          statusValue === 'mandate sent,' ||
-          statusValue.includes('mandate sent')
-        ) {
-          lead.status = 'Mandate Sent';
-          console.log('✅ Mapped to: Mandate Sent');
-        } else if (
-          statusValue === 'documentation' || 
-          statusValue === 'documentation ' ||
-          statusValue === ' documentation' ||
-          statusValue.includes('documentation')
-        ) {
-          lead.status = 'Documentation';
-        } else if (statusValue === 'others' || statusValue === 'other') {
-          lead.status = 'Others';
-        } else if (statusValue.includes('year') || statusValue.includes('exp') || statusValue.includes('service')) {
-          lead.status = 'Busy';
-        } else {
-          // If we detected a status header but couldn't map the value, try a more flexible approach
-          if (isStatusHeader) {
-            console.log('🔍 Attempting flexible status mapping for:', statusValue);
-            
-            // Try to match partial strings
-            if (statusValue.includes('mandate') || statusValue.includes('sent')) {
-              lead.status = 'Mandate Sent';
-              console.log('✅ Flexible mapping: Mandate Sent');
-            } else if (statusValue.includes('document')) {
-              lead.status = 'Documentation';
-              console.log('✅ Flexible mapping: Documentation');
-            } else if (statusValue.includes('new')) {
-              lead.status = 'New';
-              console.log('✅ Flexible mapping: New');
-            } else if (statusValue.includes('cnr')) {
-              lead.status = 'CNR';
-              console.log('✅ Flexible mapping: CNR');
-            } else if (statusValue.includes('busy')) {
-              lead.status = 'Busy';
-              console.log('✅ Flexible mapping: Busy');
-            } else if (statusValue.includes('follow')) {
-              lead.status = 'Follow-up';
-              console.log('✅ Flexible mapping: Follow-up');
-            } else if (statusValue.includes('deal') || statusValue.includes('close')) {
-              lead.status = 'Deal Close';
-              console.log('✅ Flexible mapping: Deal Close');
-            } else if (statusValue.includes('work') || statusValue.includes('allot')) {
-              lead.status = 'Work Alloted';
-              console.log('✅ Flexible mapping: Work Alloted');
-            } else if (statusValue.includes('hot') || statusValue.includes('lead')) {
-              lead.status = 'Hotlead';
-              console.log('✅ Flexible mapping: Hotlead');
-            } else if (statusValue.includes('other')) {
-              lead.status = 'Others';
-              console.log('✅ Flexible mapping: Others');
-            } else {
-              lead.status = 'New';
-              console.log('❌ UNMATCHED STATUS VALUE:', statusValue);
-            }
-          } else {
-            lead.status = 'New';
-            console.log('❌ UNMATCHED STATUS VALUE:', statusValue);
-          }
-        }
-        console.log('Final lead status:', lead.status);
-        console.log('=== END STATUS MAPPING DEBUG ===');
-        break;
-      case 'marking call date 1 april 25':
-      case 'marking call':
-      case 'call notes':
-      case 'notes':
-      case 'comments':
-      case 'description':
-        // If notes already exist, append the new value
-        if (lead.notes) {
-          lead.notes = `${lead.notes} | ${String(value)}`;
-        } else {
-          lead.notes = String(value);
-        }
-        break;
-      case 'address':
-        // Map address to companyLocation field (this will be handled by the company location case above)
-        // This case is now redundant since 'address' is handled in the company location section
-        break;
-      case 'last activity date':
-      case 'lastactivitydate':
-      case 'last contact':
-      case 'last activity':
-        lead.lastActivityDate = convertExcelDate(value);
-        break;
-      case 'next follow-up date':
-      case 'nextfollowupdate':
-      case 'follow-up date':
-      case 'followupdate':
-      case 'next contact':
-      case 'follow up date':
-        lead.followUpDate = convertExcelDate(value);
-        break;
-      case 'mandate status':
-      case 'mandatestatus':
-      case 'mandate':
-        const mandateValue = String(value).toLowerCase();
-        if (mandateValue === 'pending') {
-          lead.mandateStatus = 'Pending';
-        } else if (mandateValue === 'in progress') {
-          lead.mandateStatus = 'In Progress';
-        } else if (mandateValue === 'completed') {
-          lead.mandateStatus = 'Completed';
-        } else {
-          lead.mandateStatus = 'Pending';
-        }
-        break;
-      case 'document status':
-      case 'documentstatus':
-      case 'documents':
-        const docValue = String(value).toLowerCase();
-        if (docValue === 'pending documents') {
-          lead.documentStatus = 'Pending Documents';
-        } else if (docValue === 'documents submitted') {
-          lead.documentStatus = 'Documents Submitted';
-        } else if (docValue === 'documents reviewed') {
-          lead.documentStatus = 'Documents Reviewed';
-        } else if (docValue === 'signed mandate') {
-          lead.documentStatus = 'Signed Mandate';
-        } else {
-          lead.documentStatus = 'Pending Documents';
-        }
-        break;
-      case 'discom':
-      case 'discom name':
-      case 'discomname':
-      case 'discom_name':
-      case 'distribution company':
-      case 'distributioncompany':
-      case 'distribution_company':
-      case 'utility company':
-      case 'utilitycompany':
-      case 'utility_company':
-      case 'discoms':
-      case 'discom names':
-          console.log('=== DISCOM MAPPING DEBUG ===');
-          console.log('Header:', header);
-          console.log('Value:', value);
-          console.log('Value type:', typeof value);
-          console.log('String value:', String(value));
-        lead.discom = String(value);
-          console.log('Mapped discom:', lead.discom);
-          console.log('=== END DISCOM MAPPING DEBUG ===');
-        break;
-      case 'gidc':
-      case 'gidc number':
-      case 'gidc no':
-      case 'gidc no.':
-        lead.gidc = String(value);
-        break;
-      case 'gst number':
-      case 'gstnumber':
-      case 'gst no':
-      case 'gst no.':
-      case 'gst':
-        lead.gstNumber = String(value);
-        break;
-    }
-  };
-
-  // Extract address from notes helper function
-  const extractAddressFromNotes = (notes: string) => {
-    if (!notes || !notes.includes('Address:')) {
-      return { address: '', cleanNotes: notes };
-    }
-    
-    // More comprehensive regex to catch different address formats
-    const addressMatch = notes.match(/Address:\s*(.+?)(?:\s*\||\s*$)/i);
-    if (addressMatch && addressMatch[1]) {
-      const address = addressMatch[1].trim();
-      // Remove the entire address line including "Address:" prefix
-      let cleanNotes = notes.replace(/Address:\s*.+?(?:\s*\||\s*$)/i, '').trim();
-      // Remove any trailing pipes or extra whitespace
-      cleanNotes = cleanNotes.replace(/\|\s*$/, '').replace(/\s+$/, '').trim();
-      return { address, cleanNotes };
-    }
-    
-    return { address: '', cleanNotes: notes };
-  };
-
-  // Parse multiple mobile numbers from a single field
-  const parseMobileNumbers = (mobileNumberString: string, clientName: string = '') => {
-    console.log('*** PARSING MOBILE NUMBERS ***');
-    console.log('Input string: "' + mobileNumberString + '" (type: ' + typeof mobileNumberString + ')');
-    
-    if (!mobileNumberString || typeof mobileNumberString !== 'string') {
-      console.log('Empty or invalid input, returning default array');
-      return [
-        { id: '1', number: '', isMain: true },
-        { id: '2', number: '', isMain: false },
-        { id: '3', number: '', isMain: false }
-      ];
-    }
-
-    // Clean the input string and remove common prefixes
-    let cleanString = mobileNumberString.trim();
-    console.log('After trim: "' + cleanString + '"');
-    
-    // Remove common prefixes like "Mobile:", "Phone:", "Tel:", etc.
-    cleanString = cleanString.replace(/^(mobile|phone|tel|contact|number)[:\s]*/i, '');
-    console.log('After prefix removal: "' + cleanString + '"');
-    
-    // Split by common separators: comma, semicolon, pipe, newline, slash, or multiple spaces
-    const separators = /[,;|\n\r\/]+|\s{2,}/;
-    const rawNumbers = cleanString.split(separators);
-    console.log('Raw split result:', rawNumbers);
-    
-    const parsedNumbers = rawNumbers
-      .map(num => {
-        const trimmed = num.trim();
-        if (!trimmed || !/\d/.test(trimmed)) return null;
-        
-        // Check if this is in the format "number (name)" from export
-        const match = trimmed.match(/^(.+?)\s*\((.+?)\)$/);
-        if (match && match[1] && match[2]) {
-          const number = match[1].trim().replace(/[^0-9]/g, '').slice(0, 10); // Only keep numeric characters, max 10 digits
-          const name = match[2].trim();
-          console.log('Parsed "' + trimmed + '" as number: "' + number + '", name: "' + name + '"');
-          return { number, name };
-        } else {
-          console.log('Parsed "' + trimmed + '" as number only');
-          const numericOnly = trimmed.replace(/[^0-9]/g, '').slice(0, 10); // Only keep numeric characters, max 10 digits
-          return { number: numericOnly, name: '' };
-        }
-      })
-      .filter(Boolean)
-      .slice(0, 3); // Limit to 3 numbers maximum
-
-    console.log('Parsed numbers:', parsedNumbers);
-
-    // Create mobile numbers array with proper names
-    const mobileNumbers = [
-      { 
-        id: '1', 
-        number: parsedNumbers[0]?.number || '', 
-        name: parsedNumbers[0]?.name || (parsedNumbers[0]?.number ? clientName : ''), 
-        isMain: true 
-      },
-      { 
-        id: '2', 
-        number: parsedNumbers[1]?.number || '', 
-        name: parsedNumbers[1]?.name || '', 
-        isMain: false 
-      },
-      { 
-        id: '3', 
-        number: parsedNumbers[2]?.number || '', 
-        name: parsedNumbers[2]?.name || '', 
-        isMain: false 
-      }
-    ];
-
-    console.log('Final mobile numbers array:', mobileNumbers);
-    console.log('*** END PARSING MOBILE NUMBERS ***');
-
-    return mobileNumbers;
-  };
-
-  // Set default values for missing fields - only set defaults for truly missing required fields
-  const setDefaultValues = (lead: Partial<Lead>): Lead => {
-    // Extract address from notes if it exists
-    const { address, cleanNotes } = extractAddressFromNotes(lead.notes || '');
-    
-    console.log('=== SET DEFAULT VALUES DEBUG ===');
-    console.log('Input lead mobileNumber: "' + lead.mobileNumber + '" (type: ' + typeof lead.mobileNumber + ')');
-    console.log('Input lead consumerNumber: "' + lead.consumerNumber + '" (type: ' + typeof lead.consumerNumber + ')');
-    console.log('Input lead discom: "' + lead.discom + '" (type: ' + typeof lead.discom + ')');
-    console.log('Input lead discom length:', lead.discom ? lead.discom.length : 'undefined');
-    
-    const result: Lead = {
-      ...lead,
-      id: lead.id || crypto.randomUUID(),
-      // Only set defaults for truly missing required fields, preserve actual data
-      kva: lead.kva || '',
-      connectionDate: lead.connectionDate || '',
-      consumerNumber: lead.consumerNumber || '',
-      company: lead.company || '',
-      clientName: lead.clientName || '',
-      discom: lead.discom || '',
-      gidc: lead.gidc || '',
-      gstNumber: lead.gstNumber || '',
-      mobileNumber: lead.mobileNumber || '', // Keep actual phone numbers, only set empty if truly missing
-      mobileNumbers: lead.mobileNumbers || [{ id: '1', number: lead.mobileNumber || '', name: '', isMain: true }],
-      companyLocation: lead.companyLocation || address,
-      unitType: lead.unitType || 'New',
-      status: lead.status || 'New',
-      lastActivityDate: lead.lastActivityDate || '',
-      followUpDate: lead.followUpDate || '',
-      notes: cleanNotes || '',
-      isDone: lead.isDone || false,
-      isDeleted: lead.isDeleted || false,
-      isUpdated: lead.isUpdated || false,
-      activities: lead.activities || [],
-      mandateStatus: lead.mandateStatus || 'Pending',
-      documentStatus: lead.documentStatus || 'Pending Documents'
-    };
-    
-    console.log('Output lead mobileNumber: "' + result.mobileNumber + '" (type: ' + typeof result.mobileNumber + ')');
-    console.log('Output lead consumerNumber: "' + result.consumerNumber + '" (type: ' + typeof result.consumerNumber + ')');
-    console.log('Output lead discom: "' + result.discom + '" (type: ' + typeof result.discom + ')');
-    console.log('Output lead discom length:', result.discom ? result.discom.length : 'undefined');
-    console.log('=== END SET DEFAULT VALUES DEBUG ===');
-    
-    return result;
-  };
-
-  // Test function to debug discom import issues
-  const testDiscomImport = () => {
-    console.log('=== TESTING DISCOM IMPORT ===');
-    const testLead = {
-      kva: 'TEST',
-      consumerNumber: '12345',
-      company: 'Test Company',
-      clientName: 'Test Client',
-      discom: 'DGVCL',
-      mobileNumber: '9876543210'
-    };
-    console.log('Test lead with DGVCL:', testLead);
-    
-    const testLead2 = {
-      kva: 'TEST2',
-      consumerNumber: '12346',
-      company: 'Test Company 2',
-      clientName: 'Test Client 2',
-      discom: 'PGVCL',
-      mobileNumber: '9876543211'
-    };
-    console.log('Test lead with PGVCL:', testLead2);
-    console.log('=== END TESTING DISCOM IMPORT ===');
-  };
 
 
-  // Import leads into the system
-  const importLeads = async (leadsToImport: Partial<Lead>[]) => {
-    console.log('=== IMPORTLEADS FUNCTION STARTED ===');
-    console.log('Starting to import leads:', leadsToImport);
-    console.log('Raw Excel data structure:', JSON.stringify(leadsToImport, null, 2));
-    console.log('Current leads count before import:', leads.length);
-    
-    // Test discom import
-    testDiscomImport();
-    
-    let importedCount = 0;
-    
-    for (const leadData of leadsToImport) {
-      console.log('=== PROCESSING LEAD ===');
-      console.log('Processing lead data:', leadData);
-      if (leadData.kva && leadData.consumerNumber) {
-        console.log('Lead has KVA and consumer number (con.no), creating...');
-        console.log('Connection Date from Excel:', leadData.connectionDate);
-        console.log('Connection Date type:', typeof leadData.connectionDate);
-        console.log('Connection Date length:', leadData.connectionDate ? leadData.connectionDate.length : 'undefined');
-        console.log('=== CREATING NEW LEAD ===');
-        console.log('leadData.mobileNumber: "' + leadData.mobileNumber + '" (type: ' + typeof leadData.mobileNumber + ')');
-        console.log('leadData.consumerNumber: "' + leadData.consumerNumber + '" (type: ' + typeof leadData.consumerNumber + ')');
-        
-        // Parse mobile numbers from the imported data (handles multiple numbers in one field)
-        const mobileNumbers = parseMobileNumbers(leadData.mobileNumber || '', leadData.clientName || '');
 
-        console.log('=== LEAD CREATION DEBUG ===');
-        console.log('leadData.discom:', leadData.discom);
-        console.log('leadData.discom type:', typeof leadData.discom);
-        console.log('leadData.discom length:', leadData.discom ? leadData.discom.length : 'undefined');
 
-        const newLead: Lead = {
-          id: crypto.randomUUID(),
-          kva: leadData.kva || '',
-          connectionDate: leadData.connectionDate && leadData.connectionDate.trim() !== '' ? leadData.connectionDate : '',
-          consumerNumber: leadData.consumerNumber || '',
-          company: leadData.company || '',
-          clientName: leadData.clientName || '',
-          discom: leadData.discom || '',
-          gidc: leadData.gidc || '',
-          gstNumber: leadData.gstNumber || '',
-          mobileNumber: mobileNumbers[0]?.number || '', // Keep for backward compatibility
-          mobileNumbers: mobileNumbers as MobileNumber[],
-          companyLocation: leadData.companyLocation || '',
-          unitType: leadData.unitType || 'New',
-          status: leadData.status || 'New',
-          lastActivityDate: leadData.lastActivityDate || '', // Keep blank for imports
-          followUpDate: leadData.followUpDate || '', // Keep blank for imports
-          notes: leadData.notes || '',
-          isDone: leadData.isDone || false,
-          isDeleted: leadData.isDeleted || false,
-          isUpdated: false,
-          mandateStatus: leadData.mandateStatus || 'Pending',
-          ...(leadData.documentStatus && { documentStatus: leadData.documentStatus })
-        };
-        
-        console.log('newLead.discom:', newLead.discom);
-        console.log('=== END LEAD CREATION DEBUG ===');
-        
-        console.log('Final newLead.mobileNumber: "' + newLead.mobileNumber + '" (type: ' + typeof newLead.mobileNumber + ')');
-        console.log('Final newLead.consumerNumber: "' + newLead.consumerNumber + '" (type: ' + typeof newLead.consumerNumber + ')');
-        console.log('=== END CREATING NEW LEAD ===');
-        console.log('Created new lead object:', newLead);
-        console.log('Final Connection Date set to:', newLead.connectionDate);
-        console.log('About to add lead with discom:', newLead.discom);
-        console.log('About to call addLead...');
-        addLead(newLead);
-        console.log('addLead called successfully');
-        console.log('Lead discom after adding:', newLead.discom);
-        importedCount++;
-        console.log('Lead added, total imported:', importedCount);
-        console.log('Current leads count after this lead:', leads.length);
-      } else {
-        console.log('=== LEAD SKIPPED ===');
-        console.log('Skipping lead - missing KVA or con.no (consumer number):', leadData);
-        console.log('Lead KVA:', leadData.kva);
-        console.log('Lead con.no (consumer number):', leadData.consumerNumber);
-      }
-    }
-    
-    console.log('=== IMPORTLEADS FUNCTION COMPLETE ===');
-    console.log('Import complete, total imported:', importedCount);
-    console.log('Current leads count after import:', leads.length);
-    console.log('All current leads after import:', leads);
-    return importedCount;
-  };
+
+
+
+
+
+
+
   
   // Show export password modal
   const handleExportExcel = () => {
@@ -1679,28 +728,6 @@ export default function DashboardPage() {
               <option value="PGVCL">PGVCL</option>
             </select>
           </div>
-          {/* Import Button */}
-          <div className="relative">
-            <input
-              type="file"
-              accept=".xlsx,.xls,.xlsm,.csv"
-              onChange={handleFileImport}
-              className="hidden"
-              id="file-import-dashboard"
-              disabled={isImporting}
-            />
-            <label
-              htmlFor="file-import-dashboard"
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors cursor-pointer flex items-center space-x-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-              </svg>
-              <span>Import Leads</span>
-            </label>
-          </div>
-          
-          
           {/* Export Button */}
           <button
             onClick={handleExportExcel}
@@ -1711,8 +738,9 @@ export default function DashboardPage() {
             </svg>
             <span>Export Leads</span>
           </button>
-        </div>
-      </div>
+            
+          </div>
+          </div>
 
       {/* Status Filter Section */}
       <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-3 rounded-lg shadow-lg border border-slate-600/30 mb-4 relative overflow-hidden mx-auto w-fit">
@@ -1841,6 +869,40 @@ export default function DashboardPage() {
                     : 'bg-red-500 text-white'
                 }`}>
                   {statusCounts['Hotlead']}
+                </span>
+              </button>
+              <button
+                onClick={() => handleStatusFilter('Mandate Sent')}
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
+                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Mandate Sent'
+                    ? 'bg-teal-800 text-white'
+                    : 'bg-teal-600 hover:bg-teal-700 text-white'
+                }`}
+              >
+                Mandate Sent
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
+                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Mandate Sent'
+                    ? 'bg-teal-900 text-teal-100'
+                    : 'bg-teal-500 text-white'
+                }`}>
+                  {statusCounts['Mandate Sent']}
+                </span>
+              </button>
+              <button
+                onClick={() => handleStatusFilter('Documentation')}
+                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
+                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Documentation'
+                    ? 'bg-slate-800 text-white'
+                    : 'bg-slate-600 hover:bg-slate-700 text-white'
+                }`}
+              >
+                Documentation
+                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
+                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Documentation'
+                    ? 'bg-slate-900 text-slate-100'
+                    : 'bg-slate-500 text-white'
+                }`}>
+                  {statusCounts['Documentation']}
                 </span>
               </button>
               <button
@@ -2336,14 +1398,41 @@ export default function DashboardPage() {
                   </div>
 
                 {/* Additional Numbers */}
-                {selectedLead.mobileNumbers && selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).length > 0 && (
+                {selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 && (
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-2">Additional Numbers</label>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).map((mobile, index) => (
-                        <span key={index} className="text-sm font-medium text-gray-900 bg-white px-2 py-1 rounded border">
-                          {mobile.name ? `${mobile.name}: ${mobile.number}` : mobile.number}
-                        </span>
+                    <label className="block text-xs font-medium text-gray-600 mb-2">All Mobile Numbers</label>
+                    <div className="space-y-2">
+                      {selectedLead.mobileNumbers.filter(m => m.number && m.number.trim()).map((mobile, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white px-3 py-2 rounded border">
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-900">
+                              {mobile.name ? `${mobile.name}` : `Mobile ${index + 1}`}
+                            </div>
+                            <div className="text-sm text-gray-600">{mobile.number}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {mobile.isMain && (
+                              <span className="px-2 py-1 text-xs font-bold bg-blue-100 text-blue-800 rounded-full">
+                                Main
+                              </span>
+                            )}
+                            <button
+                              onClick={() => copyToClipboard(mobile.number, `mobile${index + 1}`)}
+                              className="text-gray-400 hover:text-gray-600 transition-colors"
+                              title="Copy mobile number"
+                            >
+                              {copiedField === `mobile${index + 1}` ? (
+                                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              ) : (
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>

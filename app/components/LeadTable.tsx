@@ -235,7 +235,7 @@ function LeadTable({
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-18"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
               onClick={() => handleSort('lastActivityDate')}
             >
               Last Activity{renderSortIndicator('lastActivityDate')}
@@ -305,7 +305,7 @@ function LeadTable({
                   </span>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{formatDate(lead.lastActivityDate)}</div>
+                  <div className="text-sm text-gray-500 min-w-20">{formatDate(lead.lastActivityDate)}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{formatDate(lead.followUpDate)}</div>
