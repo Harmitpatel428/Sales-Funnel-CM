@@ -985,9 +985,72 @@ export default function AddLeadPage() {
                   name="lastActivityDate"
                   value={formData.lastActivityDate}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
-                  placeholder="DD-MM-YYYY"
+                  onClick={async () => {
+                    try {
+                      console.log('🗓️ Last Activity Date input clicked');
+                      
+                      // Create a hidden date input
+                      const dateInput = document.createElement('input');
+                      dateInput.type = 'date';
+                      dateInput.style.position = 'fixed';
+                      dateInput.style.top = '-1000px';
+                      dateInput.style.left = '-1000px';
+                      dateInput.style.opacity = '0';
+                      dateInput.style.pointerEvents = 'none';
+                      dateInput.style.zIndex = '-1';
+                      dateInput.setAttribute('aria-label', 'Choose last activity date');
+                      
+                      // Set minimum date to today
+                      const today = new Date().toISOString().split('T')[0];
+                      if (today) {
+                        dateInput.min = today;
+                      }
+                      
+                      // Handle date selection
+                      dateInput.addEventListener('change', (e) => {
+                        const target = e.target as HTMLInputElement;
+                        console.log('📅 Last Activity Date selected:', target.value);
+                        if (target.value) {
+                          // Convert YYYY-MM-DD to DD-MM-YYYY
+                          const [year, month, day] = target.value.split('-');
+                          const formattedDate = `${day}-${month}-${year}`;
+                          console.log('📅 Formatted date:', formattedDate);
+                          setFormData(prev => ({
+                            ...prev,
+                            lastActivityDate: formattedDate
+                          }));
+                        }
+                        // Remove the input from DOM
+                        if (document.body.contains(dateInput)) {
+                          document.body.removeChild(dateInput);
+                        }
+                      });
+                      
+                      // Add to DOM
+                      document.body.appendChild(dateInput);
+                      console.log('📅 Date input added to DOM');
+                      
+                      // Force focus and show picker
+                      dateInput.focus();
+                      console.log('📅 Date input focused');
+                      
+                      // Try modern showPicker method first
+                      if ('showPicker' in dateInput) {
+                        console.log('📅 Using showPicker method');
+                        await (dateInput as any).showPicker();
+                      } else {
+                        console.log('📅 Using click fallback');
+                        // Fallback: trigger click
+                        (dateInput as HTMLInputElement).click();
+                      }
+                    } catch (error) {
+                      console.error('❌ Date picker error:', error);
+                    }
+                  }}
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black cursor-pointer"
+                  placeholder="Click to select date (DD-MM-YYYY)"
                   disabled={isSubmitting}
+                  readOnly
                 />
                  <button
                    type="button"
@@ -1078,12 +1141,83 @@ export default function AddLeadPage() {
                   name="followUpDate"
                   value={formData.followUpDate}
                   onChange={handleFollowUpDateChange}
-                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                  onClick={async () => {
+                    try {
+                      console.log('🗓️ Follow-up Date input clicked');
+                      
+                      // Create a hidden date input
+                      const dateInput = document.createElement('input');
+                      dateInput.type = 'date';
+                      dateInput.style.position = 'fixed';
+                      dateInput.style.top = '-1000px';
+                      dateInput.style.left = '-1000px';
+                      dateInput.style.opacity = '0';
+                      dateInput.style.pointerEvents = 'none';
+                      dateInput.style.zIndex = '-1';
+                      dateInput.setAttribute('aria-label', 'Choose follow-up date');
+                      
+                      // Set minimum date to today
+                      const today = new Date().toISOString().split('T')[0];
+                      if (today) {
+                        dateInput.min = today;
+                      }
+                      
+                      // Handle date selection
+                      dateInput.addEventListener('change', (e) => {
+                        const target = e.target as HTMLInputElement;
+                        console.log('📅 Follow-up Date selected:', target.value);
+                        if (target.value) {
+                          // Convert YYYY-MM-DD to DD-MM-YYYY
+                          const [year, month, day] = target.value.split('-');
+                          const formattedDate = `${day}-${month}-${year}`;
+                          console.log('📅 Formatted follow-up date:', formattedDate);
+                          setFormData(prev => ({
+                            ...prev,
+                            followUpDate: formattedDate
+                          }));
+                          // Clear error if exists
+                          if (errors.followUpDate) {
+                            setErrors(prev => {
+                              const newErrors = { ...prev };
+                              delete newErrors.followUpDate;
+                              return newErrors;
+                            });
+                          }
+                        }
+                        // Remove the input from DOM
+                        if (document.body.contains(dateInput)) {
+                          document.body.removeChild(dateInput);
+                        }
+                      });
+                      
+                      // Add to DOM
+                      document.body.appendChild(dateInput);
+                      console.log('📅 Follow-up Date input added to DOM');
+                      
+                      // Force focus and show picker
+                      dateInput.focus();
+                      console.log('📅 Follow-up Date input focused');
+                      
+                      // Try modern showPicker method first
+                      if ('showPicker' in dateInput) {
+                        console.log('📅 Using showPicker method for follow-up');
+                        await (dateInput as any).showPicker();
+                      } else {
+                        console.log('📅 Using click fallback for follow-up');
+                        // Fallback: trigger click
+                        (dateInput as HTMLInputElement).click();
+                      }
+                    } catch (error) {
+                      console.error('❌ Follow-up Date picker error:', error);
+                    }
+                  }}
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black cursor-pointer ${
                     errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
-                  placeholder="DD-MM-YYYY"
+                  placeholder="Click to select date (DD-MM-YYYY)"
                   disabled={isSubmitting}
                   maxLength={10}
+                  readOnly
                 />
                 <button
                   type="button"
