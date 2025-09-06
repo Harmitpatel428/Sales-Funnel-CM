@@ -356,10 +356,21 @@ export default function AddLeadPage() {
         companyLocation: address || prev.companyLocation // Set address if found, otherwise keep existing
       }));
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      setFormData(prev => {
+        const updatedFormData = {
+          ...prev,
+          [name]: value
+        };
+
+        // Auto-populate first mobile number's name when client name is entered
+        if (name === 'clientName' && value.trim() && prev.mobileNumbers && prev.mobileNumbers[0] && !prev.mobileNumbers[0].name.trim()) {
+          updatedFormData.mobileNumbers = prev.mobileNumbers.map((mobile, index) => 
+            index === 0 ? { ...mobile, name: value.trim() } : mobile
+          );
+        }
+
+        return updatedFormData;
+      });
     }
 
     // Clear error for this field
