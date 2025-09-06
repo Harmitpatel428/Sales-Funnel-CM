@@ -314,40 +314,6 @@ export default function AddLeadPage() {
     }
   };
 
-  // Handle follow-up date changes with auto-formatting
-  const handleFollowUpDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    let value = e.target.value;
-    
-    // Allow user to delete dashes, but auto-add them back
-    // Remove all non-numeric characters first
-    const numericValue = value.replace(/[^0-9]/g, '');
-    
-    // Auto-format with dashes based on numeric length
-    let formattedValue = '';
-    if (numericValue.length >= 1) {
-      formattedValue = numericValue.slice(0, 2);
-      if (numericValue.length >= 3) {
-        formattedValue += '-' + numericValue.slice(2, 4);
-        if (numericValue.length >= 5) {
-          formattedValue += '-' + numericValue.slice(4, 8);
-        }
-      }
-    }
-    
-    setFormData(prev => ({
-      ...prev,
-      followUpDate: formattedValue
-    }));
-
-    // Clear error for this field
-    if (errors.followUpDate) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.followUpDate;
-        return newErrors;
-      });
-    }
-  };
 
   // Handle input changes
   const handleChange = (
@@ -980,150 +946,28 @@ export default function AddLeadPage() {
               </label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   id="lastActivityDate"
                   name="lastActivityDate"
-                  value={formData.lastActivityDate}
-                  onChange={handleChange}
-                  onClick={async () => {
-                    try {
-                      console.log('🗓️ Last Activity Date input clicked');
-                      
-                      // Create a hidden date input
-                      const dateInput = document.createElement('input');
-                      dateInput.type = 'date';
-                      dateInput.style.position = 'fixed';
-                      dateInput.style.top = '-1000px';
-                      dateInput.style.left = '-1000px';
-                      dateInput.style.opacity = '0';
-                      dateInput.style.pointerEvents = 'none';
-                      dateInput.style.zIndex = '-1';
-                      dateInput.setAttribute('aria-label', 'Choose last activity date');
-                      
-                      // Set minimum date to today
-                      const today = new Date().toISOString().split('T')[0];
-                      if (today) {
-                        dateInput.min = today;
-                      }
-                      
-                      // Handle date selection
-                      dateInput.addEventListener('change', (e) => {
-                        const target = e.target as HTMLInputElement;
-                        console.log('📅 Last Activity Date selected:', target.value);
-                        if (target.value) {
-                          // Convert YYYY-MM-DD to DD-MM-YYYY
-                          const [year, month, day] = target.value.split('-');
-                          const formattedDate = `${day}-${month}-${year}`;
-                          console.log('📅 Formatted date:', formattedDate);
-                          setFormData(prev => ({
-                            ...prev,
-                            lastActivityDate: formattedDate
-                          }));
-                        }
-                        // Remove the input from DOM
-                        if (document.body.contains(dateInput)) {
-                          document.body.removeChild(dateInput);
-                        }
-                      });
-                      
-                      // Add to DOM
-                      document.body.appendChild(dateInput);
-                      console.log('📅 Date input added to DOM');
-                      
-                      // Force focus and show picker
-                      dateInput.focus();
-                      console.log('📅 Date input focused');
-                      
-                      // Try modern showPicker method first
-                      if ('showPicker' in dateInput) {
-                        console.log('📅 Using showPicker method');
-                        await (dateInput as any).showPicker();
-                      } else {
-                        console.log('📅 Using click fallback');
-                        // Fallback: trigger click
-                        (dateInput as HTMLInputElement).click();
-                      }
-                    } catch (error) {
-                      console.error('❌ Date picker error:', error);
+                  value={formData.lastActivityDate ? (() => {
+                    // Convert DD-MM-YYYY to YYYY-MM-DD for date input
+                    const [day, month, year] = formData.lastActivityDate.split('-');
+                    return `${year}-${month}-${day}`;
+                  })() : ''}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      // Convert YYYY-MM-DD to DD-MM-YYYY
+                      const [year, month, day] = e.target.value.split('-');
+                      const formattedDate = `${day}-${month}-${year}`;
+                      setFormData(prev => ({
+                        ...prev,
+                        lastActivityDate: formattedDate
+                      }));
                     }
                   }}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black cursor-pointer"
-                  placeholder="Click to select date (DD-MM-YYYY)"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
                   disabled={isSubmitting}
-                  readOnly
                 />
-                 <button
-                   type="button"
-                  onClick={async () => {
-                    try {
-                      console.log('🗓️ Last Activity Date picker clicked');
-                      
-                      // Create a hidden date input
-                      const dateInput = document.createElement('input');
-                      dateInput.type = 'date';
-                      dateInput.style.position = 'fixed';
-                      dateInput.style.top = '-1000px';
-                      dateInput.style.left = '-1000px';
-                      dateInput.style.opacity = '0';
-                      dateInput.style.pointerEvents = 'none';
-                      dateInput.style.zIndex = '-1';
-                      dateInput.setAttribute('aria-label', 'Choose last activity date');
-                      
-                      // Set minimum date to today
-                      const today = new Date().toISOString().split('T')[0];
-                      if (today) {
-                        dateInput.min = today;
-                      }
-                      
-                      // Handle date selection
-                      dateInput.addEventListener('change', (e) => {
-                        const target = e.target as HTMLInputElement;
-                        console.log('📅 Last Activity Date selected:', target.value);
-                        if (target.value) {
-                          // Convert YYYY-MM-DD to DD-MM-YYYY
-                          const [year, month, day] = target.value.split('-');
-                          const formattedDate = `${day}-${month}-${year}`;
-                          console.log('📅 Formatted date:', formattedDate);
-                          setFormData(prev => ({
-                            ...prev,
-                            lastActivityDate: formattedDate
-                          }));
-                        }
-                        // Remove the input from DOM
-                        if (document.body.contains(dateInput)) {
-                          document.body.removeChild(dateInput);
-                        }
-                      });
-                      
-                      // Add to DOM
-                      document.body.appendChild(dateInput);
-                      console.log('📅 Date input added to DOM');
-                      
-                      // Force focus and show picker
-                      dateInput.focus();
-                      console.log('📅 Date input focused');
-                      
-                      // Try modern showPicker method first
-                      if ('showPicker' in dateInput) {
-                        console.log('📅 Using showPicker method');
-                        await (dateInput as any).showPicker();
-                      } else {
-                        console.log('📅 Using click fallback');
-                        // Fallback: trigger click
-                        (dateInput as HTMLInputElement).click();
-                      }
-                    } catch (error) {
-                      console.error('❌ Date picker error:', error);
-                    }
-                  }}
-                   disabled={isSubmitting}
-                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors cursor-pointer z-10 p-1"
-                   title="Choose date"
-                 >
-                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                   </svg>
-                 </button>
               </div>
             </div>
             
@@ -1136,169 +980,39 @@ export default function AddLeadPage() {
               </label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   id="followUpDate"
                   name="followUpDate"
-                  value={formData.followUpDate}
-                  onChange={handleFollowUpDateChange}
-                  onClick={async () => {
-                    try {
-                      console.log('🗓️ Follow-up Date input clicked');
-                      
-                      // Create a hidden date input
-                      const dateInput = document.createElement('input');
-                      dateInput.type = 'date';
-                      dateInput.style.position = 'fixed';
-                      dateInput.style.top = '-1000px';
-                      dateInput.style.left = '-1000px';
-                      dateInput.style.opacity = '0';
-                      dateInput.style.pointerEvents = 'none';
-                      dateInput.style.zIndex = '-1';
-                      dateInput.setAttribute('aria-label', 'Choose follow-up date');
-                      
-                      // Set minimum date to today
-                      const today = new Date().toISOString().split('T')[0];
-                      if (today) {
-                        dateInput.min = today;
+                  value={formData.followUpDate ? (() => {
+                    // Convert DD-MM-YYYY to YYYY-MM-DD for date input
+                    const [day, month, year] = formData.followUpDate.split('-');
+                    return `${year}-${month}-${day}`;
+                  })() : ''}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      // Convert YYYY-MM-DD to DD-MM-YYYY
+                      const [year, month, day] = e.target.value.split('-');
+                      const formattedDate = `${day}-${month}-${year}`;
+                      setFormData(prev => ({
+                        ...prev,
+                        followUpDate: formattedDate
+                      }));
+                      // Clear error if exists
+                      if (errors.followUpDate) {
+                        setErrors(prev => {
+                          const newErrors = { ...prev };
+                          delete newErrors.followUpDate;
+                          return newErrors;
+                        });
                       }
-                      
-                      // Handle date selection
-                      dateInput.addEventListener('change', (e) => {
-                        const target = e.target as HTMLInputElement;
-                        console.log('📅 Follow-up Date selected:', target.value);
-                        if (target.value) {
-                          // Convert YYYY-MM-DD to DD-MM-YYYY
-                          const [year, month, day] = target.value.split('-');
-                          const formattedDate = `${day}-${month}-${year}`;
-                          console.log('📅 Formatted follow-up date:', formattedDate);
-                          setFormData(prev => ({
-                            ...prev,
-                            followUpDate: formattedDate
-                          }));
-                          // Clear error if exists
-                          if (errors.followUpDate) {
-                            setErrors(prev => {
-                              const newErrors = { ...prev };
-                              delete newErrors.followUpDate;
-                              return newErrors;
-                            });
-                          }
-                        }
-                        // Remove the input from DOM
-                        if (document.body.contains(dateInput)) {
-                          document.body.removeChild(dateInput);
-                        }
-                      });
-                      
-                      // Add to DOM
-                      document.body.appendChild(dateInput);
-                      console.log('📅 Follow-up Date input added to DOM');
-                      
-                      // Force focus and show picker
-                      dateInput.focus();
-                      console.log('📅 Follow-up Date input focused');
-                      
-                      // Try modern showPicker method first
-                      if ('showPicker' in dateInput) {
-                        console.log('📅 Using showPicker method for follow-up');
-                        await (dateInput as any).showPicker();
-                      } else {
-                        console.log('📅 Using click fallback for follow-up');
-                        // Fallback: trigger click
-                        (dateInput as HTMLInputElement).click();
-                      }
-                    } catch (error) {
-                      console.error('❌ Follow-up Date picker error:', error);
                     }
                   }}
-                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black cursor-pointer ${
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
                     errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
-                  placeholder="Click to select date (DD-MM-YYYY)"
                   disabled={isSubmitting}
-                  maxLength={10}
-                  readOnly
                 />
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      console.log('🗓️ Follow-up Date picker clicked');
-                      
-                      // Create a hidden date input
-                      const dateInput = document.createElement('input');
-                      dateInput.type = 'date';
-                      dateInput.style.position = 'fixed';
-                      dateInput.style.top = '-1000px';
-                      dateInput.style.left = '-1000px';
-                      dateInput.style.opacity = '0';
-                      dateInput.style.pointerEvents = 'none';
-                      dateInput.style.zIndex = '-1';
-                      dateInput.setAttribute('aria-label', 'Choose follow-up date');
-                      
-                      // Set minimum date to today
-                      const today = new Date().toISOString().split('T')[0];
-                      if (today) {
-                        dateInput.min = today;
-                      }
-                      
-                      // Handle date selection
-                      dateInput.addEventListener('change', (e) => {
-                        const target = e.target as HTMLInputElement;
-                        console.log('📅 Follow-up Date selected:', target.value);
-                        if (target.value) {
-                          // Convert YYYY-MM-DD to DD-MM-YYYY
-                          const [year, month, day] = target.value.split('-');
-                          const formattedDate = `${day}-${month}-${year}`;
-                          console.log('📅 Formatted follow-up date:', formattedDate);
-                          setFormData(prev => ({
-                            ...prev,
-                            followUpDate: formattedDate
-                          }));
-                          // Clear error if exists
-                          if (errors.followUpDate) {
-                            setErrors(prev => {
-                              const newErrors = { ...prev };
-                              delete newErrors.followUpDate;
-                              return newErrors;
-                            });
-                          }
-                        }
-                        // Remove the input from DOM
-                        if (document.body.contains(dateInput)) {
-                          document.body.removeChild(dateInput);
-                        }
-                      });
-                      
-                      // Add to DOM
-                      document.body.appendChild(dateInput);
-                      console.log('📅 Follow-up Date input added to DOM');
-                      
-                      // Force focus and show picker
-                      dateInput.focus();
-                      console.log('📅 Follow-up Date input focused');
-                      
-                      // Try modern showPicker method first
-                      if ('showPicker' in dateInput) {
-                        console.log('📅 Using showPicker method for follow-up');
-                        await (dateInput as any).showPicker();
-                      } else {
-                        console.log('📅 Using click fallback for follow-up');
-                        // Fallback: trigger click
-                        (dateInput as HTMLInputElement).click();
-                      }
-                    } catch (error) {
-                      console.error('❌ Follow-up Date picker error:', error);
-                    }
-                  }}
-                  disabled={isSubmitting}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors cursor-pointer z-10 w-6 h-6 flex items-center justify-center p-1"
-                  title="Choose date"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </button>
               </div>
               {errors.followUpDate && (
                 <p className="text-sm text-red-600 flex items-center">
