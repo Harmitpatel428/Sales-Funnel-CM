@@ -709,12 +709,12 @@ export default function AddLeadPage() {
     const firstMobileNumber = formData.mobileNumbers[0]?.number?.trim();
     
     if (!firstMobileNumber) {
-      alert('Please enter a mobile number in the first contact box');
+      console.log('❌ No mobile number entered in first contact box');
       return;
     }
     
     if (firstMobileNumber.length !== 10) {
-      alert('Please enter a complete 10-digit mobile number');
+      console.log('❌ Mobile number is not complete (10 digits required)');
       return;
     }
     
@@ -762,10 +762,9 @@ export default function AddLeadPage() {
         }));
       }
       
-      alert(`✅ Client name auto-detected: ${existingLead.clientName}`);
+      console.log('✅ Client name auto-detected:', existingLead.clientName);
     } else {
       console.log('❌ No matching lead found for mobile:', firstMobileNumber);
-      alert('❌ No matching lead found for this mobile number');
     }
   };
 
