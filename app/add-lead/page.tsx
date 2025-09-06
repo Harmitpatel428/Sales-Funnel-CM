@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export default function AddLeadPage() {
   const router = useRouter();
-  const { addLead, updateLead } = useLeads();
+  const { addLead, updateLead, leads } = useLeads();
   
   // Track where the user came from
   const [cameFromHome, setCameFromHome] = useState(false);
@@ -238,12 +238,34 @@ export default function AddLeadPage() {
     // Only allow numeric characters (0-9) and limit to 10 digits
     const numericValue = value.replace(/[^0-9]/g, '').slice(0, 10);
     
-    setFormData(prev => ({
-      ...prev,
-      mobileNumbers: prev.mobileNumbers.map((mobile, i) => 
+    setFormData(prev => {
+      const updatedMobileNumbers = prev.mobileNumbers.map((mobile, i) => 
         i === index ? { ...mobile, number: numericValue } : mobile
-      )
-    }));
+      );
+
+      // Auto-detect client name from first mobile number if it's complete (10 digits)
+      let updatedClientName = prev.clientName;
+      if (index === 0 && numericValue.length === 10 && !prev.clientName.trim()) {
+        // Try to find existing lead with this mobile number
+        const existingLead = leads.find(lead => {
+          // Check main mobile number
+          if (lead.mobileNumber === numericValue) return true;
+          // Check mobile numbers array
+          if (lead.mobileNumbers && lead.mobileNumbers.some(m => m.number === numericValue)) return true;
+          return false;
+        });
+        
+        if (existingLead) {
+          updatedClientName = existingLead.clientName;
+        }
+      }
+
+      return {
+        ...prev,
+        mobileNumbers: updatedMobileNumbers,
+        clientName: updatedClientName
+      };
+    });
 
     // Clear error for this field
     const errorKey = `mobileNumber_${index}` as keyof typeof formData;
