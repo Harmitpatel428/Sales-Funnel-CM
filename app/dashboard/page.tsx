@@ -398,10 +398,8 @@ export default function DashboardPage() {
         const mobile2 = mobileNumbers[1] || { number: '', name: '' };
         const mobile3 = mobileNumbers[2] || { number: '', name: '' };
         
-        // Format main mobile number with contact name if available
-        const mainMobileDisplay = mainMobile.name 
-          ? `${mainMobile.number} (${mainMobile.name})` 
-          : mainMobile.number || '';
+        // Format main mobile number (phone number only, no contact name)
+        const mainMobileDisplay = mainMobile.number || '';
         
         return [
           lead.consumerNumber || '',

@@ -671,10 +671,7 @@ Phone: ${(() => {
   const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
     ? selectedLead.mobileNumbers.find(m => m.isMain)?.number || selectedLead.mobileNumbers[0]?.number || 'N/A'
     : selectedLead.mobileNumber || 'N/A';
-  const contactName = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
-    ? selectedLead.mobileNumbers.find(m => m.isMain)?.name || selectedLead.clientName || 'N/A'
-    : selectedLead.clientName || 'N/A';
-  return `${phoneNumber} - ${contactName}`;
+  return phoneNumber;
 })()}
 Status: ${selectedLead.status}
 Unit Type: ${selectedLead.unitType}
