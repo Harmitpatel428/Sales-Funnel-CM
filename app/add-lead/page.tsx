@@ -100,18 +100,23 @@ export default function AddLeadPage() {
           ];
           
           if (leadData.mobileNumbers && Array.isArray(leadData.mobileNumbers)) {
-            // New format - use existing mobile numbers
-            mobileNumbers = leadData.mobileNumbers.map((mobile: { id?: string; number?: string; name?: string; isMain?: boolean }, index: number) => ({
-              id: mobile.id || String(index + 1),
-              number: mobile.number || '',
-              name: mobile.name || '',
-              isMain: mobile.isMain || false
-            }));
+            // New format - use existing mobile numbers but ensure we have 3 slots
+            leadData.mobileNumbers.forEach((mobile: { id?: string; number?: string; name?: string; isMain?: boolean }, index: number) => {
+              if (index < 3) { // Only process first 3 mobile numbers
+                mobileNumbers[index] = {
+                  id: mobile.id || String(index + 1),
+                  number: mobile.number || '',
+                  name: mobile.name || '',
+                  isMain: mobile.isMain || false
+                };
+              }
+            });
           } else if (leadData.mobileNumber) {
             // Old format - convert to new format
             mobileNumbers[0] = { id: '1', number: leadData.mobileNumber, name: '', isMain: true };
           }
           
+          console.log('Mobile numbers being set:', mobileNumbers); // Debug log
           setFormData({
             kva: leadData.kva || '',
             connectionDate: leadData.connectionDate || '',
@@ -622,6 +627,9 @@ export default function AddLeadPage() {
       </div>
     );
   }
+
+  // Debug log to show current form data
+  console.log('Current form data mobile numbers:', formData.mobileNumbers);
 
   return (
     <div className="max-w-4xl mx-auto">
