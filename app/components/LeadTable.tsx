@@ -156,7 +156,7 @@ function LeadTable({
   return (
     <div className={`overflow-x-auto shadow-md rounded-lg relative ${className}`}>
       <table className="min-w-full divide-y divide-gray-200 bg-white">
-        <thead className="bg-gray-50">
+        <thead className="bg-gray-50 sticky top-0 z-20">
           <tr>
             {onLeadSelection && (
               <th scope="col" className="px-0.5 py-3 text-left w-10">
