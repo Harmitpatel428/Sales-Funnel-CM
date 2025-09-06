@@ -978,16 +978,45 @@ export default function AddLeadPage() {
               <label htmlFor="lastActivityDate" className="block text-sm font-medium text-gray-700">
                 Last Activity Date
               </label>
-              <input
-                type="text"
-                id="lastActivityDate"
-                name="lastActivityDate"
-                value={formData.lastActivityDate}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
-                placeholder="DD-MM-YYYY"
-                disabled={isSubmitting}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  id="lastActivityDate"
+                  name="lastActivityDate"
+                  value={formData.lastActivityDate}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                  placeholder="DD-MM-YYYY"
+                  disabled={isSubmitting}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const dateInput = document.createElement('input');
+                    dateInput.type = 'date';
+                    dateInput.onchange = (e) => {
+                      const target = e.target as HTMLInputElement;
+                      if (target.value) {
+                        // Convert YYYY-MM-DD to DD-MM-YYYY
+                        const [year, month, day] = target.value.split('-');
+                        const formattedDate = `${day}-${month}-${year}`;
+                        setFormData(prev => ({
+                          ...prev,
+                          lastActivityDate: formattedDate
+                        }));
+                      }
+                    };
+                    dateInput.click();
+                  }}
+                  disabled={isSubmitting}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Choose date"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -997,19 +1026,56 @@ export default function AddLeadPage() {
                   <span className="text-red-500">*</span>
                 )}
               </label>
-              <input
-                type="text"
-                id="followUpDate"
-                name="followUpDate"
-                value={formData.followUpDate}
-                onChange={handleFollowUpDateChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
-                  errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                }`}
-                placeholder="DD-MM-YYYY"
-                disabled={isSubmitting}
-                maxLength={10}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  id="followUpDate"
+                  name="followUpDate"
+                  value={formData.followUpDate}
+                  onChange={handleFollowUpDateChange}
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                    errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="DD-MM-YYYY"
+                  disabled={isSubmitting}
+                  maxLength={10}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const dateInput = document.createElement('input');
+                    dateInput.type = 'date';
+                    dateInput.onchange = (e) => {
+                      const target = e.target as HTMLInputElement;
+                      if (target.value) {
+                        // Convert YYYY-MM-DD to DD-MM-YYYY
+                        const [year, month, day] = target.value.split('-');
+                        const formattedDate = `${day}-${month}-${year}`;
+                        setFormData(prev => ({
+                          ...prev,
+                          followUpDate: formattedDate
+                        }));
+                        // Clear error if exists
+                        if (errors.followUpDate) {
+                          setErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.followUpDate;
+                            return newErrors;
+                          });
+                        }
+                      }
+                    };
+                    dateInput.click();
+                  }}
+                  disabled={isSubmitting}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Choose date"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
               {errors.followUpDate && (
                 <p className="text-sm text-red-600 flex items-center">
                   <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
