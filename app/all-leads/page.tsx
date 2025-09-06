@@ -4,7 +4,7 @@ import { useState, useMemo, useRef } from 'react';
 import { useLeads, Lead } from '../context/LeadContext';
 import { useRouter } from 'next/navigation';
 import LeadTable from '../components/LeadTable';
-import * as XLSX from 'xlsx';
+// XLSX is imported dynamically to avoid turbopack issues
 
 export default function AllLeadsPage() {
   const router = useRouter();
@@ -189,13 +189,13 @@ export default function AllLeadsPage() {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Password protection functions
-  const handleDeleteClick = (lead: Lead) => {
-    setLeadToDelete(lead);
-    setShowPasswordModal(true);
-    setPassword('');
-    setPasswordError('');
-  };
+  // Password protection functions (currently unused but kept for future functionality)
+  // const handleDeleteClick = (lead: Lead) => {
+  //   setLeadToDelete(lead);
+  //   setShowPasswordModal(true);
+  //   setPassword('');
+  //   setPasswordError('');
+  // };
 
   // Restore function to restore deleted leads
   const handleRestoreClick = (lead: Lead) => {
@@ -570,7 +570,7 @@ export default function AllLeadsPage() {
                   name: '',
             isMain: lead.mobileNumbers.length === 0 
           });
-          console.log('Added slot', lead.mobileNumbers.length, 'isMain:', lead.mobileNumbers[lead.mobileNumbers.length - 1].isMain);
+          console.log('Added slot', lead.mobileNumbers.length, 'isMain:', lead.mobileNumbers[lead.mobileNumbers.length - 1]?.isMain);
         }
         
         // Set the second mobile number (index 1)
@@ -663,7 +663,7 @@ export default function AllLeadsPage() {
             name: '', 
             isMain: lead.mobileNumbers.length === 0 
           });
-          console.log('Added slot', lead.mobileNumbers.length, 'isMain:', lead.mobileNumbers[lead.mobileNumbers.length - 1].isMain);
+          console.log('Added slot', lead.mobileNumbers.length, 'isMain:', lead.mobileNumbers[lead.mobileNumbers.length - 1]?.isMain);
         }
         
         // Set the second contact name (index 1)
@@ -914,10 +914,10 @@ export default function AllLeadsPage() {
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length < 2) return [];
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const headers = lines[0]?.split(',').map(h => h.trim().replace(/"/g, '')) || [];
     console.log('CSV Headers:', headers);
 
-    return lines.slice(1).map((line, index) => {
+    return lines.slice(1).map((line) => {
       const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
       const lead: Partial<Lead> = {};
 
@@ -982,11 +982,12 @@ export default function AllLeadsPage() {
             const headers = jsonData[0] as string[];
             console.log('Excel Headers:', headers);
             
-            const leads = jsonData.slice(1).map((row: any[], index: number) => {
+            const leads = jsonData.slice(1).map((row: unknown, index: number) => {
+              const rowArray = row as any[];
               const lead: Partial<Lead> = {};
               
               headers.forEach((header, colIndex) => {
-                const value = row[colIndex];
+                const value = rowArray[colIndex];
                 if (value !== undefined && value !== null && value !== '') {
                   console.log(`Processing row ${index + 1}, header: "${header}", value: "${value}"`);
                   
@@ -1207,35 +1208,6 @@ export default function AllLeadsPage() {
     }
   };
 
-  // Action buttons for the table
-  const renderActionButtons = (lead: Lead) => (
-    <div className="flex space-x-2">
-      {!lead.isDeleted && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              localStorage.setItem('editingLead', JSON.stringify(lead));
-              router.push(`/add-lead?mode=edit&id=${lead.id}&from=all-leads`);
-            }}
-            className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-md transition-colors"
-          >
-            Edit
-          </button>
-      )}
-      {lead.isDeleted && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleRestoreClick(lead);
-            }}
-            className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
-            title="Restore this lead to its original status"
-          >
-            Restore
-          </button>
-      )}
-    </div>
-  );
 
   return (
     <div className="container mx-auto px-4 py-8">
