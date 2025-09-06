@@ -1313,14 +1313,10 @@ export default function DashboardPage() {
                           const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
                             ? selectedLead.mobileNumbers.find(m => m.isMain)?.number || selectedLead.mobileNumbers[0]?.number || 'N/A'
                             : selectedLead.mobileNumber || 'N/A';
-                          const contactName = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
-                            ? selectedLead.mobileNumbers.find(m => m.isMain)?.name || selectedLead.clientName || 'N/A'
-                            : selectedLead.clientName || 'N/A';
-                          const phoneWithName = `${phoneNumber} - ${contactName}`;
-                          copyToClipboard(phoneWithName, 'mainPhone');
+                          copyToClipboard(phoneNumber, 'mainPhone');
                         }}
                         className="text-gray-400 hover:text-gray-600 transition-colors"
-                        title="Copy main phone number and contact name"
+                        title="Copy main phone number"
                       >
                         {copiedField === 'mainPhone' ? (
                           <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
