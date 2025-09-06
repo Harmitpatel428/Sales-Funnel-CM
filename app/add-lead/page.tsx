@@ -238,6 +238,8 @@ export default function AddLeadPage() {
     // Only allow numeric characters (0-9) and limit to 10 digits
     const numericValue = value.replace(/[^0-9]/g, '').slice(0, 10);
     
+    console.log('🔍 Mobile number change:', { index, value, numericValue, leadsCount: leads.length });
+    
     setFormData(prev => {
       const updatedMobileNumbers = prev.mobileNumbers.map((mobile, i) => 
         i === index ? { ...mobile, number: numericValue } : mobile
@@ -246,17 +248,36 @@ export default function AddLeadPage() {
       // Auto-detect client name from first mobile number if it's complete (10 digits)
       let updatedClientName = prev.clientName;
       if (index === 0 && numericValue.length === 10 && !prev.clientName.trim()) {
+        console.log('🎯 Auto-detection triggered for mobile:', numericValue);
+        console.log('📊 Available leads:', leads.length);
+        
         // Try to find existing lead with this mobile number
         const existingLead = leads.find(lead => {
-          // Check main mobile number
-          if (lead.mobileNumber === numericValue) return true;
+          // Check main mobile number (backward compatibility)
+          if (lead.mobileNumber && lead.mobileNumber.trim() === numericValue) {
+            console.log('✅ Found match in main mobile number:', lead.clientName);
+            return true;
+          }
+          
           // Check mobile numbers array
-          if (lead.mobileNumbers && lead.mobileNumbers.some(m => m.number === numericValue)) return true;
+          if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
+            const hasMatch = lead.mobileNumbers.some(m => 
+              m.number && m.number.trim() === numericValue
+            );
+            if (hasMatch) {
+              console.log('✅ Found match in mobile numbers array:', lead.clientName);
+              return true;
+            }
+          }
+          
           return false;
         });
         
         if (existingLead) {
+          console.log('🎉 Auto-populating client name:', existingLead.clientName);
           updatedClientName = existingLead.clientName;
+        } else {
+          console.log('❌ No matching lead found for mobile:', numericValue);
         }
       }
 
@@ -629,6 +650,86 @@ export default function AddLeadPage() {
 
   // Debug log to show current form data
   console.log('Current form data mobile numbers:', formData.mobileNumbers);
+  console.log('Available leads for auto-detection:', leads.length);
+
+  // Auto-detect client name when leads are loaded and first mobile number is complete
+  useEffect(() => {
+    if (leads.length > 0 && formData.mobileNumbers[0]?.number?.length === 10 && !formData.clientName.trim()) {
+      console.log('🔄 useEffect: Attempting auto-detection for mobile:', formData.mobileNumbers[0].number);
+      
+      const existingLead = leads.find(lead => {
+        // Check main mobile number (backward compatibility)
+        if (lead.mobileNumber && lead.mobileNumber.trim() === formData.mobileNumbers[0]?.number) {
+          console.log('✅ useEffect: Found match in main mobile number:', lead.clientName);
+          return true;
+        }
+        
+        // Check mobile numbers array
+        if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
+          const hasMatch = lead.mobileNumbers.some(m => 
+            m.number && m.number.trim() === formData.mobileNumbers[0]?.number
+          );
+          if (hasMatch) {
+            console.log('✅ useEffect: Found match in mobile numbers array:', lead.clientName);
+            return true;
+          }
+        }
+        
+        return false;
+      });
+      
+      if (existingLead) {
+        console.log('🎉 useEffect: Auto-populating client name:', existingLead.clientName);
+        setFormData(prev => ({
+          ...prev,
+          clientName: existingLead.clientName
+        }));
+      } else {
+        console.log('❌ useEffect: No matching lead found for mobile:', formData.mobileNumbers[0].number);
+      }
+    }
+  }, [leads, formData.mobileNumbers[0]?.number, formData.clientName]);
+
+  // Manual trigger for auto-detection (for testing)
+  const triggerAutoDetection = () => {
+    if (formData.mobileNumbers[0]?.number?.length === 10) {
+      console.log('🔧 Manual trigger: Attempting auto-detection for mobile:', formData.mobileNumbers[0].number);
+      
+      const existingLead = leads.find(lead => {
+        // Check main mobile number (backward compatibility)
+        if (lead.mobileNumber && lead.mobileNumber.trim() === formData.mobileNumbers[0]?.number) {
+          console.log('✅ Manual: Found match in main mobile number:', lead.clientName);
+          return true;
+        }
+        
+        // Check mobile numbers array
+        if (lead.mobileNumbers && Array.isArray(lead.mobileNumbers)) {
+          const hasMatch = lead.mobileNumbers.some(m => 
+            m.number && m.number.trim() === formData.mobileNumbers[0]?.number
+          );
+          if (hasMatch) {
+            console.log('✅ Manual: Found match in mobile numbers array:', lead.clientName);
+            return true;
+          }
+        }
+        
+        return false;
+      });
+      
+      if (existingLead) {
+        console.log('🎉 Manual: Auto-populating client name:', existingLead.clientName);
+        setFormData(prev => ({
+          ...prev,
+          clientName: existingLead.clientName
+        }));
+      } else {
+        console.log('❌ Manual: No matching lead found for mobile:', formData.mobileNumbers[0].number);
+        alert('No matching lead found for this mobile number');
+      }
+    } else {
+      alert('Please enter a complete 10-digit mobile number first');
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -890,6 +991,16 @@ export default function AddLeadPage() {
                           {mobile.isMain ? 'Main' : 'Main'}
                         </span>
                       </button>
+                      {index === 0 && (
+                        <button
+                          type="button"
+                          onClick={triggerAutoDetection}
+                          className="px-3 py-2 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                          disabled={isSubmitting}
+                        >
+                          Auto-Detect
+                        </button>
+                      )}
                     </div>
                     {errors[`mobileNumber_${index}` as keyof typeof formData] && (
                       <p className="text-sm text-red-600 flex items-center">
