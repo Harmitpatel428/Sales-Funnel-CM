@@ -1011,7 +1011,7 @@ export default function AddLeadPage() {
                         type="button"
                         onClick={() => handleMainMobileNumberChange(index)}
                         disabled={isSubmitting}
-                        className={`flex items-center space-x-1 px-2 py-2 text-xs rounded-md border transition-all duration-200 ${
+                        className={`flex items-center space-x-1 px-1 py-1 text-xs rounded border transition-all duration-200 ${
                           mobile.isMain
                             ? 'border-purple-500 bg-purple-50 text-purple-700'
                             : 'border-gray-300 bg-white text-gray-600 hover:border-purple-300 hover:bg-purple-25'
@@ -1032,7 +1032,7 @@ export default function AddLeadPage() {
                         <button
                           type="button"
                           onClick={triggerAutoDetection}
-                          className="px-3 py-2 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                          className="px-2 py-1 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200"
                           disabled={isSubmitting}
                         >
                           Auto-Detect
@@ -1040,8 +1040,8 @@ export default function AddLeadPage() {
                       )}
                     </div>
                     {errors[`mobileNumber_${index}` as keyof typeof formData] && (
-                      <p className="text-sm text-red-600 flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <p className="text-xs text-red-600 flex items-center">
+                        <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
                         {errors[`mobileNumber_${index}` as keyof typeof formData]}
@@ -1225,63 +1225,63 @@ export default function AddLeadPage() {
             />
             
             {/* Discussion Suggestions */}
-            <div className="mt-3">
-              <p className="text-sm text-gray-600 mb-2">Quick suggestions:</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-1">
+              <p className="text-xs text-black mb-2">Quick suggestions:</p>
+              <div className="flex flex-wrap gap-1">
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("Call me after sometime I am busy right now.")}
-                  className="px-3 py-1.5 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors border border-blue-200"
+                  className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors border border-blue-200"
                 >
                   Call me after sometime I am busy right now.
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("I need to discuss this with my partner or management")}
-                  className="px-3 py-1.5 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors border border-green-200"
+                  className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors border border-green-200"
                 >
                   I need to discuss this with my partner or management
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("Send me details, I'll review")}
-                  className="px-3 py-1.5 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors border border-purple-200"
+                  className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors border border-purple-200"
                 >
                   Send me details, I'll review
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("Connect with the number I am giving.")}
-                  className="px-3 py-1.5 text-xs bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors border border-orange-200"
+                  className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors border border-orange-200"
                 >
                   Connect with the number I am giving.
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("Send me your mandate.")}
-                  className="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors border border-red-200"
+                  className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors border border-red-200"
                 >
                   Send me your mandate.
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("They want to meet in-person we've requested client's work location/address for meeting.")}
-                  className="px-3 py-1.5 text-xs bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200 transition-colors border border-indigo-200"
+                  className="px-2 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200 transition-colors border border-indigo-200"
                 >
                   They want to meet in-person we've requested client's work location/address for meeting.
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSuggestionClick("Conversation happened, but the work confirmation is still pending.")}
-                  className="px-3 py-1.5 text-xs bg-teal-100 text-teal-700 rounded-full hover:bg-teal-200 transition-colors border border-teal-200"
+                  className="px-2 py-1 text-xs bg-teal-100 text-teal-700 rounded-full hover:bg-teal-200 transition-colors border border-teal-200"
                 >
                   Conversation happened, but the work confirmation is still pending.
                 </button>
               </div>
             </div>
             {errors.notes && (
-              <p className="text-sm text-red-600 flex items-center">
-                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <p className="text-xs text-red-600 flex items-center">
+                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 {errors.notes}
