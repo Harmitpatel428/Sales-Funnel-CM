@@ -982,7 +982,7 @@ export default function DashboardPage() {
             
             <button
               onClick={handleSearch}
-              className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+              className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs"
             >
               Search
             </button>
@@ -990,7 +990,7 @@ export default function DashboardPage() {
             {activeFilters.searchTerm && (
               <button
                 onClick={clearSearch}
-                className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-xs"
               >
                 Clear
               </button>
@@ -999,7 +999,7 @@ export default function DashboardPage() {
           
               <button
                 onClick={() => handleSelectAll(!selectAll)}
-                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                className={`px-3 py-2 text-xs rounded-lg transition-colors ${
                   selectAll 
                     ? 'bg-purple-600 text-white hover:bg-purple-700' 
                     : 'bg-gray-200 text-black hover:bg-gray-300'
