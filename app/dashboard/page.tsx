@@ -694,9 +694,9 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="container mx-auto px-2 py-4">
-      <div className="flex justify-between items-center mb-3">
-        <h1 className="text-2xl font-bold text-white-800">Lead Management Dashboard</h1>
+    <div className="container mx-auto px-1 py-1">
+      <div className="flex justify-between items-center mb-1">
+        <h1 className="text-lg font-bold text-white-800">Lead Management Dashboard</h1>
         <div className="flex space-x-2">
           {/* Discom Filter */}
           <div className="flex items-center gap-2">
@@ -742,12 +742,12 @@ export default function DashboardPage() {
           </div>
 
       {/* Status Filter Section */}
-      <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-3 rounded-lg shadow-lg border border-slate-600/30 mb-4 relative overflow-hidden mx-auto w-fit">
+      <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-1 rounded-lg shadow-lg border border-slate-600/30 mb-1 relative overflow-hidden mx-auto w-fit">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-cyan-500/5"></div>
             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"></div>
             <div className="relative">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-              <h3 className="text-base font-semibold text-white">Filter by Status</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+              <h3 className="text-sm font-semibold text-white">Filter by Status</h3>
               <span className="text-xs text-white/80">Click any status to filter leads</span>
             </div>
             <div className="flex items-center justify-center gap-1.5 flex-wrap">
@@ -926,8 +926,8 @@ export default function DashboardPage() {
           </div>
 
       {/* Bulk Actions Section */}
-      <div className="bg-white p-3 rounded-lg shadow-md mb-4">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <div className="bg-white p-1 rounded-lg shadow-md mb-1">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-1">
           {/* Search Input */}
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-none">
