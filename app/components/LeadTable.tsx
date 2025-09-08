@@ -200,14 +200,14 @@ function LeadTable({
             </th>
             <th 
               scope="col" 
-              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-32"
               onClick={() => handleSort('company')}
             >
               Company{renderSortIndicator('company')}
             </th>
             <th 
               scope="col" 
-              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-22"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
               onClick={() => handleSort('clientName')}
             >
               Client Name{renderSortIndicator('clientName')}
@@ -286,10 +286,10 @@ function LeadTable({
                   <div className="text-xs text-black max-w-8 truncate">{lead.consumerNumber}</div>
                 </td>
                 <td className="px-1 py-1 whitespace-nowrap">
-                  <div className="text-xs text-black min-w-20 max-w-24 truncate" title={lead.company}>{lead.company}</div>
+                  <div className="text-xs text-black min-w-24 max-w-32 truncate" title={lead.company}>{lead.company}</div>
                 </td>
                 <td className="px-1 py-1 whitespace-nowrap">
-                  <div className="text-xs text-black min-w-18 max-w-22 truncate" title={lead.clientName}>{lead.clientName}</div>
+                  <div className="text-xs text-black min-w-20 max-w-28 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
                 <td className="px-1 py-1 whitespace-nowrap">
                   <div className="text-xs text-black">{lead.discom || 'N/A'}</div>
