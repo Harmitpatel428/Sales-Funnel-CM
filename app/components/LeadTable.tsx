@@ -179,76 +179,76 @@ function LeadTable({
             )}
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('kva')}
             >
               KVA{renderSortIndicator('kva')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
               onClick={() => handleSort('connectionDate')}
             >
               Connection Date{renderSortIndicator('connectionDate')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
               onClick={() => handleSort('consumerNumber')}
             >
               Consumer Number{renderSortIndicator('consumerNumber')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
               onClick={() => handleSort('company')}
             >
               Company{renderSortIndicator('company')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
               onClick={() => handleSort('clientName')}
             >
               Client Name{renderSortIndicator('clientName')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('discom')}
             >
               Discom{renderSortIndicator('discom')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
               onClick={() => handleSort('mobileNumber')}
             >
               Mobile Number{renderSortIndicator('mobileNumber')}
             </th>
             <th 
               scope="col" 
-              className="px-0.1 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
+              className="px-0.1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('status')}
             >
               Status{renderSortIndicator('status')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
               onClick={() => handleSort('lastActivityDate')}
             >
               Last Activity{renderSortIndicator('lastActivityDate')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
+              className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
               onClick={() => handleSort('followUpDate')}
             >
               Next Follow-up{renderSortIndicator('followUpDate')}
             </th>
             {showActions && (
-              <th scope="col" className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider w-28">
+              <th scope="col" className="px-0.5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
                 Actions
               </th>
             )}
@@ -277,25 +277,25 @@ function LeadTable({
                   </td>
                 )}
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm font-medium text-black">{lead.kva}</div>
+                  <div className="text-sm font-medium text-gray-900">{lead.kva}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black">{lead.connectionDate}</div>
+                  <div className="text-sm text-gray-500">{lead.connectionDate}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black max-w-12 truncate">{lead.consumerNumber}</div>
+                  <div className="text-sm text-gray-500 max-w-12 truncate">{lead.consumerNumber}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-15 max-w-50 truncate" title={lead.company}>{lead.company}</div>
+                  <div className="text-sm text-gray-500 min-w-15 max-w-50 truncate" title={lead.company}>{lead.company}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-5 max-w-45 truncate" title={lead.clientName}>{lead.clientName}</div>
+                  <div className="text-sm text-gray-500 min-w-5 max-w-45 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black">{lead.discom || 'N/A'}</div>
+                  <div className="text-sm text-gray-500">{lead.discom || 'N/A'}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="px-2 text-sm text-black max-w-24 truncate">
+                  <div className="px-2 text-sm text-gray-500 max-w-24 truncate">
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
@@ -305,10 +305,10 @@ function LeadTable({
                   </span>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-20">{formatDate(lead.lastActivityDate)}</div>
+                  <div className="text-sm text-gray-500 min-w-20">{formatDate(lead.lastActivityDate)}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black">{formatDate(lead.followUpDate)}</div>
+                  <div className="text-sm text-gray-500">{formatDate(lead.followUpDate)}</div>
                 </td>
                 {showActions && (
                   <td className="px-0.5 py-2 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
@@ -319,7 +319,7 @@ function LeadTable({
             ))
           ) : (
             <tr>
-              <td colSpan={getColumnSpan()} className="px-0.5 py-2 text-center text-sm text-black">
+              <td colSpan={getColumnSpan()} className="px-0.5 py-2 text-center text-sm text-gray-500">
                 {emptyMessage}
               </td>
             </tr>
