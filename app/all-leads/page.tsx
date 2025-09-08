@@ -1284,13 +1284,13 @@ export default function AllLeadsPage() {
 
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 py-4">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-800 rounded-lg mb-8 p-8">
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-800 rounded-lg mb-4 p-4">
         {/* Title Section */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-3">
           <h1 
-            className="text-4xl md:text-5xl font-bold text-white cursor-pointer select-none mb-2"
+            className="text-3xl md:text-4xl font-bold text-white cursor-pointer select-none mb-1"
             onClick={handleSecretClick}
             title="Click 5 times quickly to access password change"
           >
@@ -1302,14 +1302,14 @@ export default function AllLeadsPage() {
         </div>
         
         {/* Stats and Action Buttons */}
-        <div className="flex flex-col lg:flex-row items-center justify-between space-y-2 lg:space-y-0 lg:space-x-4">
+        <div className="flex flex-col lg:flex-row items-center justify-between space-y-1 lg:space-y-0 lg:space-x-2">
           {/* Total Leads Stat Box - Enhanced */}
           <div className="relative group">
             {/* Animated Border Glow */}
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-blue-500 to-purple-500 rounded-2xl blur-sm opacity-0 group-hover:opacity-25 transition-all duration-600 animate-pulse"></div>
             
             {/* Main Container */}
-            <div className="relative bg-white border-2 border-blue-200 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 overflow-hidden">
+            <div className="relative bg-white border-2 border-blue-200 rounded-2xl px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 overflow-hidden">
               {/* Animated Background Waves */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-50/40 via-emerald-50/20 to-purple-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
