@@ -1104,41 +1104,41 @@ export default function DashboardPage() {
       )}
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
         <div 
-          className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
+          className="bg-white p-2 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 hover:bg-gray-50"
           onClick={() => router.push('/all-leads')}
         >
-          <h3 className="text-lg font-semibold text-black">All Leads</h3>
-          <p className="text-3xl font-bold text-blue-600">{leads.length}</p>
+          <h3 className="text-sm font-semibold text-black">All Leads</h3>
+          <p className="text-xl font-bold text-blue-600">{leads.length}</p>
         </div>
         <div 
-          className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
+          className="bg-white p-2 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 hover:bg-gray-50"
           onClick={() => router.push('/due-today')}
         >
-          <h3 className="text-lg font-semibold text-black">Due Today</h3>
-          <p className="text-3xl font-bold text-yellow-600">{dueToday}</p>
+          <h3 className="text-sm font-semibold text-black">Due Today</h3>
+          <p className="text-xl font-bold text-yellow-600">{dueToday}</p>
         </div>
         <div 
-          className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
+          className="bg-white p-2 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 hover:bg-gray-50"
           onClick={() => router.push('/upcoming')}
         >
-          <h3 className="text-lg font-semibold text-black">Upcoming (7 Days)</h3>
-          <p className="text-3xl font-bold text-green-600">{upcoming}</p>
+          <h3 className="text-sm font-semibold text-black">Upcoming (7 Days)</h3>
+          <p className="text-xl font-bold text-green-600">{upcoming}</p>
         </div>
         <div 
-          className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
+          className="bg-white p-2 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 hover:bg-gray-50"
           onClick={() => router.push('/due-today?tab=overdue')}
         >
-          <h3 className="text-lg font-semibold text-black">Overdue</h3>
-          <p className="text-3xl font-bold text-red-600">{overdue}</p>
+          <h3 className="text-sm font-semibold text-black">Overdue</h3>
+          <p className="text-xl font-bold text-red-600">{overdue}</p>
         </div>
         <div 
-          className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
+          className="bg-white p-2 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 hover:bg-gray-50"
           onClick={() => router.push('/follow-up-mandate')}
         >
-          <h3 className="text-lg font-semibold text-black">Mandate & Documentation</h3>
-          <p className="text-3xl font-bold text-purple-600">{followUpMandate}</p>
+          <h3 className="text-sm font-semibold text-black">Mandate & Documentation</h3>
+          <p className="text-xl font-bold text-purple-600">{followUpMandate}</p>
         </div>
       </div>
       
