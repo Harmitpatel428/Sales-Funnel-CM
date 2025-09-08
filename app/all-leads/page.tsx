@@ -1302,14 +1302,14 @@ export default function AllLeadsPage() {
         </div>
         
         {/* Stats and Action Buttons */}
-        <div className="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0 lg:space-x-6">
+        <div className="flex flex-col lg:flex-row items-center justify-between space-y-2 lg:space-y-0 lg:space-x-4">
           {/* Total Leads Stat Box - Enhanced */}
           <div className="relative group">
             {/* Animated Border Glow */}
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-blue-500 to-purple-500 rounded-2xl blur-sm opacity-0 group-hover:opacity-25 transition-all duration-600 animate-pulse"></div>
             
             {/* Main Container */}
-            <div className="relative bg-white border-2 border-blue-200 rounded-2xl px-16 py-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 overflow-hidden">
+            <div className="relative bg-white border-2 border-blue-200 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 overflow-hidden">
               {/* Animated Background Waves */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-50/40 via-emerald-50/20 to-purple-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -1321,7 +1321,7 @@ export default function AllLeadsPage() {
               
               {/* Content */}
               <div className="relative z-10 text-center">
-                <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2 group-hover:text-blue-700 transition-colors duration-300 group-hover:scale-105 transform transition-transform duration-300">
+                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors duration-300 group-hover:scale-105 transform transition-transform duration-300">
                   {allLeads.length}
                 </div>
                 <div className="text-black text-sm font-semibold uppercase tracking-wide group-hover:text-black transition-colors duration-300">
@@ -1340,7 +1340,7 @@ export default function AllLeadsPage() {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center items-center space-x-4">
+          <div className="flex flex-wrap justify-center items-center space-x-2">
             {/* Import Button */}
             <div className="relative">
               <input
@@ -1381,9 +1381,9 @@ export default function AllLeadsPage() {
 
       {/* Leads Table */}
       <div className="bg-white rounded-lg shadow-md mb-6">
-        <div className="p-6">
+        <div className="p-3">
           <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <h2 className="text-xl font-semibold text-black">All Leads</h2>
               
               {/* Search Input */}
@@ -1399,7 +1399,7 @@ export default function AllLeadsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search leads..."
-                  className="block w-64 pl-9 pr-3 py-1.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="block w-48 pl-8 pr-3 py-1 border border-gray-300 rounded-md leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
                 {searchTerm && (
                   <button
@@ -1456,7 +1456,7 @@ export default function AllLeadsPage() {
       {/* Modal */}
       {isModalOpen && selectedLead && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-10 mx-auto p-5 border w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/4 shadow-lg rounded-md bg-white">
+          <div className="relative top-5 mx-auto p-3 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-md bg-white">
             <div className="mt-3">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-4">
@@ -1473,11 +1473,11 @@ export default function AllLeadsPage() {
               </div>
 
               {/* Modal Content */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {/* Main Information Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   {/* Basic Info */}
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Client Name</label>
                       <button
@@ -1498,7 +1498,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.clientName}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Company</label>
                       <button
@@ -1519,7 +1519,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.company}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Consumer Number</label>
                       <button
@@ -1540,7 +1540,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.consumerNumber || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">KVA</label>
                       <button
@@ -1563,7 +1563,7 @@ export default function AllLeadsPage() {
                   </div>
                   
                   {/* Contact Info */}
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Main Phone</label>
                       <button
@@ -1596,7 +1596,7 @@ export default function AllLeadsPage() {
                       })()}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Status</label>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       selectedLead.status === 'New' ? 'bg-blue-100 text-blue-800' :
@@ -1613,11 +1613,11 @@ export default function AllLeadsPage() {
                       {selectedLead.status}
                     </span>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Unit Type</label>
                     <p className="text-sm font-medium text-black">{selectedLead.unitType}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Discom</label>
                       <button
@@ -1638,7 +1638,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.discom || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">GIDC</label>
                       <button
@@ -1659,7 +1659,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.gidc || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">GST Number</label>
                       <button
@@ -1682,17 +1682,17 @@ export default function AllLeadsPage() {
                   </div>
                   
                   {/* Dates */}
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Connection Date</label>
                     <p className="text-sm font-medium text-black">{formatDateToDDMMYYYY(selectedLead.connectionDate)}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Follow-up Date</label>
                     <p className="text-sm font-medium text-black">
                       {selectedLead.followUpDate ? formatDateToDDMMYYYY(selectedLead.followUpDate) : 'N/A'}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Last Activity</label>
                     <p className="text-sm font-medium text-black">{formatDateToDDMMYYYY(selectedLead.lastActivityDate)}</p>
                   </div>
@@ -1701,7 +1701,7 @@ export default function AllLeadsPage() {
 
                 {/* Additional Numbers */}
                 {selectedLead.mobileNumbers && selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).length > 0 && (
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-2">Additional Numbers</label>
                     <div className="flex flex-wrap gap-2">
                       {selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).map((mobile, index) => (
@@ -1717,19 +1717,19 @@ export default function AllLeadsPage() {
                 {(selectedLead.companyLocation || selectedLead.notes || selectedLead.finalConclusion) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {selectedLead.companyLocation && (
-                      <div className="bg-gray-50 p-3 rounded-md">
+                      <div className="bg-gray-50 p-2 rounded-md">
                         <label className="block text-xs font-medium text-black mb-1">Company Location</label>
                         <p className="text-sm font-medium text-black">{selectedLead.companyLocation}</p>
                       </div>
                     )}
                     {selectedLead.notes && (
-                      <div className="bg-gray-50 p-3 rounded-md">
+                      <div className="bg-gray-50 p-2 rounded-md">
                         <label className="block text-xs font-medium text-black mb-1">Last Discussion</label>
                         <p className="text-sm font-medium text-black line-clamp-3">{selectedLead.notes}</p>
                       </div>
                     )}
                     {selectedLead.finalConclusion && (
-                      <div className="bg-gray-50 p-3 rounded-md">
+                      <div className="bg-gray-50 p-2 rounded-md">
                         <label className="block text-xs font-medium text-black mb-1">Final Conclusion</label>
                         <p className="text-sm font-medium text-black line-clamp-3">{selectedLead.finalConclusion}</p>
                       </div>
@@ -1739,7 +1739,7 @@ export default function AllLeadsPage() {
 
                 {/* Recent Activities - Compact */}
                 {selectedLead.activities && selectedLead.activities.length > 0 && (
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-2 rounded-md">
                     <label className="block text-xs font-medium text-black mb-2">Recent Activities</label>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {selectedLead.activities.slice(-3).map((activity) => (
@@ -1845,7 +1845,7 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
       {/* Password Protection Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="relative top-10 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
             <div className="mt-3">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-4">
@@ -1937,7 +1937,7 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
       {/* Password Change Modal */}
       {showPasswordChangeModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="relative top-10 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
             <div className="mt-3">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-4">
@@ -2029,7 +2029,7 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
       {/* Bulk Delete Modal */}
       {showBulkDeleteModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="relative top-10 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
             <div className="mt-3">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-4">

@@ -134,7 +134,7 @@ function LeadTable({
     switch (status) {
       case 'New': return 'bg-blue-100 text-blue-800';
       case 'CNR': return 'bg-orange-100 text-orange-800';
-      case 'Busy': return 'bg-yellow-100 text-yellow-800';
+      case 'Busy': return 'bg-yellow-80 text-yellow-800';
       case 'Follow-up': return 'bg-purple-100 text-purple-800';
       case 'Deal Close': return 'bg-green-100 text-green-800';
       case 'Work Alloted': return 'bg-indigo-100 text-indigo-800';
@@ -159,7 +159,7 @@ function LeadTable({
         <thead className="bg-gray-50 sticky top-0 z-30 shadow-sm">
           <tr>
             {onLeadSelection && (
-              <th scope="col" className="px-0.5 py-3 text-left w-10">
+              <th scope="col" className="px-1 py-2 text-left w-8">
                 <div className="w-8 h-8 flex items-center justify-center">
                   <input
                     type="checkbox"
@@ -179,76 +179,76 @@ function LeadTable({
             )}
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-8"
               onClick={() => handleSort('kva')}
             >
               KVA{renderSortIndicator('kva')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-20"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-122"
               onClick={() => handleSort('connectionDate')}
             >
               Connection Date{renderSortIndicator('connectionDate')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-16"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-122"
               onClick={() => handleSort('consumerNumber')}
             >
               Consumer Number{renderSortIndicator('consumerNumber')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-28"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-20"
               onClick={() => handleSort('company')}
             >
               Company{renderSortIndicator('company')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-124"
               onClick={() => handleSort('clientName')}
             >
               Client Name{renderSortIndicator('clientName')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-8"
               onClick={() => handleSort('discom')}
             >
               Discom{renderSortIndicator('discom')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-16"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-122"
               onClick={() => handleSort('mobileNumber')}
             >
               Mobile Number{renderSortIndicator('mobileNumber')}
             </th>
             <th 
               scope="col" 
-              className="px-0.1 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-1"
+              className="px-0.1 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('status')}
             >
               Status{renderSortIndicator('status')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-24"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-124"
               onClick={() => handleSort('lastActivityDate')}
             >
               Last Activity{renderSortIndicator('lastActivityDate')}
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-18"
+              className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-124"
               onClick={() => handleSort('followUpDate')}
             >
               Next Follow-up{renderSortIndicator('followUpDate')}
             </th>
             {showActions && (
-              <th scope="col" className="px-0.5 py-3 text-left text-xs font-medium text-black uppercase tracking-wider w-16">
+              <th scope="col" className="px-1 py-2 text-left text-xs font-medium text-black uppercase tracking-wider w-122">
                 Actions
               </th>
             )}
@@ -263,7 +263,7 @@ function LeadTable({
                 onClick={() => onLeadClick && onLeadClick(lead)}
               >
                 {onLeadSelection && (
-                  <td className="px-0.5 py-2 whitespace-nowrap">
+                  <td className="px-1 py-1 whitespace-nowrap">
                     <div className="w-9 h-8 flex items-center justify-center">
                       <input
                         type="checkbox"
@@ -276,42 +276,42 @@ function LeadTable({
                     </div>
                   </td>
                 )}
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm font-medium text-black">{lead.kva}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs font-medium text-black">{lead.kva}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black">{lead.connectionDate}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black">{lead.connectionDate}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black max-w-16 truncate">{lead.consumerNumber}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black max-w-12 truncate">{lead.consumerNumber}</div>
                 </td>
-                <td className="px-0 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-15 max-w-50 truncate" title={lead.company}>{lead.company}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black min-w-15 max-w-20 truncate" title={lead.company}>{lead.company}</div>
                 </td>
-                <td className="px-0 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-5 max-w-45 truncate" title={lead.clientName}>{lead.clientName}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black min-w-12 max-w-18 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black">{lead.discom || 'N/A'}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black">{lead.discom || 'N/A'}</div>
                 </td>
-                <td className="px-2 py-2 whitespace-nowrap">
-                  <div className="px-2 text-sm text-black max-w-24 truncate">
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="px-2 text-xs text-black max-w-14 truncate">
                     {(lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber)?.replace(/-/g, '') || ''}
                   </div>
                 </td>
-                <td className="px-0.8 py-2 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full max-w-50 truncate ${getStatusColor(lead.status)}`}>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full max-w-20 truncate ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-20">{formatDate(lead.lastActivityDate)}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black min-w-14">{formatDate(lead.lastActivityDate)}</div>
                 </td>
-                <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black">{formatDate(lead.followUpDate)}</div>
+                <td className="px-1 py-1 whitespace-nowrap">
+                  <div className="text-xs text-black">{formatDate(lead.followUpDate)}</div>
                 </td>
                 {showActions && (
-                  <td className="px-0.5 py-2 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-1 py-1 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                     {actionButtons && actionButtons(lead)}
                   </td>
                 )}
@@ -319,7 +319,7 @@ function LeadTable({
             ))
           ) : (
             <tr>
-              <td colSpan={getColumnSpan()} className="px-0.5 py-2 text-center text-sm text-black">
+              <td colSpan={getColumnSpan()} className="px-1 py-1 text-center text-xs text-black">
                 {emptyMessage}
               </td>
             </tr>
