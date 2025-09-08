@@ -792,7 +792,7 @@ export default function AddLeadPage() {
         <form onSubmit={handleSubmit} className="space-y-2 pb-2" noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="space-y-1">
-              <label htmlFor="kva" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="kva" className="block text-[11px] font-medium text-black">
                 KVA <span className="text-red-500">*</span>
               </label>
               <input
@@ -818,7 +818,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="connectionDate" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="connectionDate" className="block text-[11px] font-medium text-black">
                 Connection Date
               </label>
               <input
@@ -845,7 +845,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="consumerNumber" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="consumerNumber" className="block text-[11px] font-medium text-black">
                 Consumer Number <span className="text-red-500">*</span>
               </label>
               <input
@@ -871,7 +871,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="company" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="company" className="block text-[11px] font-medium text-black">
                 Company Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -897,7 +897,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="clientName" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="clientName" className="block text-[11px] font-medium text-black">
                 Client Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -923,7 +923,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="discom" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="discom" className="block text-[11px] font-medium text-black">
                 Discom
               </label>
               <select
@@ -943,7 +943,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="gidc" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="gidc" className="block text-[11px] font-medium text-black">
                 GIDC
               </label>
               <input
@@ -959,7 +959,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="gstNumber" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="gstNumber" className="block text-[11px] font-medium text-black">
                 GST Number
               </label>
               <input
@@ -976,7 +976,7 @@ export default function AddLeadPage() {
             
             {/* Mobile Numbers Section */}
             <div className="md:col-span-2 space-y-2">
-              <label className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label className="block text-[11px] font-medium text-black">
                 Mobile Numbers
               </label>
               <div className="space-y-1">
@@ -1061,7 +1061,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="companyLocation" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="companyLocation" className="block text-[11px] font-medium text-black">
                 Address
               </label>
               <input
@@ -1077,7 +1077,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="unitType" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="unitType" className="block text-[11px] font-medium text-black">
                 Unit Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -1096,7 +1096,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="status" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="status" className="block text-[11px] font-medium text-black">
                 Lead Status <span className="text-red-500">*</span>
               </label>
               <select
@@ -1122,7 +1122,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="lastActivityDate" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="lastActivityDate" className="block text-[11px] font-medium text-black">
                 Last Activity Date
               </label>
               <div className="relative">
@@ -1153,7 +1153,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="followUpDate" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+              <label htmlFor="followUpDate" className="block text-[11px] font-medium text-black">
                 Next Follow-up Date
                 {['Follow-up', 'Hotlead', 'Mandate Sent', 'Documentation', 'Meeting Requested', 'Work Confirmation Pending'].includes(formData.status) && (
                   <span className="text-red-500">*</span>
@@ -1207,7 +1207,7 @@ export default function AddLeadPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="notes" className="block text-xs font-medium text-black" style={{fontSize: '11px'}}>
+            <label htmlFor="notes" className="block text-[11px] font-medium text-black">
               Last Discussion
               {['Follow-up', 'Hotlead', 'Mandate Sent', 'Documentation', 'Meeting Requested', 'Work Confirmation Pending'].includes(formData.status) && (
                 <span className="text-red-500">*</span>
