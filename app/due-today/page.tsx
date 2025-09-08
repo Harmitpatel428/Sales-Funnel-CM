@@ -228,9 +228,9 @@ export default function DueTodayPage() {
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-400">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-700">Due Today</h3>
+              <h3 className="text-lg font-semibold text-black">Due Today</h3>
               <p className="text-3xl font-bold text-yellow-600">{todayLeads.length}</p>
-              <p className="text-sm text-gray-500 mt-1">Leads with follow-ups scheduled for today</p>
+              <p className="text-sm text-black mt-1">Leads with follow-ups scheduled for today</p>
             </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,9 +243,9 @@ export default function DueTodayPage() {
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-400">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-700">Overdue</h3>
+              <h3 className="text-lg font-semibold text-black">Overdue</h3>
               <p className="text-3xl font-bold text-red-600">{overdueLeads.length}</p>
-              <p className="text-sm text-gray-500 mt-1">Leads with overdue follow-ups</p>
+              <p className="text-sm text-black mt-1">Leads with overdue follow-ups</p>
             </div>
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +265,7 @@ export default function DueTodayPage() {
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'today'
                   ? 'border-yellow-500 text-yellow-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-black hover:text-black hover:border-gray-300'
               }`}
             >
               Due Today ({todayLeads.length})
@@ -275,7 +275,7 @@ export default function DueTodayPage() {
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'overdue'
                   ? 'border-red-500 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-black hover:text-black hover:border-gray-300'
               }`}
             >
               Overdue ({overdueLeads.length})
@@ -288,7 +288,7 @@ export default function DueTodayPage() {
           {activeTab === 'today' && (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Due Today</h2>
+                <h2 className="text-xl font-semibold text-black">Due Today</h2>
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handleSelectAll(selectedLeads.size === todayLeads.length ? false : true)}
@@ -321,7 +321,7 @@ export default function DueTodayPage() {
           {activeTab === 'overdue' && (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Overdue Follow-ups</h2>
+                <h2 className="text-xl font-semibold text-black">Overdue Follow-ups</h2>
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handleSelectAll(selectedLeads.size === overdueLeads.length ? false : true)}
@@ -360,10 +360,10 @@ export default function DueTodayPage() {
             <div className="mt-3">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Lead Details</h3>
+                <h3 className="text-lg font-medium text-black">Lead Details</h3>
                 <button
                   onClick={closeModal}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-black transition-colors"
                   title="Close modal"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,10 +379,10 @@ export default function DueTodayPage() {
                   {/* Basic Info */}
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">Client Name</label>
+                      <label className="block text-xs font-medium text-black">Client Name</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.clientName, 'clientName')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy client name"
                       >
                         {copiedField === 'clientName' ? (
@@ -396,14 +396,14 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.clientName}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.clientName}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">Company</label>
+                      <label className="block text-xs font-medium text-black">Company</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.company, 'company')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy company name"
                       >
                         {copiedField === 'company' ? (
@@ -417,14 +417,14 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.company}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.company}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">Consumer Number</label>
+                      <label className="block text-xs font-medium text-black">Consumer Number</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.consumerNumber || 'N/A', 'consumerNumber')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy consumer number"
                       >
                         {copiedField === 'consumerNumber' ? (
@@ -438,14 +438,14 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.consumerNumber || 'N/A'}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.consumerNumber || 'N/A'}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">KVA</label>
+                      <label className="block text-xs font-medium text-black">KVA</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.kva, 'kva')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy KVA"
                       >
                         {copiedField === 'kva' ? (
@@ -459,13 +459,13 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.kva}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.kva}</p>
                   </div>
                   
                   {/* Contact Info */}
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">Main Phone</label>
+                      <label className="block text-xs font-medium text-black">Main Phone</label>
                       <button
                         onClick={() => {
                           const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
@@ -473,7 +473,7 @@ export default function DueTodayPage() {
                             : selectedLead.mobileNumber || 'N/A';
                           copyToClipboard(phoneNumber, 'mainPhone');
                         }}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy main phone number"
                       >
                         {copiedField === 'mainPhone' ? (
@@ -487,7 +487,7 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-black">
                       {(() => {
                         const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
                           ? selectedLead.mobileNumbers.find(m => m.isMain)?.number || selectedLead.mobileNumbers[0]?.number || 'N/A'
@@ -497,7 +497,7 @@ export default function DueTodayPage() {
                     </p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                    <label className="block text-xs font-medium text-black mb-1">Status</label>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       selectedLead.status === 'New' ? 'bg-blue-100 text-blue-800' :
                       selectedLead.status === 'CNR' ? 'bg-purple-100 text-purple-800' :
@@ -508,21 +508,21 @@ export default function DueTodayPage() {
                       selectedLead.status === 'Hotlead' ? 'bg-red-100 text-red-800' :
                       selectedLead.status === 'Mandate Sent' ? 'bg-pink-100 text-pink-800' :
                       selectedLead.status === 'Documentation' ? 'bg-teal-100 text-teal-800' :
-                      'bg-gray-100 text-gray-800'
+                      'bg-gray-100 text-black'
                     }`}>
                       {selectedLead.status}
                     </span>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Unit Type</label>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.unitType}</p>
+                    <label className="block text-xs font-medium text-black mb-1">Unit Type</label>
+                    <p className="text-sm font-medium text-black">{selectedLead.unitType}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">Discom</label>
+                      <label className="block text-xs font-medium text-black">Discom</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.discom || 'N/A', 'discom')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy discom"
                       >
                         {copiedField === 'discom' ? (
@@ -536,14 +536,14 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.discom || 'N/A'}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.discom || 'N/A'}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">GIDC</label>
+                      <label className="block text-xs font-medium text-black">GIDC</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.gidc || 'N/A', 'gidc')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy gidc"
                       >
                         {copiedField === 'gidc' ? (
@@ -557,14 +557,14 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.gidc || 'N/A'}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.gidc || 'N/A'}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-medium text-gray-600">GST Number</label>
+                      <label className="block text-xs font-medium text-black">GST Number</label>
                       <button
                         onClick={() => copyToClipboard(selectedLead.gstNumber || 'N/A', 'gstNumber')}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 hover:text-black transition-colors"
                         title="Copy gst number"
                       >
                         {copiedField === 'gstNumber' ? (
@@ -578,23 +578,23 @@ export default function DueTodayPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{selectedLead.gstNumber || 'N/A'}</p>
+                    <p className="text-sm font-medium text-black">{selectedLead.gstNumber || 'N/A'}</p>
                   </div>
                   
                   {/* Dates */}
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Connection Date</label>
-                    <p className="text-sm font-medium text-gray-900">{formatDateToDDMMYYYY(selectedLead.connectionDate)}</p>
+                    <label className="block text-xs font-medium text-black mb-1">Connection Date</label>
+                    <p className="text-sm font-medium text-black">{formatDateToDDMMYYYY(selectedLead.connectionDate)}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Follow-up Date</label>
-                    <p className="text-sm font-medium text-gray-900">
+                    <label className="block text-xs font-medium text-black mb-1">Follow-up Date</label>
+                    <p className="text-sm font-medium text-black">
                       {selectedLead.followUpDate ? formatDateToDDMMYYYY(selectedLead.followUpDate) : 'N/A'}
                     </p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Last Activity</label>
-                    <p className="text-sm font-medium text-gray-900">{formatDateToDDMMYYYY(selectedLead.lastActivityDate)}</p>
+                    <label className="block text-xs font-medium text-black mb-1">Last Activity</label>
+                    <p className="text-sm font-medium text-black">{formatDateToDDMMYYYY(selectedLead.lastActivityDate)}</p>
                   </div>
                   
                 </div>
@@ -602,10 +602,10 @@ export default function DueTodayPage() {
                 {/* Additional Numbers */}
                 {selectedLead.mobileNumbers && selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).length > 0 && (
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-2">Additional Numbers</label>
+                    <label className="block text-xs font-medium text-black mb-2">Additional Numbers</label>
                     <div className="flex flex-wrap gap-2">
                       {selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).map((mobile, index) => (
-                        <span key={index} className="text-sm font-medium text-gray-900 bg-white px-2 py-1 rounded border">
+                        <span key={index} className="text-sm font-medium text-black bg-white px-2 py-1 rounded border">
                           {mobile.name ? `${mobile.name}: ${mobile.number}` : mobile.number}
                         </span>
                       ))}
@@ -618,20 +618,20 @@ export default function DueTodayPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {selectedLead.companyLocation && (
                       <div className="bg-gray-50 p-3 rounded-md">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Company Location</label>
-                        <p className="text-sm font-medium text-gray-900">{selectedLead.companyLocation}</p>
+                        <label className="block text-xs font-medium text-black mb-1">Company Location</label>
+                        <p className="text-sm font-medium text-black">{selectedLead.companyLocation}</p>
                       </div>
                     )}
                     {selectedLead.notes && (
                       <div className="bg-gray-50 p-3 rounded-md">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Last Discussion</label>
-                        <p className="text-sm font-medium text-gray-900 line-clamp-3">{selectedLead.notes}</p>
+                        <label className="block text-xs font-medium text-black mb-1">Last Discussion</label>
+                        <p className="text-sm font-medium text-black line-clamp-3">{selectedLead.notes}</p>
                       </div>
                     )}
                     {selectedLead.finalConclusion && (
                       <div className="bg-gray-50 p-3 rounded-md">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Final Conclusion</label>
-                        <p className="text-sm font-medium text-gray-900 line-clamp-3">{selectedLead.finalConclusion}</p>
+                        <label className="block text-xs font-medium text-black mb-1">Final Conclusion</label>
+                        <p className="text-sm font-medium text-black line-clamp-3">{selectedLead.finalConclusion}</p>
                       </div>
                     )}
                   </div>
@@ -640,12 +640,12 @@ export default function DueTodayPage() {
                 {/* Recent Activities - Compact */}
                 {selectedLead.activities && selectedLead.activities.length > 0 && (
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <label className="block text-xs font-medium text-gray-600 mb-2">Recent Activities</label>
+                    <label className="block text-xs font-medium text-black mb-2">Recent Activities</label>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {selectedLead.activities.slice(-3).map((activity) => (
                         <div key={activity.id} className="bg-white p-2 rounded text-xs">
-                          <p className="text-gray-900 font-medium">{activity.description}</p>
-                          <p className="text-gray-500">
+                          <p className="text-black font-medium">{activity.description}</p>
+                          <p className="text-black">
                             {new Date(activity.timestamp).toLocaleDateString()}
                           </p>
                         </div>
@@ -683,7 +683,7 @@ ${selectedLead.notes ? `Last Discussion: ${selectedLead.notes}` : ''}
 ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` : ''}`;
                       copyToClipboard(allInfo, 'allInfo');
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 text-sm font-medium text-black bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors flex items-center space-x-2"
                   >
                     {copiedField === 'allInfo' ? (
                       <>
@@ -715,7 +715,7 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
                 <div className="flex space-x-3">
                   <button
                     onClick={closeModal}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-black bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
                   >
                     Close
                   </button>
