@@ -1399,7 +1399,7 @@ export default function AllLeadsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search leads..."
-                  className="block w-40 pl-6 pr-2 py-1 border border-gray-300 rounded leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
+                  className="block w-40 pl-6 pr-2 py-1 border border-gray-300 rounded leading-5 bg-white placeholder:text-black focus:outline-none focus:placeholder:text-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                 />
                 {searchTerm && (
                   <button
