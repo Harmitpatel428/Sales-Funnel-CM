@@ -1309,7 +1309,7 @@ export default function AllLeadsPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-blue-500 to-purple-500 rounded-2xl blur-sm opacity-0 group-hover:opacity-25 transition-all duration-600 animate-pulse"></div>
             
             {/* Main Container */}
-            <div className="relative bg-white border-2 border-blue-200 rounded-2xl px-16 py-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 overflow-hidden">
+            <div className="relative bg-white border-2 border-blue-200 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 overflow-hidden">
               {/* Animated Background Waves */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-50/40 via-emerald-50/20 to-purple-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -1321,7 +1321,7 @@ export default function AllLeadsPage() {
               
               {/* Content */}
               <div className="relative z-10 text-center">
-                <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2 group-hover:text-blue-700 transition-colors duration-300 group-hover:scale-105 transform transition-transform duration-300">
+                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors duration-300 group-hover:scale-105 transform transition-transform duration-300">
                   {allLeads.length}
                 </div>
                 <div className="text-black text-sm font-semibold uppercase tracking-wide group-hover:text-black transition-colors duration-300">
@@ -1381,9 +1381,9 @@ export default function AllLeadsPage() {
 
       {/* Leads Table */}
       <div className="bg-white rounded-lg shadow-md mb-6">
-        <div className="p-6">
+        <div className="p-3">
           <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <h2 className="text-xl font-semibold text-black">All Leads</h2>
               
               {/* Search Input */}
@@ -1399,7 +1399,7 @@ export default function AllLeadsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search leads..."
-                  className="block w-64 pl-9 pr-3 py-1.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="block w-48 pl-8 pr-3 py-1 border border-gray-300 rounded-md leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
                 {searchTerm && (
                   <button
