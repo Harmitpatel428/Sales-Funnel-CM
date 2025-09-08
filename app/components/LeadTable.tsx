@@ -134,7 +134,7 @@ function LeadTable({
     switch (status) {
       case 'New': return 'bg-blue-100 text-blue-800';
       case 'CNR': return 'bg-orange-100 text-orange-800';
-      case 'Busy': return 'bg-yellow-160 text-yellow-1600';
+      case 'Busy': return 'bg-yellow-120 text-yellow-1200';
       case 'Follow-up': return 'bg-purple-100 text-purple-800';
       case 'Deal Close': return 'bg-green-100 text-green-800';
       case 'Work Alloted': return 'bg-indigo-100 text-indigo-800';
@@ -159,8 +159,8 @@ function LeadTable({
         <thead className="bg-gray-50 sticky top-0 z-30 shadow-sm">
           <tr>
             {onLeadSelection && (
-              <th scope="col" className="px-0.5 py-3 text-left w-16">
-                <div className="w-16 h-8 flex items-center justify-center">
+              <th scope="col" className="px-0.5 py-3 text-left w-12">
+                <div className="w-12 h-8 flex items-center justify-center">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -179,7 +179,7 @@ function LeadTable({
             )}
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-16"
+              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('kva')}
             >
               KVA{renderSortIndicator('kva')}
@@ -214,7 +214,7 @@ function LeadTable({
             </th>
             <th 
               scope="col" 
-              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-16"
+              className="px-0.5 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('discom')}
             >
               Discom{renderSortIndicator('discom')}
@@ -228,7 +228,7 @@ function LeadTable({
             </th>
             <th 
               scope="col" 
-              className="px-0.1 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-16"
+              className="px-0.1 py-3 text-left text-sm font-medium text-black uppercase tracking-wider cursor-pointer hover:bg-gray-100 w-12"
               onClick={() => handleSort('status')}
             >
               Status{renderSortIndicator('status')}
@@ -283,13 +283,13 @@ function LeadTable({
                   <div className="text-sm text-black">{lead.connectionDate}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black max-w-16 truncate">{lead.consumerNumber}</div>
+                  <div className="text-sm text-black max-w-12 truncate">{lead.consumerNumber}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-black min-w-15 max-w-50 truncate" title={lead.company}>{lead.company}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-16 max-w-45 truncate" title={lead.clientName}>{lead.clientName}</div>
+                  <div className="text-sm text-black min-w-5 max-w-45 truncate" title={lead.clientName}>{lead.clientName}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-black">{lead.discom || 'N/A'}</div>
@@ -305,7 +305,7 @@ function LeadTable({
                   </span>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
-                  <div className="text-sm text-black min-w-14">{formatDate(lead.lastActivityDate)}</div>
+                  <div className="text-sm text-black min-w-20">{formatDate(lead.lastActivityDate)}</div>
                 </td>
                 <td className="px-0.5 py-2 whitespace-nowrap">
                   <div className="text-sm text-black">{formatDate(lead.followUpDate)}</div>
