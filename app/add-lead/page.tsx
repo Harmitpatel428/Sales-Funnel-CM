@@ -769,11 +769,11 @@ export default function AddLeadPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+    <div className="max-w-4xl mx-auto px-1">
+      <div className="bg-white rounded-lg shadow-lg p-2">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-lg font-bold text-black">
             {isEditMode ? 'Edit Lead' : 'Add New Lead'}
           </h1>
           <button
@@ -789,10 +789,10 @@ export default function AddLeadPage() {
         </div>
         
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 pb-8" noValidate>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label htmlFor="kva" className="block text-sm font-medium text-gray-700">
+        <form onSubmit={handleSubmit} className="space-y-2 pb-2" noValidate>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label htmlFor="kva" className="block text-xs font-medium text-black">
                 KVA <span className="text-red-500">*</span>
               </label>
               <input
@@ -801,15 +801,15 @@ export default function AddLeadPage() {
                 name="kva"
                 value={formData.kva}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
                   errors.kva ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter KVA"
                 disabled={isSubmitting}
               />
               {errors.kva && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.kva}
@@ -817,8 +817,8 @@ export default function AddLeadPage() {
               )}
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="connectionDate" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="connectionDate" className="block text-xs font-medium text-black">
                 Connection Date
               </label>
               <input
@@ -827,7 +827,7 @@ export default function AddLeadPage() {
                 name="connectionDate"
                 value={formData.connectionDate}
                 onChange={handleConnectionDateChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
                   errors.connectionDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="DD-MM-YYYY"
@@ -835,8 +835,8 @@ export default function AddLeadPage() {
                 maxLength={10}
               />
               {errors.connectionDate && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.connectionDate}
@@ -844,8 +844,8 @@ export default function AddLeadPage() {
               )}
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="consumerNumber" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="consumerNumber" className="block text-xs font-medium text-black">
                 Consumer Number <span className="text-red-500">*</span>
               </label>
               <input
@@ -854,15 +854,15 @@ export default function AddLeadPage() {
                 name="consumerNumber"
                 value={formData.consumerNumber}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
                   errors.consumerNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter consumer number"
                 disabled={isSubmitting}
               />
               {errors.consumerNumber && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.consumerNumber}
@@ -870,8 +870,8 @@ export default function AddLeadPage() {
               )}
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="company" className="block text-xs font-medium text-black">
                 Company Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -880,15 +880,15 @@ export default function AddLeadPage() {
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
                   errors.company ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter company name"
                 disabled={isSubmitting}
               />
               {errors.company && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.company}
@@ -896,8 +896,8 @@ export default function AddLeadPage() {
               )}
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="clientName" className="block text-xs font-medium text-black">
                 Client Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -906,15 +906,15 @@ export default function AddLeadPage() {
                 name="clientName"
                 value={formData.clientName}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
                   errors.clientName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter client name"
                 disabled={isSubmitting}
               />
               {errors.clientName && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.clientName}
@@ -922,8 +922,8 @@ export default function AddLeadPage() {
               )}
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="discom" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="discom" className="block text-xs font-medium text-black">
                 Discom
               </label>
               <select
@@ -942,8 +942,8 @@ export default function AddLeadPage() {
               </select>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="gidc" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="gidc" className="block text-xs font-medium text-black">
                 GIDC
               </label>
               <input
@@ -958,8 +958,8 @@ export default function AddLeadPage() {
               />
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="gstNumber" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="gstNumber" className="block text-xs font-medium text-black">
                 GST Number
               </label>
               <input
@@ -976,10 +976,10 @@ export default function AddLeadPage() {
             
             {/* Mobile Numbers Section */}
             <div className="md:col-span-2 space-y-4">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-black">
                 Mobile Numbers
               </label>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {formData.mobileNumbers.map((mobile, index) => (
                   <div key={mobile.id} className="space-y-1">
                     <div className="flex items-center space-x-2">
@@ -1051,8 +1051,8 @@ export default function AddLeadPage() {
                 ))}
               </div>
               {errors.mobileNumbers && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.mobileNumbers}
@@ -1060,8 +1060,8 @@ export default function AddLeadPage() {
               )}
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="companyLocation" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="companyLocation" className="block text-xs font-medium text-black">
                 Address
               </label>
               <input
@@ -1076,8 +1076,8 @@ export default function AddLeadPage() {
               />
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="unitType" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="unitType" className="block text-xs font-medium text-black">
                 Unit Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -1095,8 +1095,8 @@ export default function AddLeadPage() {
               </select>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="status" className="block text-xs font-medium text-black">
                 Lead Status <span className="text-red-500">*</span>
               </label>
               <select
@@ -1121,8 +1121,8 @@ export default function AddLeadPage() {
               </select>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="lastActivityDate" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="lastActivityDate" className="block text-xs font-medium text-black">
                 Last Activity Date
               </label>
               <div className="relative">
@@ -1152,8 +1152,8 @@ export default function AddLeadPage() {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="followUpDate" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="followUpDate" className="block text-xs font-medium text-black">
                 Next Follow-up Date
                 {['Follow-up', 'Hotlead', 'Mandate Sent', 'Documentation', 'Meeting Requested', 'Work Confirmation Pending'].includes(formData.status) && (
                   <span className="text-red-500">*</span>
@@ -1189,15 +1189,15 @@ export default function AddLeadPage() {
                     }
                   }}
                   min={new Date().toISOString().split('T')[0]}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                  className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
                     errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   disabled={isSubmitting}
                 />
               </div>
               {errors.followUpDate && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <p className="text-xs text-red-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {errors.followUpDate}
@@ -1207,7 +1207,7 @@ export default function AddLeadPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="notes" className="block text-xs font-medium text-black">
               Last Discussion
               {['Follow-up', 'Hotlead', 'Mandate Sent', 'Documentation', 'Meeting Requested', 'Work Confirmation Pending'].includes(formData.status) && (
                 <span className="text-red-500">*</span>
@@ -1290,11 +1290,11 @@ export default function AddLeadPage() {
           </div>
           
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-gray-200">
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`flex-1 sm:flex-none sm:px-8 py-3 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+              className={`flex-1 sm:flex-none sm:px-4 py-2 rounded font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm ${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed text-white'
                   : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
@@ -1317,7 +1317,7 @@ export default function AddLeadPage() {
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="flex-1 sm:flex-none sm:px-8 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50"
+              className="flex-1 sm:flex-none sm:px-4 py-2 border border-gray-300 rounded text-black font-medium hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 text-sm"
             >
               Cancel
             </button>
