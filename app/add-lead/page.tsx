@@ -792,7 +792,7 @@ export default function AddLeadPage() {
         <form onSubmit={handleSubmit} className="space-y-2 pb-2" noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="space-y-1">
-              <label htmlFor="kva" className="block text-xs font-medium text-black">
+              <label htmlFor="kva" className="block text-sm font-medium text-black">
                 KVA <span className="text-red-500">*</span>
               </label>
               <input
@@ -801,7 +801,7 @@ export default function AddLeadPage() {
                 name="kva"
                 value={formData.kva}
                 onChange={handleChange}
-                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs ${
                   errors.kva ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter KVA"
@@ -818,7 +818,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="connectionDate" className="block text-xs font-medium text-black">
+              <label htmlFor="connectionDate" className="block text-sm font-medium text-black">
                 Connection Date
               </label>
               <input
@@ -827,7 +827,7 @@ export default function AddLeadPage() {
                 name="connectionDate"
                 value={formData.connectionDate}
                 onChange={handleConnectionDateChange}
-                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs ${
                   errors.connectionDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="DD-MM-YYYY"
@@ -845,7 +845,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="consumerNumber" className="block text-xs font-medium text-black">
+              <label htmlFor="consumerNumber" className="block text-sm font-medium text-black">
                 Consumer Number <span className="text-red-500">*</span>
               </label>
               <input
@@ -854,7 +854,7 @@ export default function AddLeadPage() {
                 name="consumerNumber"
                 value={formData.consumerNumber}
                 onChange={handleChange}
-                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs ${
                   errors.consumerNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter consumer number"
@@ -871,7 +871,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="company" className="block text-xs font-medium text-black">
+              <label htmlFor="company" className="block text-sm font-medium text-black">
                 Company Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -880,7 +880,7 @@ export default function AddLeadPage() {
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs ${
                   errors.company ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter company name"
@@ -897,7 +897,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="clientName" className="block text-xs font-medium text-black">
+              <label htmlFor="clientName" className="block text-sm font-medium text-black">
                 Client Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -906,7 +906,7 @@ export default function AddLeadPage() {
                 name="clientName"
                 value={formData.clientName}
                 onChange={handleChange}
-                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
+                className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs ${
                   errors.clientName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Enter client name"
@@ -923,7 +923,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="discom" className="block text-xs font-medium text-black">
+              <label htmlFor="discom" className="block text-sm font-medium text-black">
                 Discom
               </label>
               <select
@@ -931,7 +931,7 @@ export default function AddLeadPage() {
                 name="discom"
                 value={formData.discom}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                 disabled={isSubmitting}
               >
                 <option value="">Select Discom</option>
@@ -943,7 +943,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="gidc" className="block text-xs font-medium text-black">
+              <label htmlFor="gidc" className="block text-sm font-medium text-black">
                 GIDC
               </label>
               <input
@@ -952,14 +952,14 @@ export default function AddLeadPage() {
                 name="gidc"
                 value={formData.gidc || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                 placeholder="Enter GIDC"
                 disabled={isSubmitting}
               />
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="gstNumber" className="block text-xs font-medium text-black">
+              <label htmlFor="gstNumber" className="block text-sm font-medium text-black">
                 GST Number
               </label>
               <input
@@ -968,27 +968,27 @@ export default function AddLeadPage() {
                 name="gstNumber"
                 value={formData.gstNumber || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                 placeholder="Enter GST Number"
                 disabled={isSubmitting}
               />
             </div>
             
             {/* Mobile Numbers Section */}
-            <div className="md:col-span-2 space-y-4">
-              <label className="block text-xs font-medium text-black">
+            <div className="md:col-span-2 space-y-2">
+              <label className="block text-sm font-medium text-black">
                 Mobile Numbers
               </label>
               <div className="space-y-1">
                 {formData.mobileNumbers.map((mobile, index) => (
                   <div key={mobile.id} className="space-y-1">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
                       <div className="flex-1">
                         <input
                           type="text"
                           value={mobile.name}
                           onChange={(e) => handleMobileNameChange(index, e.target.value)}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
                           placeholder={`Contact ${index + 1}`}
                           disabled={isSubmitting}
                         />
@@ -998,7 +998,7 @@ export default function AddLeadPage() {
                           type="text"
                           value={mobile.number}
                           onChange={(e) => handleMobileNumberChange(index, e.target.value)}
-                          className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
+                          className={`w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black ${
                             errors[`mobileNumber_${index}` as keyof typeof formData] ? 'border-red-500 bg-red-50' : 'border-gray-300'
                           }`}
                           placeholder={`Mobile ${index + 1}`}
@@ -1061,7 +1061,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="companyLocation" className="block text-xs font-medium text-black">
+              <label htmlFor="companyLocation" className="block text-sm font-medium text-black">
                 Address
               </label>
               <input
@@ -1070,14 +1070,14 @@ export default function AddLeadPage() {
                 name="companyLocation"
                 value={formData.companyLocation}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                 placeholder="Enter address"
                 disabled={isSubmitting}
               />
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="unitType" className="block text-xs font-medium text-black">
+              <label htmlFor="unitType" className="block text-sm font-medium text-black">
                 Unit Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -1086,7 +1086,7 @@ export default function AddLeadPage() {
                 value={formData.unitType}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                 disabled={isSubmitting}
               >
                 <option value="New">New</option>
@@ -1096,7 +1096,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="status" className="block text-xs font-medium text-black">
+              <label htmlFor="status" className="block text-sm font-medium text-black">
                 Lead Status <span className="text-red-500">*</span>
               </label>
               <select
@@ -1105,7 +1105,7 @@ export default function AddLeadPage() {
                 value={formData.status}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                 disabled={isSubmitting}
               >
                 <option value="New">New</option>
@@ -1122,7 +1122,7 @@ export default function AddLeadPage() {
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="lastActivityDate" className="block text-xs font-medium text-black">
+              <label htmlFor="lastActivityDate" className="block text-sm font-medium text-black">
                 Last Activity Date
               </label>
               <div className="relative">
@@ -1146,14 +1146,14 @@ export default function AddLeadPage() {
                       }));
                     }
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black"
+                  className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
                   disabled={isSubmitting}
                 />
               </div>
             </div>
             
             <div className="space-y-1">
-              <label htmlFor="followUpDate" className="block text-xs font-medium text-black">
+              <label htmlFor="followUpDate" className="block text-sm font-medium text-black">
                 Next Follow-up Date
                 {['Follow-up', 'Hotlead', 'Mandate Sent', 'Documentation', 'Meeting Requested', 'Work Confirmation Pending'].includes(formData.status) && (
                   <span className="text-red-500">*</span>
@@ -1189,7 +1189,7 @@ export default function AddLeadPage() {
                     }
                   }}
                   min={new Date().toISOString().split('T')[0]}
-                  className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-sm ${
+                  className={`w-full px-2 py-1 border rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs ${
                     errors.followUpDate ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   disabled={isSubmitting}
@@ -1207,7 +1207,7 @@ export default function AddLeadPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="notes" className="block text-xs font-medium text-black">
+            <label htmlFor="notes" className="block text-sm font-medium text-black">
               Last Discussion
               {['Follow-up', 'Hotlead', 'Mandate Sent', 'Documentation', 'Meeting Requested', 'Work Confirmation Pending'].includes(formData.status) && (
                 <span className="text-red-500">*</span>
@@ -1219,7 +1219,7 @@ export default function AddLeadPage() {
               value={formData.notes}
               onChange={handleChange}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 resize-vertical text-black text-sm"
+              className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 resize-vertical text-black text-xs"
               placeholder="Enter details about the last discussion with this lead"
               disabled={isSubmitting}
             />
