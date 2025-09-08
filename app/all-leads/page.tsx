@@ -1340,7 +1340,7 @@ export default function AllLeadsPage() {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center items-center space-x-2">
+          <div className="flex flex-wrap justify-center items-center space-x-1">
             {/* Import Button */}
             <div className="relative">
               <input
@@ -1353,9 +1353,9 @@ export default function AllLeadsPage() {
               />
               <label
                 htmlFor="file-import"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl cursor-pointer flex items-center space-x-2 font-semibold transition-colors shadow-lg"
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded cursor-pointer flex items-center space-x-1 text-xs font-semibold transition-colors shadow-lg"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                 </svg>
                 <span>Import Leads</span>
@@ -1365,9 +1365,9 @@ export default function AllLeadsPage() {
             {/* Export Button */}
             <button
               onClick={handleExportExcel}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center space-x-2 font-semibold transition-colors shadow-lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded flex items-center space-x-1 text-xs font-semibold transition-colors shadow-lg"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span>Export All Leads</span>
@@ -1380,16 +1380,16 @@ export default function AllLeadsPage() {
 
 
       {/* Leads Table */}
-      <div className="bg-white rounded-lg shadow-md mb-4">
-        <div className="p-2">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center space-x-2">
-              <h2 className="text-lg font-semibold text-black">All Leads</h2>
+      <div className="bg-white rounded-lg shadow-md mb-2">
+        <div className="p-1">
+          <div className="flex justify-between items-center mb-1">
+            <div className="flex items-center space-x-1">
+              <h2 className="text-sm font-semibold text-black">All Leads</h2>
               
               {/* Search Input */}
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                  <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -1399,7 +1399,7 @@ export default function AllLeadsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search leads..."
-                  className="block w-48 pl-8 pr-3 py-1 border border-gray-300 rounded-md leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="block w-40 pl-6 pr-2 py-1 border border-gray-300 rounded leading-5 bg-white placeholder-black focus:outline-none focus:placeholder-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                 />
                 {searchTerm && (
                   <button
