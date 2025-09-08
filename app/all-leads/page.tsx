@@ -1321,7 +1321,7 @@ export default function AllLeadsPage() {
               
               {/* Content */}
               <div className="relative z-10 text-center">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors duration-300 group-hover:scale-105 transform transition-transform duration-300">
+                <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors duration-300 group-hover:scale-105 transform transition-transform duration-300">
                   {allLeads.length}
                 </div>
                 <div className="text-black text-sm font-semibold uppercase tracking-wide group-hover:text-black transition-colors duration-300">
@@ -1380,11 +1380,11 @@ export default function AllLeadsPage() {
 
 
       {/* Leads Table */}
-      <div className="bg-white rounded-lg shadow-md mb-6">
-        <div className="p-3">
-          <div className="flex justify-between items-center mb-4">
+      <div className="bg-white rounded-lg shadow-md mb-4">
+        <div className="p-2">
+          <div className="flex justify-between items-center mb-2">
             <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-semibold text-black">All Leads</h2>
+              <h2 className="text-lg font-semibold text-black">All Leads</h2>
               
               {/* Search Input */}
               <div className="relative">
@@ -1456,7 +1456,7 @@ export default function AllLeadsPage() {
       {/* Modal */}
       {isModalOpen && selectedLead && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-5 mx-auto p-3 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-md bg-white">
+          <div className="relative top-3 mx-auto p-2 border w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/4 shadow-lg rounded-md bg-white">
             <div className="mt-3">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-4">
