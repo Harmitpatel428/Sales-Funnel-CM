@@ -1473,11 +1473,11 @@ export default function AllLeadsPage() {
               </div>
 
               {/* Modal Content */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {/* Main Information Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
                   {/* Basic Info */}
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Client Name</label>
                       <button
@@ -1498,7 +1498,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.clientName}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Company</label>
                       <button
@@ -1519,7 +1519,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.company}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Consumer Number</label>
                       <button
@@ -1540,7 +1540,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.consumerNumber || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">KVA</label>
                       <button
@@ -1563,7 +1563,7 @@ export default function AllLeadsPage() {
                   </div>
                   
                   {/* Contact Info */}
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Main Phone</label>
                       <button
@@ -1596,7 +1596,7 @@ export default function AllLeadsPage() {
                       })()}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Status</label>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       selectedLead.status === 'New' ? 'bg-blue-100 text-blue-800' :
@@ -1613,11 +1613,11 @@ export default function AllLeadsPage() {
                       {selectedLead.status}
                     </span>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Unit Type</label>
                     <p className="text-sm font-medium text-black">{selectedLead.unitType}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">Discom</label>
                       <button
@@ -1638,7 +1638,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.discom || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">GIDC</label>
                       <button
@@ -1659,7 +1659,7 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">{selectedLead.gidc || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-xs font-medium text-black">GST Number</label>
                       <button
@@ -1682,17 +1682,17 @@ export default function AllLeadsPage() {
                   </div>
                   
                   {/* Dates */}
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Connection Date</label>
                     <p className="text-sm font-medium text-black">{formatDateToDDMMYYYY(selectedLead.connectionDate)}</p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Follow-up Date</label>
                     <p className="text-sm font-medium text-black">
                       {selectedLead.followUpDate ? formatDateToDDMMYYYY(selectedLead.followUpDate) : 'N/A'}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-1">Last Activity</label>
                     <p className="text-sm font-medium text-black">{formatDateToDDMMYYYY(selectedLead.lastActivityDate)}</p>
                   </div>
@@ -1701,7 +1701,7 @@ export default function AllLeadsPage() {
 
                 {/* Additional Numbers */}
                 {selectedLead.mobileNumbers && selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).length > 0 && (
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-2">Additional Numbers</label>
                     <div className="flex flex-wrap gap-2">
                       {selectedLead.mobileNumbers.filter(m => !m.isMain && m.number.trim()).map((mobile, index) => (
@@ -1717,19 +1717,19 @@ export default function AllLeadsPage() {
                 {(selectedLead.companyLocation || selectedLead.notes || selectedLead.finalConclusion) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {selectedLead.companyLocation && (
-                      <div className="bg-gray-50 p-2 rounded-md">
+                      <div className="bg-gray-50 p-1.5 rounded-md">
                         <label className="block text-xs font-medium text-black mb-1">Company Location</label>
                         <p className="text-sm font-medium text-black">{selectedLead.companyLocation}</p>
                       </div>
                     )}
                     {selectedLead.notes && (
-                      <div className="bg-gray-50 p-2 rounded-md">
+                      <div className="bg-gray-50 p-1.5 rounded-md">
                         <label className="block text-xs font-medium text-black mb-1">Last Discussion</label>
                         <p className="text-sm font-medium text-black line-clamp-3">{selectedLead.notes}</p>
                       </div>
                     )}
                     {selectedLead.finalConclusion && (
-                      <div className="bg-gray-50 p-2 rounded-md">
+                      <div className="bg-gray-50 p-1.5 rounded-md">
                         <label className="block text-xs font-medium text-black mb-1">Final Conclusion</label>
                         <p className="text-sm font-medium text-black line-clamp-3">{selectedLead.finalConclusion}</p>
                       </div>
@@ -1739,7 +1739,7 @@ export default function AllLeadsPage() {
 
                 {/* Recent Activities - Compact */}
                 {selectedLead.activities && selectedLead.activities.length > 0 && (
-                  <div className="bg-gray-50 p-2 rounded-md">
+                  <div className="bg-gray-50 p-1.5 rounded-md">
                     <label className="block text-xs font-medium text-black mb-2">Recent Activities</label>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {selectedLead.activities.slice(-3).map((activity) => (

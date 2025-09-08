@@ -694,8 +694,8 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="container mx-auto">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto px-2 py-4">
+      <div className="flex justify-between items-center mb-3">
         <h1 className="text-2xl font-bold text-white-800">Lead Management Dashboard</h1>
         <div className="flex space-x-2">
           {/* Discom Filter */}
