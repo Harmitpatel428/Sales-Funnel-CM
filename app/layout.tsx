@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 import { LeadProvider } from "./context/LeadContext";
+import { NavigationProvider } from "./context/NavigationContext";
+import NavigationWrapper from "./components/NavigationWrapper";
 
 
 const geistSans = Geist({
@@ -20,6 +22,7 @@ export const metadata: Metadata = {
   description: "Simple CRM for lead management",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,13 +34,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
         <LeadProvider>
-          <div className="flex flex-col h-screen">
-            <Navigation />
-            <main className="flex-1 overflow-y-auto p-6">
-              {children}
-            </main>
-            
-          </div>
+          <NavigationProvider>
+            <div className="flex flex-col h-screen">
+              <NavigationWrapper />
+              <main className="flex-1 overflow-y-auto p-6">
+                {children}
+              </main>
+            </div>
+          </NavigationProvider>
         </LeadProvider>
       </body>
     </html>

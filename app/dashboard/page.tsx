@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLeads, Lead, LeadFilters } from '../context/LeadContext';
+import { useNavigation } from '../context/NavigationContext';
 import LeadTable from '../components/LeadTable';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { leads, deleteLead, getFilteredLeads, updateLead } = useLeads();
+  const { discomFilter, setDiscomFilter, setOnExportClick } = useNavigation();
   const [activeFilters, setActiveFilters] = useState<LeadFilters>({
     status: ['New'] // Show "New" leads by default
   });
@@ -28,7 +30,6 @@ export default function DashboardPage() {
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
   const [showEmptyStatusNotification, setShowEmptyStatusNotification] = useState(false);
   const [emptyStatusMessage, setEmptyStatusMessage] = useState('');
-  const [discomFilter, setDiscomFilter] = useState<string>('');
   const [showExportPasswordModal, setShowExportPasswordModal] = useState(false);
   const [exportPassword, setExportPassword] = useState('');
 
@@ -91,6 +92,26 @@ export default function DashboardPage() {
       localStorage.removeItem('leadUpdated');
     }
   }, [showToastNotification]);
+
+  // Set up navigation handlers
+  useEffect(() => {
+    setOnExportClick(() => handleExportExcel);
+  }, [setOnExportClick]);
+
+  // Handle discom filter changes
+  useEffect(() => {
+    if (discomFilter === '') {
+      setActiveFilters({
+        status: ['New'] // Show "New" leads from all discoms when selecting "All Discoms"
+      });
+    } else {
+      setActiveFilters(prev => ({
+        ...prev,
+        discom: discomFilter,
+        status: ['New'] // Automatically show New status when discom is selected
+      }));
+    }
+  }, [discomFilter]);
 
   // Check for updated leads and clear main dashboard view if needed
   useEffect(() => {
@@ -695,51 +716,6 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-1 py-1">
-      <div className="flex justify-between items-center mb-1">
-        <h1 className="text-lg font-bold text-white-800">Lead Management Dashboard</h1>
-        <div className="flex space-x-2">
-          {/* Discom Filter */}
-          <div className="flex items-center gap-2">
-            <select
-              value={discomFilter}
-              onChange={(e) => {
-                const value = e.target.value;
-                setDiscomFilter(value);
-                if (value === '') {
-                  setActiveFilters({
-                    status: ['New'] // Show "New" leads from all discoms when selecting "All Discoms"
-                  });
-                } else {
-                  setActiveFilters(prev => ({
-                    ...prev,
-                    discom: value,
-                    status: ['New'] // Automatically show New status when discom is selected
-                  }));
-                }
-              }}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white text-black"
-              aria-label="Filter by Discom"
-            >
-              <option value="">All Discoms</option>
-              <option value="UGVCL">UGVCL</option>
-              <option value="MGVCL">MGVCL</option>
-              <option value="DGVCL">DGVCL</option>
-              <option value="PGVCL">PGVCL</option>
-            </select>
-          </div>
-          {/* Export Button */}
-          <button
-            onClick={handleExportExcel}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span>Export Leads</span>
-          </button>
-            
-          </div>
-          </div>
 
       {/* Status Filter Section */}
       <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-1 rounded-lg shadow-lg border border-slate-600/30 mb-1 relative overflow-hidden mx-auto w-fit">
