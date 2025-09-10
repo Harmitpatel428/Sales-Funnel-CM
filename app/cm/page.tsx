@@ -65,6 +65,7 @@ export default function CMPage() {
 
   // Add sample leads if none exist
   const addSampleLeads = () => {
+    if (typeof window === 'undefined') return; // Check for SSR
     if (leads.length === 0) {
       const sampleLeads: Lead[] = [
         {
@@ -83,8 +84,8 @@ export default function CMPage() {
             { id: '2', number: '9876543211', name: 'Assistant', isMain: false }
           ],
           companyLocation: 'Industrial Area, Phase 1, Chandigarh',
-          unitType: 'New',
-          status: 'New',
+          unitType: 'New' as const,
+          status: 'New' as const,
           lastActivityDate: '15-01-2024',
           followUpDate: '20-01-2024',
           finalConclusion: '',
@@ -92,8 +93,8 @@ export default function CMPage() {
           isDone: false,
           isDeleted: false,
           isUpdated: false,
-          mandateStatus: 'Pending',
-          documentStatus: 'Pending Documents'
+          mandateStatus: 'Pending' as const,
+          documentStatus: 'Pending Documents' as const
         },
         {
           id: 'sample-2',
@@ -110,8 +111,8 @@ export default function CMPage() {
             { id: '1', number: '8765432109', name: 'Priya Sharma', isMain: true }
           ],
           companyLocation: 'Sector 17, Chandigarh',
-          unitType: 'Existing',
-          status: 'Follow-up',
+          unitType: 'Existing' as const,
+          status: 'Follow-up' as const,
           lastActivityDate: '12-01-2024',
           followUpDate: '18-01-2024',
           finalConclusion: '',
@@ -119,15 +120,19 @@ export default function CMPage() {
           isDone: false,
           isDeleted: false,
           isUpdated: false,
-          mandateStatus: 'Pending',
-          documentStatus: 'Pending Documents'
+          mandateStatus: 'Pending' as const,
+          documentStatus: 'Pending Documents' as const
         }
       ];
       
       // Add sample leads to localStorage
-      localStorage.setItem('leads', JSON.stringify(sampleLeads));
-      // Reload the page to see the leads
-      window.location.reload();
+      try {
+        localStorage.setItem('leads', JSON.stringify(sampleLeads));
+        // Reload the page to see the leads
+        window.location.reload();
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
     }
   };
 
@@ -199,9 +204,8 @@ export default function CMPage() {
         powerConnection: formData.powerConnection
       };
 
+      // Generate PDF
       pdfService.downloadPDF(mandateData, consultantInfo);
-      
-      // Show success message
       alert('Mandate created and PDF generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);

@@ -320,6 +320,11 @@ export class PDFService {
   }
 
   public downloadPDF(mandateData: MandateData, consultantInfo: ConsultantInfo, filename?: string): void {
+    if (typeof window === 'undefined') {
+      console.error('PDF generation is only available in browser environment');
+      return;
+    }
+    
     const pdf = this.generateMandatePDF(mandateData, consultantInfo);
     
     // Generate filename if not provided
