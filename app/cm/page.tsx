@@ -177,21 +177,6 @@ export default function CMPage() {
                     <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
                       <h2 className="text-lg font-semibold text-gray-900 mb-4">Lead Information</h2>
                       <div className="space-y-4">
-                        <div className="space-y-2">
-                          <label htmlFor="mandateName" className="block text-sm font-medium text-gray-700">
-                            Mandate Name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            id="mandateName"
-                            name="mandateName"
-                            value={formData.mandateName}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter mandate name"
-                          />
-                        </div>
 
                         <div className="space-y-2">
                           <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
