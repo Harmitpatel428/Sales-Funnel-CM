@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { pdfMakeService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfMakeService';
+import { pdfServiceV2, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
 
 export default function TestPDFPage() {
   const [consultantInfo, setConsultantInfo] = useState<ConsultantInfo>(DEFAULT_CONSULTANT_INFO);
@@ -22,7 +22,7 @@ export default function TestPDFPage() {
 
   const handleGeneratePDF = () => {
     try {
-      pdfMakeService.downloadPDF(mandateData, consultantInfo);
+      pdfServiceV2.downloadPDF(mandateData, consultantInfo);
       alert('PDF generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);

@@ -1,4 +1,5 @@
-import PdfPrinter from 'pdfmake/src/printer';
+// Dynamic import to avoid SSR issues
+let PdfPrinter: any = null;
 
 export interface MandateData {
   clientName: string;
@@ -22,15 +23,7 @@ export interface ConsultantInfo {
   phone: string;
 }
 
-// Font definitions for pdfmake
-const fonts = {
-  Roboto: {
-    normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
-    bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
-    italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
-    bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
-  }
-};
+// Fonts will be loaded dynamically
 
 // Predefined scheme descriptions matching the sample PDF
 const SCHEME_DESCRIPTIONS: { [key: string]: any } = {
@@ -439,13 +432,33 @@ export class PDFMakeService {
     return docDefinition;
   }
 
-  public downloadPDF(mandateData: MandateData, consultantInfo: ConsultantInfo, filename?: string): void {
+  public async downloadPDF(mandateData: MandateData, consultantInfo: ConsultantInfo, filename?: string): Promise<void> {
     if (typeof window === 'undefined') {
       console.error('PDF generation is only available in browser environment');
       return;
     }
 
     try {
+      // Dynamic import to avoid SSR issues
+      if (!PdfPrinter) {
+        const pdfMake = await import('pdfmake/build/pdfmake');
+        const pdfFonts = await import('pdfmake/build/vfs_fonts');
+        PdfPrinter = pdfMake.default;
+        
+        // Set up fonts
+        pdfMake.default.fonts = {
+          Roboto: {
+            normal: 'Roboto-Regular.ttf',
+            bold: 'Roboto-Medium.ttf',
+            italics: 'Roboto-Italic.ttf',
+            bolditalics: 'Roboto-MediumItalic.ttf'
+          }
+        };
+        
+        // Set up vfs
+        pdfMake.default.vfs = pdfFonts.default.pdfMake.vfs;
+      }
+
       const docDefinition = this.generateMandatePDF(mandateData, consultantInfo);
       
       // Generate filename if not provided
@@ -455,24 +468,8 @@ export class PDFMakeService {
         filename = `Mandate_${cleanClientName}_${currentDate}.pdf`;
       }
 
-      // Create PDF
-      const printer = new PdfPrinter(fonts);
-      const pdfDoc = printer.createPdfKitDocument(docDefinition);
-      
-      // Download the PDF
-      pdfDoc.pipe(
-        new (window as any).BlobStream()
-      ).on('finish', () => {
-        const blob = pdfDoc.toBlob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        URL.revokeObjectURL(url);
-      });
-      
-      pdfDoc.end();
+      // Create and download PDF
+      PdfPrinter.createPdf(docDefinition).download(filename);
     } catch (error) {
       console.error('Error generating PDF:', error);
       throw error;

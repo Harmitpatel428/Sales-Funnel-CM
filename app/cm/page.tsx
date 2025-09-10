@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeads, Lead } from '../context/LeadContext';
 import { useMandates, Mandate } from '../context/MandateContext';
-import { pdfMakeService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfMakeService';
+import { pdfServiceV2, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
 
 export default function CMPage() {
   const router = useRouter();
@@ -205,7 +205,7 @@ export default function CMPage() {
       };
 
       // Generate PDF
-      pdfMakeService.downloadPDF(mandateData, consultantInfo);
+      pdfServiceV2.downloadPDF(mandateData, consultantInfo);
       alert('Mandate created and PDF generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);
