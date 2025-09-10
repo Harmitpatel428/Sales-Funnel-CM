@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeads } from '../context/LeadContext';
 import { useMandates } from '../context/MandateContext';
+import { pdfService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfService';
 import { Lead, Mandate } from '../context/MandateContext';
 
 export default function CMPage() {
@@ -15,6 +16,8 @@ export default function CMPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showMandatesList, setShowMandatesList] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showConsultantForm, setShowConsultantForm] = useState(false);
+  const [consultantInfo, setConsultantInfo] = useState<ConsultantInfo>(DEFAULT_CONSULTANT_INFO);
   const [formData, setFormData] = useState({
     clientName: '',
     company: '',
@@ -111,6 +114,32 @@ export default function CMPage() {
 
     addMandate(newMandate);
     
+    // Generate PDF
+    try {
+      const mandateData: MandateData = {
+        clientName: formData.clientName,
+        company: formData.company,
+        address: formData.address || '',
+        phone: formData.phone || '',
+        kva: formData.kva,
+        schemes: formData.schemes,
+        typeOfCase: formData.typeOfCase,
+        category: formData.category,
+        projectCost: formData.projectCost,
+        industriesType: formData.industriesType,
+        termLoanAmount: formData.termLoanAmount,
+        powerConnection: formData.powerConnection
+      };
+
+      pdfService.downloadPDF(mandateData, consultantInfo);
+      
+      // Show success message
+      alert('Mandate created and PDF generated successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Mandate created successfully, but there was an error generating the PDF.');
+    }
+    
     // Reset form and go back to main view
     setFormData({
       clientName: '',
@@ -128,9 +157,6 @@ export default function CMPage() {
     });
     setSelectedLead(null);
     setShowCreateForm(false);
-    
-    // Show success message
-    alert('Mandate created successfully!');
   };
 
   // Handle cancel
@@ -316,12 +342,14 @@ export default function CMPage() {
                         <p className="text-sm text-gray-600 mb-4">Select applicable schemes:</p>
                         <div className="space-y-3">
                           {[
-                            'Interest subsidy',
-                            'SGST Subsidy',
-                            'Rent',
-                            'Power connection charges',
-                            'Electric duty exemption',
-                            'Solar subsidy'
+                            'Interest Subsidy',
+                            'PCC',
+                            'EDE',
+                            'Capital Subsidy',
+                            'Technology Upgradation',
+                            'Infrastructure Development',
+                            'Export Promotion',
+                            'Skill Development'
                           ].map((scheme) => (
                             <label 
                               key={scheme} 
@@ -481,6 +509,101 @@ export default function CMPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Consultant Information Section */}
+              <div className="px-4 sm:px-6 py-4 sm:py-6 border-t border-gray-200 bg-blue-50">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Consultant Information</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowConsultantForm(!showConsultantForm)}
+                    className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                  >
+                    {showConsultantForm ? 'Hide' : 'Edit'} Consultant Info
+                  </button>
+                </div>
+                
+                {showConsultantForm ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="consultantName" className="block text-sm font-medium text-gray-700">
+                        Consultant Name
+                      </label>
+                      <input
+                        type="text"
+                        id="consultantName"
+                        value={consultantInfo.name}
+                        onChange={(e) => setConsultantInfo(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        placeholder="Enter consultant name"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="consultantEmail" className="block text-sm font-medium text-gray-700">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="consultantEmail"
+                        value={consultantInfo.email}
+                        onChange={(e) => setConsultantInfo(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        placeholder="Enter email"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="consultantPhone" className="block text-sm font-medium text-gray-700">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        id="consultantPhone"
+                        value={consultantInfo.phone}
+                        onChange={(e) => setConsultantInfo(prev => ({ ...prev, phone: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2 md:col-span-2">
+                      <label htmlFor="consultantAddress" className="block text-sm font-medium text-gray-700">
+                        Address
+                      </label>
+                      <textarea
+                        id="consultantAddress"
+                        value={consultantInfo.address}
+                        onChange={(e) => setConsultantInfo(prev => ({ ...prev, address: e.target.value }))}
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-vertical"
+                        placeholder="Enter consultant address"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-700">Name:</span>
+                        <span className="ml-2 text-gray-900">{consultantInfo.name}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Email:</span>
+                        <span className="ml-2 text-gray-900">{consultantInfo.email}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Phone:</span>
+                        <span className="ml-2 text-gray-900">{consultantInfo.phone}</span>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="font-medium text-gray-700">Address:</span>
+                        <span className="ml-2 text-gray-900">{consultantInfo.address}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Form Actions - Desktop */}
