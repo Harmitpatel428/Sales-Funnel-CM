@@ -80,24 +80,118 @@
   box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
 }
 
-/* Fix placeholder color to be black */
-.input::placeholder {
-  color: #000000;
+/* 
+ * Global Placeholder Styling - Professional & Consistent
+ * 
+ * This provides consistent placeholder styling across the entire application:
+ * - Light mode: text-slate-500 (medium gray)
+ * - Dark mode: text-slate-400 (lighter gray for better contrast)
+ * 
+ * Browser Support:
+ * - Webkit (Chrome, Safari, Edge): ::-webkit-input-placeholder
+ * - Firefox: ::-moz-placeholder
+ * - IE/Edge Legacy: :-ms-input-placeholder
+ * 
+ * Per-Input Overrides:
+ * You can override the global styling for specific inputs using Tailwind classes:
+ * Example: className="... placeholder:text-indigo-400"
+ * 
+ * The global styles will be overridden by any Tailwind placeholder classes
+ * due to CSS specificity and Tailwind's utility-first approach.
+ */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  @apply text-slate-500;
   opacity: 1;
 }
 
-/* Fix placeholder color for different browsers */
+/* Webkit browsers (Chrome, Safari, Edge) */
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder,
+select::-webkit-input-placeholder {
+  @apply text-slate-500;
+}
+
+/* Firefox */
+input::-moz-placeholder,
+textarea::-moz-placeholder,
+select::-moz-placeholder {
+  @apply text-slate-500;
+  opacity: 1;
+}
+
+/* Internet Explorer & Edge Legacy */
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder,
+select:-ms-input-placeholder {
+  @apply text-slate-500;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  input::placeholder,
+  textarea::placeholder,
+  select::placeholder {
+    @apply text-slate-400;
+  }
+  
+  input::-webkit-input-placeholder,
+  textarea::-webkit-input-placeholder,
+  select::-webkit-input-placeholder {
+    @apply text-slate-400;
+  }
+  
+  input::-moz-placeholder,
+  textarea::-moz-placeholder,
+  select::-moz-placeholder {
+    @apply text-slate-400;
+    opacity: 1;
+  }
+  
+  input:-ms-input-placeholder,
+  textarea:-ms-input-placeholder,
+  select:-ms-input-placeholder {
+    @apply text-slate-400;
+  }
+}
+
+/* Legacy input class for backward compatibility */
+.input::placeholder {
+  @apply text-slate-500;
+  opacity: 1;
+}
+
 .input::-webkit-input-placeholder {
-  color: #000000;
+  @apply text-slate-500;
 }
 
 .input::-moz-placeholder {
-  color: #000000;
+  @apply text-slate-500;
   opacity: 1;
 }
 
 .input:-ms-input-placeholder {
-  color: #000000;
+  @apply text-slate-500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .input::placeholder {
+    @apply text-slate-400;
+  }
+  
+  .input::-webkit-input-placeholder {
+    @apply text-slate-400;
+  }
+  
+  .input::-moz-placeholder {
+    @apply text-slate-400;
+    opacity: 1;
+  }
+  
+  .input:-ms-input-placeholder {
+    @apply text-slate-400;
+  }
 }
 
 /* Theme Variables */
