@@ -16,12 +16,11 @@ export default function CMPage() {
   const [showMandatesList, setShowMandatesList] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
-    mandateName: '',
     clientName: '',
     company: '',
     kva: '',
     address: '',
-    discom: ''
+    schemes: [] as string[]
   });
 
   // Generate UUID function
@@ -58,12 +57,11 @@ export default function CMPage() {
   const handleLeadSelection = (lead: Lead) => {
     setSelectedLead(lead);
     setFormData({
-      mandateName: `${lead.clientName} - ${lead.company}`,
       clientName: lead.clientName,
       company: lead.company,
       kva: lead.kva,
       address: lead.companyLocation || '',
-      discom: lead.discom || ''
+      schemes: []
     });
     setShowCreateForm(true);
   };
@@ -75,12 +73,12 @@ export default function CMPage() {
     const newMandate: Mandate = {
       mandateId: generateId(),
       leadId: selectedLead?.id || null,
-      mandateName: formData.mandateName,
+      mandateName: `${formData.clientName} - ${formData.company}`,
       clientName: formData.clientName,
       company: formData.company,
       kva: formData.kva,
       address: formData.address,
-      discom: formData.discom,
+      schemes: formData.schemes,
       createdAt: new Date().toISOString(),
       status: 'draft',
       isDeleted: false
@@ -90,12 +88,11 @@ export default function CMPage() {
     
     // Reset form and go back to main view
     setFormData({
-      mandateName: '',
       clientName: '',
       company: '',
       kva: '',
       address: '',
-      discom: ''
+      schemes: []
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -107,12 +104,11 @@ export default function CMPage() {
   // Handle cancel
   const handleCancel = () => {
     setFormData({
-      mandateName: '',
       clientName: '',
       company: '',
       kva: '',
       address: '',
-      discom: ''
+      schemes: []
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -125,6 +121,16 @@ export default function CMPage() {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  // Handle scheme selection changes
+  const handleSchemeChange = (scheme: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      schemes: checked 
+        ? [...prev.schemes, scheme]
+        : prev.schemes.filter(s => s !== scheme)
     }));
   };
 
@@ -236,37 +242,6 @@ export default function CMPage() {
                           />
                         </div>
 
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Column - Mandate Details */}
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Mandate Details</h2>
-                      <div className="space-y-4">
-
-                        <div className="space-y-2">
-                          <label htmlFor="discom" className="block text-sm font-medium text-gray-700">
-                            Discom
-                          </label>
-                          <select
-                            id="discom"
-                            name="discom"
-                            value={formData.discom}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                          >
-                            <option value="">Select Discom</option>
-                            <option value="UGVCL">UGVCL</option>
-                            <option value="MGVCL">MGVCL</option>
-                            <option value="DGVCL">DGVCL</option>
-                            <option value="PGVCL">PGVCL</option>
-                          </select>
-                        </div>
-
-
-
                         <div className="space-y-2">
                           <label htmlFor="address" className="block text-sm font-medium text-gray-700">
                             Address
@@ -280,6 +255,41 @@ export default function CMPage() {
                             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
                             placeholder="Enter address"
                           />
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Mandate Details */}
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Mandate Details</h2>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Scheme Options
+                          </label>
+                          <div className="space-y-2">
+                            {[
+                              'Interest subsidy',
+                              'SGST Subsidy',
+                              'Rent',
+                              'Power connection charges',
+                              'Electric duty exemption',
+                              'Solar subsidy'
+                            ].map((scheme) => (
+                              <label key={scheme} className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={formData.schemes.includes(scheme)}
+                                  onChange={(e) => handleSchemeChange(scheme, e.target.checked)}
+                                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">{scheme}</span>
+                              </label>
+                            ))}
+                          </div>
                         </div>
 
                       </div>
