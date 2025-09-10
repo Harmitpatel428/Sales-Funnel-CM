@@ -56,6 +56,14 @@ const Navigation = memo(function Navigation({ discomFilter, onDiscomChange, onEx
             >
               Add Lead
             </Link>
+            <Link 
+              href="/cm"
+              className={`px-3 py-1.5 rounded-md font-medium transition-all duration-300 text-sm ${pathname === '/cm' 
+                ? 'bg-purple-100 text-purple-700 shadow-sm' 
+                : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50'}`}
+            >
+              CM
+            </Link>
           </div>
           
           {/* Controls and Clock */}
