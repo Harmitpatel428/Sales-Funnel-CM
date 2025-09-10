@@ -21,7 +21,13 @@ export default function CMPage() {
     kva: '',
     address: '',
     phone: '',
-    schemes: [] as string[]
+    schemes: [] as string[],
+    typeOfCase: '',
+    category: '',
+    projectCost: '',
+    industriesType: '',
+    termLoanAmount: '',
+    powerConnection: ''
   });
 
   // Generate UUID function
@@ -57,13 +63,23 @@ export default function CMPage() {
   // Handle lead selection for creating mandate from existing lead
   const handleLeadSelection = (lead: Lead) => {
     setSelectedLead(lead);
+    
+    // Find the main contact information
+    const mainContact = lead.mobileNumbers?.find(m => m.isMain);
+    
     setFormData({
-      clientName: lead.clientName,
+      clientName: mainContact?.name || lead.clientName,
       company: lead.company,
       kva: lead.kva,
       address: lead.companyLocation || '',
-      phone: lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber || '',
-      schemes: []
+      phone: mainContact?.number || lead.mobileNumber || '',
+      schemes: [],
+      typeOfCase: '',
+      category: '',
+      projectCost: '',
+      industriesType: '',
+      termLoanAmount: '',
+      powerConnection: ''
     });
     setShowCreateForm(true);
   };
@@ -82,6 +98,12 @@ export default function CMPage() {
       address: formData.address,
       phone: formData.phone,
       schemes: formData.schemes,
+      typeOfCase: formData.typeOfCase,
+      category: formData.category,
+      projectCost: formData.projectCost,
+      industriesType: formData.industriesType,
+      termLoanAmount: formData.termLoanAmount,
+      powerConnection: formData.powerConnection,
       createdAt: new Date().toISOString(),
       status: 'draft',
       isDeleted: false
@@ -96,7 +118,13 @@ export default function CMPage() {
       kva: '',
       address: '',
       phone: '',
-      schemes: []
+      schemes: [],
+      typeOfCase: '',
+      category: '',
+      projectCost: '',
+      industriesType: '',
+      termLoanAmount: '',
+      powerConnection: ''
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -113,7 +141,13 @@ export default function CMPage() {
       kva: '',
       address: '',
       phone: '',
-      schemes: []
+      schemes: [],
+      typeOfCase: '',
+      category: '',
+      projectCost: '',
+      industriesType: '',
+      termLoanAmount: '',
+      powerConnection: ''
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -321,6 +355,128 @@ export default function CMPage() {
                             </p>
                           </div>
                         )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details of Proposed Firm Section */}
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                      <div className="flex items-center mb-6">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-900">Details of Proposed Firm</h2>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {/* Type of Case */}
+                        <div className="space-y-2">
+                          <label htmlFor="typeOfCase" className="block text-sm font-medium text-gray-700">
+                            Type of Case
+                          </label>
+                          <input
+                            type="text"
+                            id="typeOfCase"
+                            name="typeOfCase"
+                            value={formData.typeOfCase}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter type of case"
+                          />
+                        </div>
+
+                        {/* Category Dropdown */}
+                        <div className="space-y-2">
+                          <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+                            Category
+                          </label>
+                          <select
+                            id="category"
+                            name="category"
+                            value={formData.category}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                          >
+                            <option value="">Select Category</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                          </select>
+                        </div>
+
+                        {/* Project Cost */}
+                        <div className="space-y-2">
+                          <label htmlFor="projectCost" className="block text-sm font-medium text-gray-700">
+                            Project Cost
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              id="projectCost"
+                              name="projectCost"
+                              value={formData.projectCost}
+                              onChange={handleChange}
+                              className="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                              placeholder="Enter project cost"
+                            />
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                              <span className="text-gray-500 text-sm">Approx</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Industries Type Dropdown */}
+                        <div className="space-y-2">
+                          <label htmlFor="industriesType" className="block text-sm font-medium text-gray-700">
+                            Industries Type
+                          </label>
+                          <select
+                            id="industriesType"
+                            name="industriesType"
+                            value={formData.industriesType}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                          >
+                            <option value="">Select Industry Type</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Service">Service</option>
+                          </select>
+                        </div>
+
+                        {/* Term Loan Amount */}
+                        <div className="space-y-2">
+                          <label htmlFor="termLoanAmount" className="block text-sm font-medium text-gray-700">
+                            Term Loan Amount
+                          </label>
+                          <input
+                            type="text"
+                            id="termLoanAmount"
+                            name="termLoanAmount"
+                            value={formData.termLoanAmount}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter term loan amount"
+                          />
+                        </div>
+
+                        {/* Power Connection */}
+                        <div className="space-y-2">
+                          <label htmlFor="powerConnection" className="block text-sm font-medium text-gray-700">
+                            Power Connection
+                          </label>
+                          <input
+                            type="text"
+                            id="powerConnection"
+                            name="powerConnection"
+                            value={formData.powerConnection}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter power connection details"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

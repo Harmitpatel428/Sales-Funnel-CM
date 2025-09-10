@@ -12,6 +12,12 @@ export interface Mandate {
   address?: string;
   phone?: string;
   schemes: string[];
+  typeOfCase?: string;
+  category?: string;
+  projectCost?: string;
+  industriesType?: string;
+  termLoanAmount?: string;
+  powerConnection?: string;
   createdAt: string;
   status: 'draft' | 'active' | 'closed';
   isDeleted: boolean;
@@ -112,6 +118,12 @@ export function MandateProvider({ children }: { children: ReactNode }) {
           mandate.kva,
           mandate.address,
           mandate.phone,
+          mandate.typeOfCase,
+          mandate.category,
+          mandate.projectCost,
+          mandate.industriesType,
+          mandate.termLoanAmount,
+          mandate.powerConnection,
           ...mandate.schemes
         ].filter(Boolean).map(field => field?.toLowerCase());
         
