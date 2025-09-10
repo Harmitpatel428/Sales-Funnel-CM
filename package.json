@@ -1,9 +1,10 @@
 {
-  "name": "sales-funnel",
-  "version": "0.1.0",
+  "name": "enterprise-lead-management-system",
+  "version": "2.0.0",
+  "description": "Professional Enterprise Lead Management & CRM System",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --fix",
@@ -51,8 +52,8 @@
   "main": "electron/main.js",
   "homepage": "./",
   "build": {
-    "appId": "com.salesfunnel.app",
-    "productName": "Sales Funnel",
+    "appId": "com.enterpriseleadmgmt.app",
+    "productName": "Enterprise Lead Management System",
     "directories": {
       "output": "dist"
     },

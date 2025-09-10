@@ -25,7 +25,7 @@ const Navigation = memo(function Navigation({ discomFilter, onDiscomChange, onEx
   
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-10 backdrop-blur-sm bg-opacity-90 transition-all duration-300">
-      <div className="max-w-6xl mx-auto px-3 py-2">
+      <div className="max-w-6xl mx-auto px-3 py-0.5">
         <div className="flex justify-between items-center">
           <div className="font-bold text-lg text-purple-700 tracking-tight hover:text-purple-600 transition-colors">
             V4U Lead Funnel CRM

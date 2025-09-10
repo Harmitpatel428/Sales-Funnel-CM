@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useLeads, Lead } from '../context/LeadContext';
 import { useRouter } from 'next/navigation';
 import LeadTable from '../components/LeadTable';
@@ -149,6 +149,49 @@ export default function AllLeadsPage() {
     setSelectedLead(null);
     setIsModalOpen(false);
   };
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (isModalOpen) {
+          closeModal();
+        }
+        if (showPasswordModal) {
+          setShowPasswordModal(false);
+          setPassword('');
+          setLeadToDelete(null);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen, showPasswordModal]);
+
+  // Handle modal return from edit form
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnToModal = urlParams.get('returnToModal');
+    const leadId = urlParams.get('leadId');
+    
+    if (returnToModal === 'true' && leadId) {
+      // Find the lead and open the modal
+      const lead = leads.find(l => l.id === leadId);
+      if (lead) {
+        setSelectedLead(lead);
+        setIsModalOpen(true);
+      }
+      
+      // Clean up URL parameters
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('returnToModal');
+      newUrl.searchParams.delete('leadId');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [leads]);
 
   // Copy to clipboard function
   const copyToClipboard = async (text: string, fieldName: string) => {
@@ -545,6 +588,31 @@ export default function AllLeadsPage() {
         console.log('Original value: "' + value + '" (type: ' + typeof value + ')');
         lead.mobileNumber = String(value);
         console.log('Lead mobileNumber after setting: "' + lead.mobileNumber + '"');
+        
+        // Also populate the mobileNumbers array with the main mobile number
+        if (!lead.mobileNumbers) {
+          lead.mobileNumbers = [];
+        }
+        
+        // Ensure we have at least one slot
+        if (lead.mobileNumbers.length === 0) {
+          lead.mobileNumbers.push({
+            id: '1',
+            number: String(value),
+            name: lead.clientName || '', // Auto-populate contact name with client name
+            isMain: true
+          });
+          console.log('Added main mobile number to mobileNumbers array:', lead.mobileNumbers[0]);
+        } else {
+          // Update the first slot if it exists
+          lead.mobileNumbers[0] = {
+            id: '1',
+            number: String(value),
+            name: lead.clientName || lead.mobileNumbers[0]?.name || '', // Auto-populate contact name with client name
+            isMain: true
+          };
+          console.log('Updated main mobile number in mobileNumbers array:', lead.mobileNumbers[0]);
+        }
         break;
       case 'mobile number 2':
       case 'mobile number2':
@@ -1138,11 +1206,37 @@ export default function AllLeadsPage() {
       console.log('Valid leads (with client names):', validLeads);
 
       if (validLeads.length > 0) {
-        // Add unique IDs to leads
-        const leadsWithIds = validLeads.map((lead, index) => ({
-          ...lead,
-          id: `imported-${Date.now()}-${index}`,
-        })) as Lead[];
+        // Add unique IDs to leads and auto-detect last activity date
+        const leadsWithIds = validLeads.map((lead, index) => {
+          // Auto-detect last activity date if not provided
+          let lastActivityDate = lead.lastActivityDate;
+          if (!lastActivityDate || lastActivityDate.trim() === '') {
+            // Set to current date in DD-MM-YYYY format
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            lastActivityDate = `${day}-${month}-${year}`;
+            console.log(`Auto-detected last activity date for ${lead.clientName}: ${lastActivityDate}`);
+          }
+          
+          // Auto-populate main mobile number contact name if not provided
+          let mobileNumbers = lead.mobileNumbers || [];
+          if (mobileNumbers.length > 0 && mobileNumbers[0] && mobileNumbers[0].number && !mobileNumbers[0].name) {
+            mobileNumbers[0] = {
+              ...mobileNumbers[0],
+              name: lead.clientName || ''
+            };
+            console.log(`Auto-populated contact name for main mobile number: ${mobileNumbers[0].name}`);
+          }
+          
+          return {
+            ...lead,
+            id: `imported-${Date.now()}-${index}`,
+            lastActivityDate: lastActivityDate,
+            mobileNumbers: mobileNumbers,
+          };
+        }) as Lead[];
 
         console.log('Leads with IDs:', leadsWithIds);
 
@@ -1187,6 +1281,34 @@ export default function AllLeadsPage() {
     }
   };
 
+  // Helper function to format dates for export (DD-MM-YYYY format only)
+  const formatDateForExport = (dateString: string): string => {
+    if (!dateString || dateString.trim() === '') {
+      return '';
+    }
+    
+    // If already in DD-MM-YYYY format, return as is
+    if (dateString.match(/^\d{2}-\d{2}-\d{4}$/)) {
+      return dateString;
+    }
+    
+    // If it's an ISO date string or Date object, convert to DD-MM-YYYY
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original if invalid
+      }
+      
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      
+      return `${day}-${month}-${year}`;
+    } catch {
+      return dateString; // Return original if conversion fails
+    }
+  };
+
   // Export function (copied from dashboard)
   const handleExportExcel = async () => {
     try {
@@ -1211,6 +1333,7 @@ export default function AllLeadsPage() {
         'Last Discussion', 
         'Address',
         'Next Follow-up Date',
+        'Last Activity Date',
         'Mobile Number 2', 
         'Contact Name 2', 
         'Mobile Number 3', 
@@ -1232,7 +1355,7 @@ export default function AllLeadsPage() {
         return [
           lead.consumerNumber || '',
           lead.kva || '',
-          lead.connectionDate && lead.connectionDate.trim() !== '' ? lead.connectionDate : '',
+          formatDateForExport(lead.connectionDate || ''), // Connection Date
           lead.company || '',
           lead.clientName || '',
           lead.discom || '', // Discom
@@ -1242,7 +1365,8 @@ export default function AllLeadsPage() {
           lead.status || 'New', // Lead Status
           lead.notes || '', // Last Discussion
           lead.companyLocation || (lead.notes && lead.notes.includes('Address:') ? lead.notes.split('Address:')[1]?.trim() || '' : ''), // Address
-          lead.followUpDate || '', // Next Follow-up Date
+          formatDateForExport(lead.followUpDate || ''), // Next Follow-up Date
+          formatDateForExport(lead.lastActivityDate || ''), // Last Activity Date
           mobile2.number || '', // Mobile Number 2
           mobile2.name || '', // Contact Name 2
           mobile3.number || '', // Mobile Number 3
@@ -1399,7 +1523,7 @@ export default function AllLeadsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search leads..."
-                  className="block w-40 pl-6 pr-2 py-1 border border-gray-300 rounded leading-5 bg-white placeholder:text-black focus:outline-none focus:placeholder:text-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
+                  className="block w-40 pl-6 pr-2 py-1 border border-gray-300 rounded leading-5 bg-white placeholder:text-black focus:outline-none focus:placeholder:text-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs text-black"
                 />
                 {searchTerm && (
                   <button
@@ -1568,9 +1692,17 @@ export default function AllLeadsPage() {
                       <label className="block text-xs font-medium text-black">Main Phone</label>
                       <button
                         onClick={() => {
-                          const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
-                            ? selectedLead.mobileNumbers.find(m => m.isMain)?.number || selectedLead.mobileNumbers[0]?.number || 'N/A'
-                            : selectedLead.mobileNumber || 'N/A';
+                          const mainMobile = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
+                            ? selectedLead.mobileNumbers.find(m => m.isMain) || selectedLead.mobileNumbers[0]
+                            : null;
+                          
+                          let phoneNumber = 'N/A';
+                          if (mainMobile && mainMobile.number) {
+                            phoneNumber = mainMobile.name ? `${mainMobile.name}: ${mainMobile.number}` : mainMobile.number;
+                          } else {
+                            phoneNumber = selectedLead.mobileNumber || 'N/A';
+                          }
+                          
                           copyToClipboard(phoneNumber, 'mainPhone');
                         }}
                         className="text-gray-400 hover:text-black transition-colors"
@@ -1589,9 +1721,15 @@ export default function AllLeadsPage() {
                     </div>
                     <p className="text-sm font-medium text-black">
                       {(() => {
-                        const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
-                          ? selectedLead.mobileNumbers.find(m => m.isMain)?.number || selectedLead.mobileNumbers[0]?.number || 'N/A'
-                          : selectedLead.mobileNumber || 'N/A';
+                        const mainMobile = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
+                          ? selectedLead.mobileNumbers.find(m => m.isMain) || selectedLead.mobileNumbers[0]
+                          : null;
+                        
+                        if (mainMobile && mainMobile.number) {
+                          return mainMobile.name ? `${mainMobile.name}: ${mainMobile.number}` : mainMobile.number;
+                        }
+                        
+                        const phoneNumber = selectedLead.mobileNumber || 'N/A';
                         return phoneNumber;
                       })()}
                     </p>
@@ -1768,13 +1906,15 @@ Discom: ${selectedLead.discom || 'N/A'}
 GIDC: ${selectedLead.gidc || 'N/A'}
 GST Number: ${selectedLead.gstNumber || 'N/A'}
 Phone: ${(() => {
-  const phoneNumber = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
-    ? selectedLead.mobileNumbers.find(m => m.isMain)?.number || selectedLead.mobileNumbers[0]?.number || 'N/A'
-    : selectedLead.mobileNumber || 'N/A';
-  const contactName = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
-    ? selectedLead.mobileNumbers.find(m => m.isMain)?.name || selectedLead.clientName || 'N/A'
-    : selectedLead.clientName || 'N/A';
-  return `${phoneNumber} - ${contactName}`;
+  const mainMobile = selectedLead.mobileNumbers && selectedLead.mobileNumbers.length > 0 
+    ? selectedLead.mobileNumbers.find(m => m.isMain) || selectedLead.mobileNumbers[0]
+    : null;
+  
+  if (mainMobile && mainMobile.number) {
+    return mainMobile.name ? `${mainMobile.name}: ${mainMobile.number}` : mainMobile.number;
+  }
+  
+  return selectedLead.mobileNumber || 'N/A';
 })()}
 Status: ${selectedLead.status}
 Unit Type: ${selectedLead.unitType}
@@ -1827,6 +1967,11 @@ ${selectedLead.finalConclusion ? `Conclusion: ${selectedLead.finalConclusion}` :
                       onClick={() => {
                         // Store the lead data in localStorage for the edit form
                         localStorage.setItem('editingLead', JSON.stringify(selectedLead));
+                        // Store modal return data for ESC key functionality
+                        localStorage.setItem('modalReturnData', JSON.stringify({
+                          sourcePage: 'all-leads',
+                          leadId: selectedLead.id
+                        }));
                         closeModal();
                         router.push(`/add-lead?mode=edit&id=${selectedLead.id}&from=all-leads`);
                       }}

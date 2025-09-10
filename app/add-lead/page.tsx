@@ -183,6 +183,20 @@ export default function AddLeadPage() {
     }
   }, [leads, formData.mobileNumbers[0]?.number, formData.clientName]);
 
+  // Handle ESC key to close/cancel form
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [cameFromHome, sourcePage, isEditMode]); // Include dependencies that handleCancel uses
+
   // Generate UUID function
   const generateId = (): string => {
     if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
@@ -450,25 +464,6 @@ export default function AddLeadPage() {
     }
   };
 
-  // Handle suggestion insertion for notes
-  const handleSuggestionClick = (suggestion: string) => {
-    // Auto-capitalize the first letter of the suggestion
-    const capitalizedSuggestion = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
-    
-    setFormData(prev => ({
-      ...prev,
-      notes: capitalizedSuggestion
-    }));
-
-    // Clear error for notes field
-    if (errors.notes) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.notes;
-        return newErrors;
-      });
-    }
-  };
 
   // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -661,7 +656,36 @@ export default function AddLeadPage() {
     if (isEditMode) {
       localStorage.removeItem('editingLead');
     }
-    // Navigate back to appropriate page
+    
+    // Check if we came from a modal and should return to it
+    const modalReturnData = localStorage.getItem('modalReturnData');
+    if (modalReturnData) {
+      try {
+        const { sourcePage: modalSourcePage, leadId } = JSON.parse(modalReturnData);
+        // Navigate back to the specific source page with modal return flag
+        const routeMap: { [key: string]: string } = {
+          'documentation': '/follow-up-mandate?tab=pending',
+          'mandate-sent': '/follow-up-mandate?tab=signed',
+          'due-today': '/due-today',
+          'upcoming': '/upcoming',
+          'all-leads': '/all-leads',
+          'dashboard': '/dashboard'
+        };
+        const targetRoute = routeMap[modalSourcePage] || '/dashboard';
+        // Add modal return parameters while preserving existing parameters
+        const url = new URL(targetRoute, window.location.origin);
+        url.searchParams.set('returnToModal', 'true');
+        url.searchParams.set('leadId', leadId);
+        router.push(url.pathname + url.search);
+        localStorage.removeItem('modalReturnData');
+        return;
+      } catch (error) {
+        console.error('Error parsing modal return data:', error);
+        localStorage.removeItem('modalReturnData');
+      }
+    }
+    
+    // Navigate back to appropriate page (original logic)
     if (cameFromHome) {
       router.push('/');
     } else if (sourcePage) {
@@ -1144,6 +1168,12 @@ export default function AddLeadPage() {
                         ...prev,
                         lastActivityDate: formattedDate
                       }));
+                    } else {
+                      // Handle clear button - set lastActivityDate to empty string
+                      setFormData(prev => ({
+                        ...prev,
+                        lastActivityDate: ''
+                      }));
                     }
                   }}
                   className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 text-black text-xs"
@@ -1178,14 +1208,20 @@ export default function AddLeadPage() {
                         ...prev,
                         followUpDate: formattedDate
                       }));
-                      // Clear error if exists
-                      if (errors.followUpDate) {
-                        setErrors(prev => {
-                          const newErrors = { ...prev };
-                          delete newErrors.followUpDate;
-                          return newErrors;
-                        });
-                      }
+                    } else {
+                      // Handle clear button - set followUpDate to empty string
+                      setFormData(prev => ({
+                        ...prev,
+                        followUpDate: ''
+                      }));
+                    }
+                    // Clear error if exists
+                    if (errors.followUpDate) {
+                      setErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors.followUpDate;
+                        return newErrors;
+                      });
                     }
                   }}
                   min={new Date().toISOString().split('T')[0]}
@@ -1223,62 +1259,6 @@ export default function AddLeadPage() {
               placeholder="Enter details about the last discussion with this lead"
               disabled={isSubmitting}
             />
-            
-            {/* Discussion Suggestions */}
-            <div className="mt-1">
-              <p className="text-xs text-black mb-2">Quick suggestions:</p>
-              <div className="flex flex-wrap gap-1">
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("Call me after sometime I am busy right now.")}
-                  className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors border border-blue-200"
-                >
-                  Call me after sometime I am busy right now.
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("I need to discuss this with my partner or management")}
-                  className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors border border-green-200"
-                >
-                  I need to discuss this with my partner or management
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("Send me details, I'll review")}
-                  className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors border border-purple-200"
-                >
-                  Send me details, I'll review
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("Connect with the number I am giving.")}
-                  className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors border border-orange-200"
-                >
-                  Connect with the number I am giving.
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("Send me your mandate.")}
-                  className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors border border-red-200"
-                >
-                  Send me your mandate.
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("They want to meet in-person we've requested client's work location/address for meeting.")}
-                  className="px-2 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200 transition-colors border border-indigo-200"
-                >
-                  They want to meet in-person we've requested client's work location/address for meeting.
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSuggestionClick("Conversation happened, but the work confirmation is still pending.")}
-                  className="px-2 py-1 text-xs bg-teal-100 text-teal-700 rounded-full hover:bg-teal-200 transition-colors border border-teal-200"
-                >
-                  Conversation happened, but the work confirmation is still pending.
-                </button>
-              </div>
-            </div>
             {errors.notes && (
               <p className="text-xs text-red-600 flex items-center">
                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">

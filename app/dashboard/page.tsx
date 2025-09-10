@@ -32,6 +32,13 @@ export default function DashboardPage() {
   const [emptyStatusMessage, setEmptyStatusMessage] = useState('');
   const [showExportPasswordModal, setShowExportPasswordModal] = useState(false);
   const [exportPassword, setExportPassword] = useState('');
+  
+  // Drag and drop state for status buttons
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [statusOrder, setStatusOrder] = useState<string[]>([
+    'New', 'CNR', 'Busy', 'Follow-up', 'Deal Close', 'Work Alloted', 
+    'Hotlead', 'Mandate Sent', 'Documentation', 'Others'
+  ]);
 
   // Create a stable reference for activeFilters to prevent infinite loops
   const activeFiltersKey = useMemo(() => {
@@ -126,6 +133,62 @@ export default function DashboardPage() {
       console.log('Clearing main dashboard view due to updated leads');
     }
   }, [leads.length, activeFiltersKey]);
+
+  // Handle ESC key to close modals
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (showLeadModal) {
+          setShowLeadModal(false);
+          document.body.style.overflow = 'unset';
+        }
+        if (showDeleteModal) {
+          setShowDeleteModal(false);
+          setLeadToDelete(null);
+          document.body.style.overflow = 'unset';
+        }
+        if (showMassDeleteModal) {
+          setShowMassDeleteModal(false);
+          setLeadsToDelete([]);
+          document.body.style.overflow = 'unset';
+        }
+        if (showExportPasswordModal) {
+          setShowExportPasswordModal(false);
+          setExportPassword('');
+          document.body.style.overflow = 'unset';
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showLeadModal, showDeleteModal, showMassDeleteModal, showExportPasswordModal]);
+
+  // Handle modal return from edit form
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnToModal = urlParams.get('returnToModal');
+    const leadId = urlParams.get('leadId');
+    
+    if (returnToModal === 'true' && leadId) {
+      // Find the lead and open the modal
+      const lead = leads.find(l => l.id === leadId);
+      if (lead) {
+        setSelectedLead(lead);
+        setShowLeadModal(true);
+        // Prevent body scrolling when modal is open
+        document.body.style.overflow = 'hidden';
+      }
+      
+      // Clean up URL parameters
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('returnToModal');
+      newUrl.searchParams.delete('leadId');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [leads]);
   
   // Helper function to parse DD-MM-YYYY format dates
   const parseFollowUpDate = (dateString: string): Date | null => {
@@ -372,6 +435,34 @@ export default function DashboardPage() {
     setExportPassword('');
   };
 
+  // Helper function to format dates for export (DD-MM-YYYY format only)
+  const formatDateForExport = (dateString: string): string => {
+    if (!dateString || dateString.trim() === '') {
+      return '';
+    }
+    
+    // If already in DD-MM-YYYY format, return as is
+    if (dateString.match(/^\d{2}-\d{2}-\d{4}$/)) {
+      return dateString;
+    }
+    
+    // If it's an ISO date string or Date object, convert to DD-MM-YYYY
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original if invalid
+      }
+      
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      
+      return `${day}-${month}-${year}`;
+    } catch {
+      return dateString; // Return original if conversion fails
+    }
+  };
+
   // Actual export function with password verification
   const performExport = async () => {
     // Password verification - you can change this password
@@ -405,6 +496,7 @@ export default function DashboardPage() {
         'Last Discussion', 
         'Address',
         'Next Follow-up Date',
+        'Last Activity Date',
         'Mobile Number 2', 
         'Contact Name 2', 
         'Mobile Number 3', 
@@ -426,7 +518,7 @@ export default function DashboardPage() {
         return [
           lead.consumerNumber || '',
           lead.kva || '',
-          lead.connectionDate && lead.connectionDate.trim() !== '' ? lead.connectionDate : '',
+          formatDateForExport(lead.connectionDate || ''), // Connection Date
           lead.company || '',
           lead.clientName || '',
           lead.discom || '', // Discom
@@ -437,7 +529,8 @@ export default function DashboardPage() {
           lead.status || 'New', // Lead Status
           lead.notes || '', // Last Discussion
           lead.companyLocation || (lead.notes && lead.notes.includes('Address:') ? lead.notes.split('Address:')[1]?.trim() || '' : ''), // Address
-          lead.followUpDate || '', // Next Follow-up Date
+          formatDateForExport(lead.followUpDate || ''), // Next Follow-up Date
+          formatDateForExport(lead.lastActivityDate || ''), // Last Activity Date
           mobile2.number || '', // Mobile Number 2
           mobile2.name || '', // Contact Name 2
           mobile3.number || '', // Mobile Number 3
@@ -637,6 +730,137 @@ export default function DashboardPage() {
     setSelectAll(false);
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, status: string) => {
+    setDraggedItem(status);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', status);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropStatus: string) => {
+    e.preventDefault();
+    
+    if (draggedItem && draggedItem !== dropStatus) {
+      const newOrder = [...statusOrder];
+      const draggedIndex = newOrder.indexOf(draggedItem);
+      const dropIndex = newOrder.indexOf(dropStatus);
+      
+      // Remove dragged item and insert at new position
+      newOrder.splice(draggedIndex, 1);
+      newOrder.splice(dropIndex, 0, draggedItem);
+      
+      setStatusOrder(newOrder);
+      
+      // Save to localStorage for persistence
+      localStorage.setItem('statusButtonOrder', JSON.stringify(newOrder));
+    }
+    
+    setDraggedItem(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+  };
+
+  // Load saved order from localStorage
+  useEffect(() => {
+    const savedOrder = localStorage.getItem('statusButtonOrder');
+    if (savedOrder) {
+      try {
+        const parsedOrder = JSON.parse(savedOrder);
+        setStatusOrder(parsedOrder);
+      } catch (error) {
+        console.error('Error parsing saved button order:', error);
+      }
+    }
+  }, []);
+
+  // Helper function to get button styling
+  const getButtonStyle = (status: string) => {
+    const isActive = activeFilters.status?.length === 1 && activeFilters.status[0] === status;
+    const isDragging = draggedItem === status;
+    
+    const baseClasses = "px-2.5 py-1.5 rounded-md transition-all duration-200 text-xs font-medium flex items-center gap-1 whitespace-nowrap";
+    const draggingClasses = isDragging ? "opacity-50 transform rotate-2" : "";
+    
+    const colorMap: { [key: string]: { active: string; inactive: string; badge: string; badgeActive: string } } = {
+      'New': { 
+        active: 'bg-blue-800 text-white', 
+        inactive: 'bg-blue-600 hover:bg-blue-700 text-white',
+        badge: 'bg-blue-500 text-white',
+        badgeActive: 'bg-blue-900 text-blue-100'
+      },
+      'CNR': { 
+        active: 'bg-orange-800 text-white', 
+        inactive: 'bg-orange-600 hover:bg-orange-700 text-white',
+        badge: 'bg-orange-500 text-white',
+        badgeActive: 'bg-orange-900 text-orange-100'
+      },
+      'Busy': { 
+        active: 'bg-yellow-800 text-white', 
+        inactive: 'bg-yellow-600 hover:bg-yellow-700 text-white',
+        badge: 'bg-yellow-500 text-white',
+        badgeActive: 'bg-yellow-900 text-yellow-100'
+      },
+      'Follow-up': { 
+        active: 'bg-purple-800 text-white', 
+        inactive: 'bg-purple-600 hover:bg-purple-700 text-white',
+        badge: 'bg-purple-500 text-white',
+        badgeActive: 'bg-purple-900 text-purple-100'
+      },
+      'Deal Close': { 
+        active: 'bg-green-800 text-white', 
+        inactive: 'bg-green-600 hover:bg-green-700 text-white',
+        badge: 'bg-green-500 text-white',
+        badgeActive: 'bg-green-900 text-green-100'
+      },
+      'Work Alloted': { 
+        active: 'bg-indigo-800 text-white', 
+        inactive: 'bg-indigo-600 hover:bg-indigo-700 text-white',
+        badge: 'bg-indigo-500 text-white',
+        badgeActive: 'bg-indigo-900 text-indigo-100'
+      },
+      'Hotlead': { 
+        active: 'bg-red-800 text-white', 
+        inactive: 'bg-red-600 hover:bg-red-700 text-white',
+        badge: 'bg-red-500 text-white',
+        badgeActive: 'bg-red-900 text-red-100'
+      },
+      'Mandate Sent': { 
+        active: 'bg-teal-800 text-white', 
+        inactive: 'bg-teal-600 hover:bg-teal-700 text-white',
+        badge: 'bg-teal-500 text-white',
+        badgeActive: 'bg-teal-900 text-teal-100'
+      },
+      'Documentation': { 
+        active: 'bg-slate-800 text-white', 
+        inactive: 'bg-slate-600 hover:bg-slate-700 text-white',
+        badge: 'bg-slate-500 text-white',
+        badgeActive: 'bg-slate-900 text-slate-100'
+      },
+      'Others': { 
+        active: 'bg-gray-800 text-white', 
+        inactive: 'bg-gray-600 hover:bg-gray-700 text-white',
+        badge: 'bg-gray-500 text-white',
+        badgeActive: 'bg-gray-900 text-gray-100'
+      }
+    };
+    
+    const colors = colorMap[status] || colorMap['Others'];
+    const colorClasses = isActive ? colors?.active : colors?.inactive;
+    const badgeClasses = isActive ? colors?.badgeActive : colors?.badge;
+    
+    return {
+      buttonClasses: `${baseClasses} ${colorClasses} ${draggingClasses}`,
+      badgeClasses: `px-1 py-0.5 rounded-full text-xs font-bold ${badgeClasses}`
+    };
+  };
+
   // Handle individual lead selection
   const handleLeadSelection = (leadId: string, checked: boolean) => {
     const newSelectedLeads = new Set(selectedLeads);
@@ -709,6 +933,11 @@ export default function DashboardPage() {
   const handleEditLead = (lead: Lead) => {
     // Store the lead data in localStorage for editing
     localStorage.setItem('editingLead', JSON.stringify(lead));
+    // Store modal return data for ESC key functionality
+    localStorage.setItem('modalReturnData', JSON.stringify({
+      sourcePage: 'dashboard',
+      leadId: lead.id
+    }));
     // Navigate to add-lead page with a flag to indicate we're editing
     router.push(`/add-lead?mode=edit&id=${lead.id}&from=dashboard`);
   };
@@ -717,7 +946,7 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto px-1">
       {/* Status Filter Section */}
-      <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-1 rounded-lg shadow-lg border border-slate-600/30 mb-1 relative overflow-hidden mx-auto w-fit -mt-4">
+      <div className="bg-gradient-to-br from-slate-800 via-gray-700 to-slate-800 p-1 rounded-lg shadow-lg border border-slate-600/30 mb-1 relative overflow-hidden mx-auto w-fit mt-2">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-cyan-500/5"></div>
             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"></div>
             <div className="relative">
@@ -726,176 +955,27 @@ export default function DashboardPage() {
               <span className="text-xs text-white/80">Click any status to filter leads</span>
             </div>
             <div className="flex items-center justify-center gap-1.5 flex-wrap">
-              <button
-                onClick={() => handleStatusFilter('New')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'New'
-                    ? 'bg-blue-800 text-white'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
-              >
-                New
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'New'
-                    ? 'bg-blue-900 text-blue-100'
-                    : 'bg-blue-500 text-white'
-                }`}>
-                  {statusCounts['New']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('CNR')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'CNR'
-                    ? 'bg-orange-800 text-white'
-                    : 'bg-orange-600 hover:bg-orange-700 text-white'
-                }`}
-              >
-                CNR
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'CNR'
-                    ? 'bg-orange-900 text-orange-100'
-                    : 'bg-orange-500 text-white'
-                }`}>
-                  {statusCounts['CNR']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Busy')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Busy'
-                    ? 'bg-yellow-800 text-white'
-                    : 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                }`}
-              >
-                Busy
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Busy'
-                    ? 'bg-yellow-900 text-yellow-100'
-                    : 'bg-yellow-500 text-white'
-                }`}>
-                  {statusCounts['Busy']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Follow-up')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Follow-up'
-                    ? 'bg-purple-800 text-white'
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
-                }`}
-              >
-                Follow-up
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Follow-up'
-                    ? 'bg-purple-900 text-purple-100'
-                    : 'bg-purple-500 text-white'
-                }`}>
-                  {statusCounts['Follow-up']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Deal Close')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Deal Close'
-                    ? 'bg-green-800 text-white'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-              >
-                Deal Close
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Deal Close'
-                    ? 'bg-green-900 text-green-100'
-                    : 'bg-green-500 text-white'
-                }`}>
-                  {statusCounts['Deal Close']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Work Alloted')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Work Alloted'
-                    ? 'bg-indigo-800 text-white'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                }`}
-              >
-                Work Alloted
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Work Alloted'
-                    ? 'bg-indigo-900 text-indigo-100'
-                    : 'bg-indigo-500 text-white'
-                }`}>
-                  {statusCounts['Work Alloted']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Hotlead')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Hotlead'
-                    ? 'bg-red-800 text-white'
-                    : 'bg-red-600 hover:bg-red-700 text-white'
-                }`}
-              >
-                Hotlead
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Hotlead'
-                    ? 'bg-red-900 text-red-100'
-                    : 'bg-red-500 text-white'
-                }`}>
-                  {statusCounts['Hotlead']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Mandate Sent')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Mandate Sent'
-                    ? 'bg-teal-800 text-white'
-                    : 'bg-teal-600 hover:bg-teal-700 text-white'
-                }`}
-              >
-                Mandate Sent
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Mandate Sent'
-                    ? 'bg-teal-900 text-teal-100'
-                    : 'bg-teal-500 text-white'
-                }`}>
-                  {statusCounts['Mandate Sent']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Documentation')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Documentation'
-                    ? 'bg-slate-800 text-white'
-                    : 'bg-slate-600 hover:bg-slate-700 text-white'
-                }`}
-              >
-                Documentation
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Documentation'
-                    ? 'bg-slate-900 text-slate-100'
-                    : 'bg-slate-500 text-white'
-                }`}>
-                  {statusCounts['Documentation']}
-                </span>
-              </button>
-              <button
-                onClick={() => handleStatusFilter('Others')}
-                className={`px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium flex items-center gap-1 whitespace-nowrap ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Others'
-                    ? 'bg-gray-800 text-white'
-                    : 'bg-gray-600 hover:bg-gray-700 text-white'
-                }`}
-              >
-                Others
-                <span className={`px-1 py-0.5 rounded-full text-xs font-bold ${
-                  activeFilters.status?.length === 1 && activeFilters.status[0] === 'Others'
-                    ? 'bg-gray-900 text-gray-100'
-                    : 'bg-gray-500 text-white'
-                }`}>
-                  {statusCounts['Others']}
-                </span>
-              </button>
+              {statusOrder.map((status) => {
+                const styles = getButtonStyle(status);
+                return (
+                  <button
+                    key={status}
+                    draggable
+                    onClick={() => handleStatusFilter(status as Lead['status'])}
+                    onDragStart={(e) => handleDragStart(e, status)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, status)}
+                    onDragEnd={handleDragEnd}
+                    className={styles.buttonClasses}
+                    title={`Drag to reorder • Click to filter ${status} leads`}
+                  >
+                    {status}
+                    <span className={styles.badgeClasses}>
+                      {statusCounts[status as Lead['status']]}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
             </div>
           </div>

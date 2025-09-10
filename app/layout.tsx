@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navigation from "./components/Navigation";
 import { LeadProvider } from "./context/LeadContext";
 import { NavigationProvider } from "./context/NavigationContext";
 import NavigationWrapper from "./components/NavigationWrapper";
@@ -18,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lead CRM",
-  description: "Simple CRM for lead management",
+  title: "Enterprise Lead Management System",
+  description: "Professional Enterprise Lead Management & CRM System",
 };
 
 
@@ -37,7 +36,7 @@ export default function RootLayout({
           <NavigationProvider>
             <div className="flex flex-col h-screen">
               <NavigationWrapper />
-              <main className="flex-1 overflow-y-auto p-6">
+              <main className="flex-1 overflow-y-auto p-0">
                 {children}
               </main>
             </div>
