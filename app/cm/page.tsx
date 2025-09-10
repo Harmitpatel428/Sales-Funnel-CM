@@ -473,87 +473,89 @@ export default function CMPage() {
           {/* Main Options */}
           <div className="px-4 sm:px-6 py-4 sm:py-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-          {/* Create Mandate from Existing Lead */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-semibold text-gray-900">Create Mandate from Existing Lead</h2>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Select an existing lead to create a mandate. The form will be pre-filled with lead information.
-            </p>
+              {/* Create Mandate from Existing Lead */}
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-4 sm:p-6 border border-purple-200">
+                <div className="flex items-start sm:items-center mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Create Mandate from Existing Lead</h2>
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                  Select an existing lead to create a mandate. The form will be pre-filled with lead information.
+                </p>
 
-            {/* Search Leads */}
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="leadSearch" className="block text-sm font-medium text-gray-700 mb-2">
-                  Search Leads
-                </label>
-                <input
-                  type="text"
-                  id="leadSearch"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black"
-                  placeholder="Search by client name, company, consumer number, or KVA..."
-                />
-              </div>
+                {/* Search Leads */}
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="leadSearch" className="block text-sm font-medium text-gray-700 mb-2">
+                      Search Leads
+                    </label>
+                    <input
+                      type="text"
+                      id="leadSearch"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                      placeholder="Search by client name, company, consumer number, or KVA..."
+                    />
+                  </div>
 
-              {/* Leads List */}
-              <div className="max-h-64 overflow-y-auto space-y-2">
-                {filteredLeads.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">
-                    {searchTerm ? 'No leads found matching your search.' : 'No leads available.'}
-                  </p>
-                ) : (
-                  filteredLeads.map((lead) => (
-                    <div
-                      key={lead.id}
-                      onClick={() => handleLeadSelection(lead)}
-                      className="p-3 bg-white rounded-md border border-gray-200 hover:border-purple-300 hover:bg-purple-50 cursor-pointer transition-colors duration-200"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-gray-900">{lead.clientName}</h3>
-                          <p className="text-sm text-gray-600">{lead.company}</p>
-                          <p className="text-xs text-gray-500">
-                            Consumer: {lead.consumerNumber} | KVA: {lead.kva}
-                          </p>
+                  {/* Leads List */}
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {filteredLeads.length === 0 ? (
+                      <p className="text-gray-500 text-center py-4 text-sm">
+                        {searchTerm ? 'No leads found matching your search.' : 'No leads available.'}
+                      </p>
+                    ) : (
+                      filteredLeads.map((lead) => (
+                        <div
+                          key={lead.id}
+                          onClick={() => handleLeadSelection(lead)}
+                          className="p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 cursor-pointer transition-colors duration-200"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{lead.clientName}</h3>
+                              <p className="text-xs sm:text-sm text-gray-600 truncate">{lead.company}</p>
+                              <p className="text-xs text-gray-500">
+                                Consumer: {lead.consumerNumber} | KVA: {lead.kva}
+                              </p>
+                            </div>
+                            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full flex-shrink-0 ml-2">
+                              {lead.status}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                          {lead.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                )}
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Create New Mandate */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+              {/* Create New Mandate */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 sm:p-6 border border-green-200">
+                <div className="flex items-start sm:items-center mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Create New Mandate</h2>
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                  Create a standalone mandate without linking to any existing lead.
+                </p>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-sm sm:text-base"
+                >
+                  Create New Mandate
+                </button>
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">Create New Mandate</h2>
             </div>
-            <p className="text-gray-600 mb-6">
-              Create a standalone mandate without linking to any existing lead.
-            </p>
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="w-full px-4 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 font-medium"
-            >
-              Create New Mandate
-            </button>
           </div>
         </div>
       </div>
@@ -601,122 +603,131 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">All Mandates</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Press <kbd className="px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">ESC</kbd> to go back
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">All Mandates</h1>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                  Press <kbd className="px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">ESC</kbd> to go back
+                </p>
+              </div>
+              <button
+                onClick={onBack}
+                className="ml-4 text-gray-600 hover:text-gray-800 transition-colors duration-200 flex-shrink-0"
+                aria-label="Go back"
+                title="Go back"
+              >
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <button
-            onClick={onBack}
-            className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
-            aria-label="Go back"
-            title="Go back"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </button>
-        </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black"
-              placeholder="Search mandates..."
-            />
-          </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-            aria-label="Filter by status"
-            title="Filter by status"
-          >
-            <option value="all">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="active">Active</option>
-            <option value="closed">Closed</option>
-          </select>
-        </div>
+          {/* Filters */}
+          <div className="px-4 sm:px-6 py-4 sm:py-6">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                  placeholder="Search mandates..."
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                aria-label="Filter by status"
+                title="Filter by status"
+              >
+                <option value="all">All Status</option>
+                <option value="draft">Draft</option>
+                <option value="active">Active</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
 
-        {/* Mandates Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Mandate Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Client
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Company
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredMandates.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                    No mandates found.
-                  </td>
-                </tr>
-              ) : (
-                filteredMandates.map((mandate) => (
-                  <tr key={mandate.mandateId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{mandate.mandateName}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{mandate.clientName}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{mandate.company}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        mandate.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        mandate.status === 'active' ? 'bg-green-100 text-green-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {mandate.status.charAt(0).toUpperCase() + mandate.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(mandate.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleDelete(mandate.mandateId)}
-                        className="text-red-600 hover:text-red-900 transition-colors duration-200"
-                      >
-                        Delete
-                      </button>
-                    </td>
+            {/* Mandates Table */}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Mandate Name
+                    </th>
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Client
+                    </th>
+                    <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Created
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredMandates.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-3 sm:px-6 py-8 text-center text-gray-500 text-sm">
+                        No mandates found.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredMandates.map((mandate) => (
+                      <tr key={mandate.mandateId} className="hover:bg-gray-50">
+                        <td className="px-3 sm:px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{mandate.mandateName}</div>
+                          <div className="sm:hidden text-xs text-gray-500 mt-1">
+                            {mandate.clientName} • {mandate.company}
+                          </div>
+                        </td>
+                        <td className="hidden sm:table-cell px-6 py-4">
+                          <div className="text-sm text-gray-900 truncate max-w-xs">{mandate.clientName}</div>
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          <div className="text-sm text-gray-900 truncate max-w-xs">{mandate.company}</div>
+                        </td>
+                        <td className="px-3 sm:px-6 py-4">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            mandate.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                            mandate.status === 'active' ? 'bg-green-100 text-green-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {mandate.status.charAt(0).toUpperCase() + mandate.status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="hidden lg:table-cell px-6 py-4">
+                          <div className="text-sm text-gray-500">{formatDate(mandate.createdAt)}</div>
+                        </td>
+                        <td className="px-3 sm:px-6 py-4">
+                          <button
+                            onClick={() => handleDelete(mandate.mandateId)}
+                            className="text-red-600 hover:text-red-900 transition-colors duration-200 text-sm"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
