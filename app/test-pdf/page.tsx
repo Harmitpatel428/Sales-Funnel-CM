@@ -1,28 +1,28 @@
 'use client';
 
 import React, { useState } from 'react';
-import { pdfService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfService';
+import { pdfMakeService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfMakeService';
 
 export default function TestPDFPage() {
   const [consultantInfo, setConsultantInfo] = useState<ConsultantInfo>(DEFAULT_CONSULTANT_INFO);
   const [mandateData, setMandateData] = useState<MandateData>({
-    clientName: 'Manglam Seeds',
-    company: 'Manglam Seeds Pvt Ltd',
-    address: 'Industrial Area, Phase 1, Chandigarh',
+    clientName: 'M/s Mangalam Seeds Ltd',
+    company: 'M/s Mangalam Seeds Ltd',
+    address: 'Village: Maktupur, Ta: Unjha, Dist: Mehsana, Gujarat-382430',
     phone: '+91-9876543210',
-    kva: '100',
-    schemes: ['Interest Subsidy', 'PCC', 'EDE'],
-    typeOfCase: 'New Industrial Unit',
+    kva: '300',
+    schemes: ['Interest Subsidy', 'Power Connection Charges', 'Electric Duty Exemption'],
+    typeOfCase: 'New-Category II',
     category: 'Manufacturing',
-    projectCost: '₹50,00,000',
-    industriesType: 'Manufacturing',
-    termLoanAmount: '₹30,00,000',
-    powerConnection: '100 KVA'
+    projectCost: '₹3.50 Cr (Approx.)',
+    industriesType: 'Seed Manufacturing',
+    termLoanAmount: '₹1.40 Cr (Approx.)',
+    powerConnection: '300 KVA'
   });
 
   const handleGeneratePDF = () => {
     try {
-      pdfService.downloadPDF(mandateData, consultantInfo);
+      pdfMakeService.downloadPDF(mandateData, consultantInfo);
       alert('PDF generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -172,18 +172,18 @@ export default function TestPDFPage() {
             <button
               onClick={() => {
                 setMandateData({
-                  clientName: 'Manglam Seeds',
-                  company: 'Manglam Seeds Pvt Ltd',
-                  address: 'Industrial Area, Phase 1, Chandigarh',
+                  clientName: 'M/s Mangalam Seeds Ltd',
+                  company: 'M/s Mangalam Seeds Ltd',
+                  address: 'Village: Maktupur, Ta: Unjha, Dist: Mehsana, Gujarat-382430',
                   phone: '+91-9876543210',
-                  kva: '100',
-                  schemes: ['Interest Subsidy', 'PCC', 'EDE'],
-                  typeOfCase: 'New Industrial Unit',
+                  kva: '300',
+                  schemes: ['Interest Subsidy', 'Power Connection Charges', 'Electric Duty Exemption'],
+                  typeOfCase: 'New-Category II',
                   category: 'Manufacturing',
-                  projectCost: '₹50,00,000',
-                  industriesType: 'Manufacturing',
-                  termLoanAmount: '₹30,00,000',
-                  powerConnection: '100 KVA'
+                  projectCost: '₹3.50 Cr (Approx.)',
+                  industriesType: 'Seed Manufacturing',
+                  termLoanAmount: '₹1.40 Cr (Approx.)',
+                  powerConnection: '300 KVA'
                 });
                 setConsultantInfo({
                   name: 'Dr. Rajesh Kumar',

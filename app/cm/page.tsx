@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeads, Lead } from '../context/LeadContext';
 import { useMandates, Mandate } from '../context/MandateContext';
-import { pdfService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfService';
+import { pdfMakeService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfMakeService';
 
 export default function CMPage() {
   const router = useRouter();
@@ -205,7 +205,7 @@ export default function CMPage() {
       };
 
       // Generate PDF
-      pdfService.downloadPDF(mandateData, consultantInfo);
+      pdfMakeService.downloadPDF(mandateData, consultantInfo);
       alert('Mandate created and PDF generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -415,8 +415,8 @@ export default function CMPage() {
                         <div className="space-y-3">
                           {[
                             'Interest Subsidy',
-                            'PCC',
-                            'EDE',
+                            'Power Connection Charges',
+                            'Electric Duty Exemption',
                             'Capital Subsidy',
                             'Technology Upgradation',
                             'Infrastructure Development',
