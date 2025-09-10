@@ -19,15 +19,9 @@ export default function CMPage() {
     mandateName: '',
     clientName: '',
     company: '',
-    consumerNumber: '',
     kva: '',
-    phone: '',
     address: '',
-    discom: '',
-    gidc: '',
-    gstNumber: '',
-    notes: '',
-    status: 'draft' as Mandate['status']
+    discom: ''
   });
 
   // Generate UUID function
@@ -57,7 +51,6 @@ export default function CMPage() {
     !lead.isDeleted && 
     (lead.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
      lead.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     lead.consumerNumber.includes(searchTerm) ||
      lead.kva.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
@@ -68,15 +61,9 @@ export default function CMPage() {
       mandateName: `${lead.clientName} - ${lead.company}`,
       clientName: lead.clientName,
       company: lead.company,
-      consumerNumber: lead.consumerNumber,
       kva: lead.kva,
-      phone: lead.mobileNumbers.find(m => m.isMain)?.number || lead.mobileNumber || '',
       address: lead.companyLocation || '',
-      discom: lead.discom || '',
-      gidc: lead.gidc || '',
-      gstNumber: lead.gstNumber || '',
-      notes: lead.notes || '',
-      status: 'draft'
+      discom: lead.discom || ''
     });
     setShowCreateForm(true);
   };
@@ -91,16 +78,11 @@ export default function CMPage() {
       mandateName: formData.mandateName,
       clientName: formData.clientName,
       company: formData.company,
-      consumerNumber: formData.consumerNumber,
       kva: formData.kva,
-      phone: formData.phone,
       address: formData.address,
       discom: formData.discom,
-      gidc: formData.gidc,
-      gstNumber: formData.gstNumber,
       createdAt: new Date().toISOString(),
-      status: formData.status,
-      notes: formData.notes,
+      status: 'draft',
       isDeleted: false
     };
 
@@ -111,15 +93,9 @@ export default function CMPage() {
       mandateName: '',
       clientName: '',
       company: '',
-      consumerNumber: '',
       kva: '',
-      phone: '',
       address: '',
-      discom: '',
-      gidc: '',
-      gstNumber: '',
-      notes: '',
-      status: 'draft'
+      discom: ''
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -134,15 +110,9 @@ export default function CMPage() {
       mandateName: '',
       clientName: '',
       company: '',
-      consumerNumber: '',
       kva: '',
-      phone: '',
       address: '',
-      discom: '',
-      gidc: '',
-      gstNumber: '',
-      notes: '',
-      status: 'draft'
+      discom: ''
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -249,21 +219,6 @@ export default function CMPage() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <label htmlFor="consumerNumber" className="block text-sm font-medium text-gray-700">
-                            Consumer Number <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            id="consumerNumber"
-                            name="consumerNumber"
-                            value={formData.consumerNumber}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter consumer number"
-                          />
-                        </div>
 
                         <div className="space-y-2">
                           <label htmlFor="kva" className="block text-sm font-medium text-gray-700">
@@ -281,20 +236,6 @@ export default function CMPage() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                            Phone Number
-                          </label>
-                          <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter phone number"
-                          />
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -304,23 +245,6 @@ export default function CMPage() {
                     <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
                       <h2 className="text-lg font-semibold text-gray-900 mb-4">Mandate Details</h2>
                       <div className="space-y-4">
-                        <div className="space-y-2">
-                          <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                            Status <span className="text-red-500">*</span>
-                          </label>
-                          <select
-                            id="status"
-                            name="status"
-                            value={formData.status}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                          >
-                            <option value="draft">Draft</option>
-                            <option value="active">Active</option>
-                            <option value="closed">Closed</option>
-                          </select>
-                        </div>
 
                         <div className="space-y-2">
                           <label htmlFor="discom" className="block text-sm font-medium text-gray-700">
@@ -341,35 +265,7 @@ export default function CMPage() {
                           </select>
                         </div>
 
-                        <div className="space-y-2">
-                          <label htmlFor="gidc" className="block text-sm font-medium text-gray-700">
-                            GIDC
-                          </label>
-                          <input
-                            type="text"
-                            id="gidc"
-                            name="gidc"
-                            value={formData.gidc}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter GIDC"
-                          />
-                        </div>
 
-                        <div className="space-y-2">
-                          <label htmlFor="gstNumber" className="block text-sm font-medium text-gray-700">
-                            GST Number
-                          </label>
-                          <input
-                            type="text"
-                            id="gstNumber"
-                            name="gstNumber"
-                            value={formData.gstNumber}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter GST Number"
-                          />
-                        </div>
 
                         <div className="space-y-2">
                           <label htmlFor="address" className="block text-sm font-medium text-gray-700">
@@ -386,20 +282,6 @@ export default function CMPage() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                            Notes
-                          </label>
-                          <textarea
-                            id="notes"
-                            name="notes"
-                            value={formData.notes}
-                            onChange={handleChange}
-                            rows={3}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-vertical text-black text-sm sm:text-base"
-                            placeholder="Enter any additional notes"
-                          />
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -499,7 +381,7 @@ export default function CMPage() {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                      placeholder="Search by client name, company, consumer number, or KVA..."
+                      placeholder="Search by client name, company, or KVA..."
                     />
                   </div>
 
@@ -521,7 +403,7 @@ export default function CMPage() {
                               <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{lead.clientName}</h3>
                               <p className="text-xs sm:text-sm text-gray-600 truncate">{lead.company}</p>
                               <p className="text-xs text-gray-500">
-                                Consumer: {lead.consumerNumber} | KVA: {lead.kva}
+                                KVA: {lead.kva}
                               </p>
                             </div>
                             <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full flex-shrink-0 ml-2">

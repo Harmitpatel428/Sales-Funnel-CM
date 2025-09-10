@@ -8,16 +8,11 @@ export interface Mandate {
   mandateName: string;
   clientName: string;
   company: string;
-  consumerNumber: string;
   kva: string;
-  phone: string;
   address?: string;
   discom?: string;
-  gidc?: string;
-  gstNumber?: string;
   createdAt: string;
   status: 'draft' | 'active' | 'closed';
-  notes?: string;
   isDeleted: boolean;
 }
 
@@ -113,14 +108,9 @@ export function MandateProvider({ children }: { children: ReactNode }) {
           mandate.mandateName,
           mandate.clientName,
           mandate.company,
-          mandate.consumerNumber,
           mandate.kva,
-          mandate.phone,
           mandate.address,
-          mandate.discom,
-          mandate.gidc,
-          mandate.gstNumber,
-          mandate.notes
+          mandate.discom
         ].filter(Boolean).map(field => field?.toLowerCase());
         
         return searchableFields.some(field => field?.includes(searchTerm));
