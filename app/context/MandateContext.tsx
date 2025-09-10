@@ -10,6 +10,7 @@ export interface Mandate {
   company: string;
   kva: string;
   address?: string;
+  phone?: string;
   schemes: string[];
   createdAt: string;
   status: 'draft' | 'active' | 'closed';
@@ -110,6 +111,7 @@ export function MandateProvider({ children }: { children: ReactNode }) {
           mandate.company,
           mandate.kva,
           mandate.address,
+          mandate.phone,
           ...mandate.schemes
         ].filter(Boolean).map(field => field?.toLowerCase());
         

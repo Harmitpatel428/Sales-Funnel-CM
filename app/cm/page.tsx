@@ -20,6 +20,7 @@ export default function CMPage() {
     company: '',
     kva: '',
     address: '',
+    phone: '',
     schemes: [] as string[]
   });
 
@@ -61,6 +62,7 @@ export default function CMPage() {
       company: lead.company,
       kva: lead.kva,
       address: lead.companyLocation || '',
+      phone: lead.mobileNumbers?.find(m => m.isMain)?.number || lead.mobileNumber || '',
       schemes: []
     });
     setShowCreateForm(true);
@@ -78,6 +80,7 @@ export default function CMPage() {
       company: formData.company,
       kva: formData.kva,
       address: formData.address,
+      phone: formData.phone,
       schemes: formData.schemes,
       createdAt: new Date().toISOString(),
       status: 'draft',
@@ -92,6 +95,7 @@ export default function CMPage() {
       company: '',
       kva: '',
       address: '',
+      phone: '',
       schemes: []
     });
     setSelectedLead(null);
@@ -108,6 +112,7 @@ export default function CMPage() {
       company: '',
       kva: '',
       address: '',
+      phone: '',
       schemes: []
     });
     setSelectedLead(null);
@@ -239,6 +244,21 @@ export default function CMPage() {
                             onChange={handleChange}
                             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
                             placeholder="Enter address"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                            Client Phone Number
+                          </label>
+                          <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter client phone number"
                           />
                         </div>
 
