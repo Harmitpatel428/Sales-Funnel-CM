@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLeads } from '../context/LeadContext';
-import { useMandates } from '../context/MandateContext';
+import { useLeads, Lead } from '../context/LeadContext';
+import { useMandates, Mandate } from '../context/MandateContext';
 import { pdfService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfService';
-import { Lead, Mandate } from '../context/MandateContext';
 
 export default function CMPage() {
   const router = useRouter();
@@ -62,6 +61,75 @@ export default function CMPage() {
      lead.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
      lead.kva.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+
+  // Add sample leads if none exist
+  const addSampleLeads = () => {
+    if (leads.length === 0) {
+      const sampleLeads: Lead[] = [
+        {
+          id: 'sample-1',
+          kva: '100',
+          connectionDate: '15-01-2024',
+          consumerNumber: '1234567890',
+          company: 'Manglam Seeds Pvt Ltd',
+          clientName: 'Rajesh Kumar',
+          discom: 'UGVCL',
+          gidc: 'GIDC-001',
+          gstNumber: '24ABCDE1234F1Z5',
+          mobileNumber: '9876543210',
+          mobileNumbers: [
+            { id: '1', number: '9876543210', name: 'Rajesh Kumar', isMain: true },
+            { id: '2', number: '9876543211', name: 'Assistant', isMain: false }
+          ],
+          companyLocation: 'Industrial Area, Phase 1, Chandigarh',
+          unitType: 'New',
+          status: 'New',
+          lastActivityDate: '15-01-2024',
+          followUpDate: '20-01-2024',
+          finalConclusion: '',
+          notes: 'Interested in subsidy schemes',
+          isDone: false,
+          isDeleted: false,
+          isUpdated: false,
+          mandateStatus: 'Pending',
+          documentStatus: 'Pending Documents'
+        },
+        {
+          id: 'sample-2',
+          kva: '50',
+          connectionDate: '10-01-2024',
+          consumerNumber: '0987654321',
+          company: 'Tech Solutions Ltd',
+          clientName: 'Priya Sharma',
+          discom: 'MGVCL',
+          gidc: 'GIDC-002',
+          gstNumber: '24FGHIJ5678K1L9',
+          mobileNumber: '8765432109',
+          mobileNumbers: [
+            { id: '1', number: '8765432109', name: 'Priya Sharma', isMain: true }
+          ],
+          companyLocation: 'Sector 17, Chandigarh',
+          unitType: 'Existing',
+          status: 'Follow-up',
+          lastActivityDate: '12-01-2024',
+          followUpDate: '18-01-2024',
+          finalConclusion: '',
+          notes: 'Follow up required for documentation',
+          isDone: false,
+          isDeleted: false,
+          isUpdated: false,
+          mandateStatus: 'Pending',
+          documentStatus: 'Pending Documents'
+        }
+      ];
+      
+      // Add sample leads to localStorage
+      localStorage.setItem('leads', JSON.stringify(sampleLeads));
+      // Reload the page to see the leads
+      window.location.reload();
+    }
+  };
 
   // Handle lead selection for creating mandate from existing lead
   const handleLeadSelection = (lead: Lead) => {
@@ -706,9 +774,19 @@ export default function CMPage() {
                   {/* Leads List */}
                   <div className="max-h-64 overflow-y-auto space-y-2">
                     {filteredLeads.length === 0 ? (
-                      <p className="text-gray-500 text-center py-4 text-sm">
-                        {searchTerm ? 'No leads found matching your search.' : 'No leads available.'}
-                      </p>
+                      <div className="text-center py-4">
+                        <p className="text-gray-500 text-sm mb-3">
+                          {searchTerm ? 'No leads found matching your search.' : 'No leads available.'}
+                        </p>
+                        {leads.length === 0 && (
+                          <button
+                            onClick={addSampleLeads}
+                            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm"
+                          >
+                            Add Sample Leads
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       filteredLeads.map((lead) => (
                         <div
