@@ -261,37 +261,61 @@ export default function CMPage() {
                     </div>
                   </div>
 
-                  {/* Right Column - Mandate Details */}
+                  {/* Right Column - Scheme Options */}
                   <div className="space-y-4 sm:space-y-6">
                     <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Mandate Details</h2>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <label className="block text-sm font-medium text-gray-700">
-                            Scheme Options
-                          </label>
-                          <div className="space-y-2">
-                            {[
-                              'Interest subsidy',
-                              'SGST Subsidy',
-                              'Rent',
-                              'Power connection charges',
-                              'Electric duty exemption',
-                              'Solar subsidy'
-                            ].map((scheme) => (
-                              <label key={scheme} className="flex items-center">
-                                <input
-                                  type="checkbox"
-                                  checked={formData.schemes.includes(scheme)}
-                                  onChange={(e) => handleSchemeChange(scheme, e.target.checked)}
-                                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                                />
-                                <span className="ml-2 text-sm text-gray-700">{scheme}</span>
-                              </label>
-                            ))}
-                          </div>
+                      <div className="flex items-center mb-6">
+                        <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
                         </div>
-
+                        <h2 className="text-lg font-semibold text-gray-900">Scheme Options</h2>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <p className="text-sm text-gray-600 mb-4">Select applicable schemes:</p>
+                        <div className="space-y-3">
+                          {[
+                            'Interest subsidy',
+                            'SGST Subsidy',
+                            'Rent',
+                            'Power connection charges',
+                            'Electric duty exemption',
+                            'Solar subsidy'
+                          ].map((scheme) => (
+                            <label 
+                              key={scheme} 
+                              className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors duration-200 ${
+                                formData.schemes.includes(scheme)
+                                  ? 'border-purple-500 bg-purple-50'
+                                  : 'border-gray-200 bg-white hover:border-purple-300'
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={formData.schemes.includes(scheme)}
+                                onChange={(e) => handleSchemeChange(scheme, e.target.checked)}
+                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mr-3"
+                              />
+                              <span className={`text-sm font-medium ${
+                                formData.schemes.includes(scheme)
+                                  ? 'text-purple-900'
+                                  : 'text-gray-700'
+                              }`}>
+                                {scheme}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                        
+                        {formData.schemes.length > 0 && (
+                          <div className="mt-4 p-3 bg-purple-100 rounded-lg">
+                            <p className="text-sm text-purple-800 font-medium">
+                              {formData.schemes.length} scheme{formData.schemes.length !== 1 ? 's' : ''} selected
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
