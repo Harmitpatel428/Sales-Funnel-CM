@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeads } from '../context/LeadContext';
 import { useMandates } from '../context/MandateContext';
@@ -37,6 +37,20 @@ export default function CMPage() {
     }
     return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
   };
+
+  // Handle ESC key to go back
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showCreateForm, showMandatesList, selectedLead]); // Include dependencies that handleCancel uses
 
   // Filter leads based on search term
   const filteredLeads = leads.filter(lead => 
@@ -150,259 +164,315 @@ export default function CMPage() {
 
   if (showCreateForm) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {selectedLead ? 'Create Mandate from Lead' : 'Create New Mandate'}
-            </h1>
-            <button
-              onClick={handleCancel}
-              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
-              aria-label="Go back"
-              title="Go back"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            {/* Header */}
+            <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
+                    {selectedLead ? 'Create Mandate from Lead' : 'Create New Mandate'}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                    Press <kbd className="px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">ESC</kbd> to cancel
+                  </p>
+                </div>
+                <button
+                  onClick={handleCancel}
+                  className="ml-4 text-gray-600 hover:text-gray-800 transition-colors duration-200 flex-shrink-0"
+                  aria-label="Go back"
+                  title="Go back"
+                >
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="relative">
+              <div className="px-4 sm:px-6 py-4 sm:py-6">
+                {/* Desktop: Two columns, Mobile: Single column */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                  {/* Left Column - Lead Information */}
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Lead Information</h2>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label htmlFor="mandateName" className="block text-sm font-medium text-gray-700">
+                            Mandate Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="mandateName"
+                            name="mandateName"
+                            value={formData.mandateName}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter mandate name"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
+                            Client Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="clientName"
+                            name="clientName"
+                            value={formData.clientName}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter client name"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+                            Company <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="company"
+                            name="company"
+                            value={formData.company}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter company name"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="consumerNumber" className="block text-sm font-medium text-gray-700">
+                            Consumer Number <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="consumerNumber"
+                            name="consumerNumber"
+                            value={formData.consumerNumber}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter consumer number"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="kva" className="block text-sm font-medium text-gray-700">
+                            KVA <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="kva"
+                            name="kva"
+                            value={formData.kva}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter KVA"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                            Phone Number
+                          </label>
+                          <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter phone number"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Mandate Details */}
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Mandate Details</h2>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                            Status <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            id="status"
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                          >
+                            <option value="draft">Draft</option>
+                            <option value="active">Active</option>
+                            <option value="closed">Closed</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="discom" className="block text-sm font-medium text-gray-700">
+                            Discom
+                          </label>
+                          <select
+                            id="discom"
+                            name="discom"
+                            value={formData.discom}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                          >
+                            <option value="">Select Discom</option>
+                            <option value="UGVCL">UGVCL</option>
+                            <option value="MGVCL">MGVCL</option>
+                            <option value="DGVCL">DGVCL</option>
+                            <option value="PGVCL">PGVCL</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="gidc" className="block text-sm font-medium text-gray-700">
+                            GIDC
+                          </label>
+                          <input
+                            type="text"
+                            id="gidc"
+                            name="gidc"
+                            value={formData.gidc}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter GIDC"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="gstNumber" className="block text-sm font-medium text-gray-700">
+                            GST Number
+                          </label>
+                          <input
+                            type="text"
+                            id="gstNumber"
+                            name="gstNumber"
+                            value={formData.gstNumber}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter GST Number"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                            Address
+                          </label>
+                          <input
+                            type="text"
+                            id="address"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            placeholder="Enter address"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+                            Notes
+                          </label>
+                          <textarea
+                            id="notes"
+                            name="notes"
+                            value={formData.notes}
+                            onChange={handleChange}
+                            rows={3}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-vertical text-black text-sm sm:text-base"
+                            placeholder="Enter any additional notes"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Actions - Desktop */}
+              <div className="hidden sm:block px-4 sm:px-6 py-4 sm:py-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 font-medium"
+                  >
+                    Create Mandate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              {/* Form Actions - Mobile (Sticky) */}
+              <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 font-medium text-sm"
+                  >
+                    Create Mandate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile bottom padding to prevent content from being hidden behind sticky button */}
+              <div className="sm:hidden h-20"></div>
+            </form>
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="mandateName" className="block text-sm font-medium text-gray-700">
-                  Mandate Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="mandateName"
-                  name="mandateName"
-                  value={formData.mandateName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder:text-indigo-400"
-                  placeholder="Enter mandate name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                  Status <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                >
-                  <option value="draft">Draft</option>
-                  <option value="active">Active</option>
-                  <option value="closed">Closed</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
-                  Client Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="clientName"
-                  name="clientName"
-                  value={formData.clientName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter client name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                  Company <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter company name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="consumerNumber" className="block text-sm font-medium text-gray-700">
-                  Consumer Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="consumerNumber"
-                  name="consumerNumber"
-                  value={formData.consumerNumber}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter consumer number"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="kva" className="block text-sm font-medium text-gray-700">
-                  KVA <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="kva"
-                  name="kva"
-                  value={formData.kva}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter KVA"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter phone number"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="discom" className="block text-sm font-medium text-gray-700">
-                  Discom
-                </label>
-                <select
-                  id="discom"
-                  name="discom"
-                  value={formData.discom}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                >
-                  <option value="">Select Discom</option>
-                  <option value="UGVCL">UGVCL</option>
-                  <option value="MGVCL">MGVCL</option>
-                  <option value="DGVCL">DGVCL</option>
-                  <option value="PGVCL">PGVCL</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="gidc" className="block text-sm font-medium text-gray-700">
-                  GIDC
-                </label>
-                <input
-                  type="text"
-                  id="gidc"
-                  name="gidc"
-                  value={formData.gidc}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter GIDC"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="gstNumber" className="block text-sm font-medium text-gray-700">
-                  GST Number
-                </label>
-                <input
-                  type="text"
-                  id="gstNumber"
-                  name="gstNumber"
-                  value={formData.gstNumber}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                  placeholder="Enter GST Number"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                Address
-              </label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
-                placeholder="Enter address"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                Notes
-              </label>
-              <textarea
-                id="notes"
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-vertical "
-                placeholder="Enter any additional notes"
-              />
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex gap-4 pt-6 border-t border-gray-200">
-              <button
-                type="submit"
-                className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-              >
-                Create Mandate
-              </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mandate Management</h1>
-          <button
-            onClick={() => setShowMandatesList(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-          >
-            View All Mandates
-          </button>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Mandate Management</h1>
+              <button
+                onClick={() => setShowMandatesList(true)}
+                className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm sm:text-base"
+              >
+                View All Mandates
+              </button>
+            </div>
+          </div>
 
-        {/* Main Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Main Options */}
+          <div className="px-4 sm:px-6 py-4 sm:py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Create Mandate from Existing Lead */}
           <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
             <div className="flex items-center mb-4">
@@ -428,7 +498,7 @@ export default function CMPage() {
                   id="leadSearch"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black"
                   placeholder="Search by client name, company, consumer number, or KVA..."
                 />
               </div>
@@ -497,6 +567,20 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'active' | 'closed'>('all');
 
+  // Handle ESC key to go back
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onBack();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onBack]);
+
   const filteredMandates = getFilteredMandates({
     searchTerm: searchTerm || undefined,
     status: statusFilter === 'all' ? undefined : [statusFilter as Mandate['status']]
@@ -521,7 +605,12 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
       <div className="bg-white rounded-lg shadow-lg p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">All Mandates</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">All Mandates</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Press <kbd className="px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">ESC</kbd> to go back
+            </p>
+          </div>
           <button
             onClick={onBack}
             className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
@@ -541,7 +630,7 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 "
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black"
               placeholder="Search mandates..."
             />
           </div>

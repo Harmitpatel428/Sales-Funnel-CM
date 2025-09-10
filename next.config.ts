@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Export configuration for Electron
-  output: 'export',
+  // Export configuration for Electron (disabled for development)
+  // output: 'export',
   trailingSlash: true,
   
   // Performance optimizations
@@ -31,28 +31,28 @@ const nextConfig: NextConfig = {
   //   return config;
   // },
   
-  // Headers for better caching
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-        ],
-      },
-    ];
-  },
+  // Headers for better caching (disabled for development)
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/(.*)',
+  //       headers: [
+  //         {
+  //           key: 'X-Content-Type-Options',
+  //           value: 'nosniff',
+  //         },
+  //         {
+  //           key: 'X-Frame-Options',
+  //           value: 'DENY',
+  //         },
+  //         {
+  //           key: 'X-XSS-Protection',
+  //           value: '1; mode=block',
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
