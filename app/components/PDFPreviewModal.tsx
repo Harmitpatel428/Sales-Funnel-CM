@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MandateData, ConsultantInfo } from '../services/pdfServiceV2';
 import { formatSubjectLine, getSchemeDescription, getAllSchemeNames } from '../utils/schemeUtils';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (updatedData: MandateData) => void;
+  onConfirm: (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo) => void;
   mandateData: MandateData;
   consultantInfo: ConsultantInfo;
 }
@@ -21,10 +21,45 @@ export default function PDFPreviewModal({
 }: PDFPreviewModalProps) {
   const [editableData, setEditableData] = useState<MandateData>(mandateData);
   const [editableConsultantInfo, setEditableConsultantInfo] = useState<ConsultantInfo>(consultantInfo);
+  const [editableContent, setEditableContent] = useState({
+    subjectLine: '',
+    workScope: [
+      'Assessment of eligibility for various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022.',
+      'Preparation and submission of all required documents and applications.',
+      'Liaison with concerned government departments and agencies.',
+      'Follow-up on application status and expedite approvals.',
+      'Guidance on compliance requirements and procedures.',
+      'Support for any additional documentation or clarifications required.',
+      'Regular updates on the progress of applications.'
+    ],
+    eligibilityCriteria: [
+      'The unit should be registered under the Companies Act, 2013 or Partnership Act, 1932 or any other relevant Act.',
+      'The unit should be operational and engaged in manufacturing or service activities.',
+      'The unit should have valid business registration and necessary licenses.',
+      'The unit should comply with all applicable laws and regulations.',
+      'The unit should have proper financial statements and project documentation.',
+      'The unit should meet the minimum investment and employment criteria as specified in the scheme.',
+      'The unit should adhere to environmental and safety standards.'
+    ],
+    termsAndConditions: [
+      'All services are subject to client cooperation and timely provision of required documents.',
+      'Fees are payable as per agreed terms and conditions.',
+      'We reserve the right to modify our services based on changing government policies.',
+      'Confidentiality of client information is maintained at all times.',
+      'Any additional services beyond the scope will be charged separately.',
+      'This mandate is valid for 90 days from the date of signing.',
+      'Payment terms: 50% advance, 50% on completion of work.',
+      'We are not responsible for delays caused by government departments or policy changes.'
+    ]
+  });
 
   // Update editable data when mandateData changes
   useEffect(() => {
     setEditableData(mandateData);
+    setEditableContent(prev => ({
+      ...prev,
+      subjectLine: formatSubjectLine(mandateData.schemes)
+    }));
   }, [mandateData]);
 
   useEffect(() => {
@@ -46,6 +81,14 @@ export default function PDFPreviewModal({
       ...prev,
       [field]: value
     }));
+    
+    // Update subject line when schemes change
+    if (field === 'schemes') {
+      setEditableContent(prev => ({
+        ...prev,
+        subjectLine: formatSubjectLine(value as string[])
+      }));
+    }
   };
 
   const handleConsultantFieldChange = (field: keyof ConsultantInfo, value: string) => {
@@ -66,12 +109,24 @@ export default function PDFPreviewModal({
     }
   };
 
-  const handleConfirm = () => {
-    onConfirm(editableData);
+  const handleContentChange = (field: keyof typeof editableContent, value: string | string[]) => {
+    setEditableContent(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  // Use utility function to format subject line
-  const subjectLine = formatSubjectLine(editableData.schemes);
+  const handleListEdit = (listName: keyof typeof editableContent, index: number, value: string) => {
+    if (Array.isArray(editableContent[listName])) {
+      const newList = [...(editableContent[listName] as string[])];
+      newList[index] = value;
+      handleContentChange(listName, newList);
+    }
+  };
+
+  const handleConfirm = () => {
+    onConfirm(editableData, editableConsultantInfo);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
