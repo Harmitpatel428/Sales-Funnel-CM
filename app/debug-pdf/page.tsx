@@ -11,7 +11,6 @@ export default function DebugPDFPage() {
       clientName: 'Test Client',
       company: 'Test Company',
       address: 'Test Address',
-      phone: '1234567890',
       kva: '100',
       schemes: ['Interest Subsidy'],
       typeOfCase: 'New',
@@ -19,7 +18,10 @@ export default function DebugPDFPage() {
       projectCost: '₹1.00 Cr',
       industriesType: 'Test Industry',
       termLoanAmount: '₹50 Lakhs',
-      powerConnection: '100 KVA'
+      powerConnection: '100 KVA',
+      fees: {
+        'Interest Subsidy': 25000
+      }
     };
 
     const consultantInfo: ConsultantInfo = DEFAULT_CONSULTANT_INFO;

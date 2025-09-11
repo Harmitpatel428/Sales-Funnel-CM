@@ -33,7 +33,8 @@ export default function MandatePreviewTestPage() {
         projectCost: formData.projectCost,
         industriesType: formData.industriesType,
         termLoanAmount: formData.termLoanAmount,
-        powerConnection: formData.powerConnection
+        powerConnection: formData.powerConnection,
+        fees: {}
       };
 
       console.log('Generating PDF with data:', mandateData);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MandateData, ConsultantInfo } from '../services/pdfServiceV2';
+import { MandateData, ConsultantInfo } from '../services/pdfServiceSimple';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 
 interface PDFPreviewModalProps {
@@ -76,7 +76,7 @@ export default function PDFPreviewModal({
     return `${day}-${month}-${year}`;
   };
 
-  const handleFieldChange = (field: keyof MandateData, value: string | string[]) => {
+  const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number }) => {
     setEditableData(prev => ({
       ...prev,
       [field]: value
@@ -422,34 +422,52 @@ export default function PDFPreviewModal({
                 <div className="mb-6">
                   <div className="text-xs font-bold mb-3">OUR FEES</div>
                   <div className="text-xs mb-2">Our consulting fees are structured as follows:</div>
-                  <div className="space-y-1">
-                    {editableData.schemes.map((scheme, index) => {
-                      let feeAmount = '';
-                      switch (scheme) {
-                        case 'Interest Subsidy':
-                          feeAmount = '₹25,000';
-                          break;
-                        case 'Power Connection Charges':
-                          feeAmount = '₹15,000';
-                          break;
-                        case 'Electric Duty Exemption':
-                          feeAmount = '₹20,000';
-                          break;
-                        default:
-                          feeAmount = '₹10,000';
-                      }
-                      return (
-                        <div key={index} className="text-xs">
-                          {scheme}: {feeAmount} (Fixed Fee)
-                        </div>
-                      );
-                    })}
-                    {editableData.schemes.length > 0 && (
-                      <div className="text-xs font-bold mt-2">
-                        Total: ₹{(editableData.schemes.length * 15000).toLocaleString()}
+                  
+                  {editableData.schemes.length > 0 ? (
+                    <div className="space-y-2">
+                      {/* Fees Table Header */}
+                      <div className="flex border-b border-gray-300 pb-1">
+                        <div className="flex-1 text-xs font-bold">Scheme Name</div>
+                        <div className="w-24 text-xs font-bold text-right">Consultant Fee (₹)</div>
                       </div>
-                    )}
-                  </div>
+                      
+                      {/* Fees Table Rows */}
+                      {editableData.schemes.map((scheme, index) => (
+                        <div key={scheme} className="flex items-center border-b border-gray-200 pb-1">
+                          <div className="flex-1 text-xs">
+                            {index + 1}. {scheme}
+                          </div>
+                          <div className="w-24 text-right">
+                            <div
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const fee = parseInt(e.target.textContent?.replace(/[₹,]/g, '') || '0') || 0;
+                                handleFieldChange('fees', {
+                                  ...editableData.fees,
+                                  [scheme]: fee
+                                });
+                              }}
+                              className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 text-right"
+                              style={{ minHeight: '14px' }}
+                            >
+                              ₹{(editableData.fees[scheme] || 0).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Total Row */}
+                      <div className="flex items-center pt-2 border-t border-gray-300">
+                        <div className="flex-1 text-xs font-bold">Total Fees:</div>
+                        <div className="w-24 text-xs font-bold text-right">
+                          ₹{Object.values(editableData.fees).reduce((sum, fee) => sum + fee, 0).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-gray-500">No schemes selected</div>
+                  )}
                 </div>
 
                 {/* Terms & Conditions */}

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 // import { useRouter } from 'next/navigation'; // Not used currently
 import { useLeads, Lead } from '../context/LeadContext';
 import { useMandates, Mandate } from '../context/MandateContext';
-import { MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
+import { MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceSimple';
 import PDFPreviewModal from '../components/PDFPreviewModal';
 
 export default function CMPage() {
@@ -171,7 +171,8 @@ export default function CMPage() {
       projectCost: '',
       industriesType: '',
       termLoanAmount: '',
-      powerConnection: ''
+      powerConnection: '',
+      fees: {}
     });
     setShowCreateForm(true);
   };
@@ -263,7 +264,8 @@ export default function CMPage() {
       projectCost: '',
       industriesType: '',
       termLoanAmount: '',
-      powerConnection: ''
+      powerConnection: '',
+      fees: {}
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -798,7 +800,8 @@ export default function CMPage() {
             projectCost: formData.projectCost,
             industriesType: formData.industriesType,
             termLoanAmount: formData.termLoanAmount,
-            powerConnection: formData.powerConnection
+            powerConnection: formData.powerConnection,
+            fees: formData.fees
           }}
           consultantInfo={consultantInfo}
         />

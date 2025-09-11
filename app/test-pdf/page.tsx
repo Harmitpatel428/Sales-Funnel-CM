@@ -17,7 +17,12 @@ export default function TestPDFPage() {
     projectCost: '₹3.50 Cr (Approx.)',
     industriesType: 'Seed Manufacturing',
     termLoanAmount: '₹1.40 Cr (Approx.)',
-    powerConnection: '300 KVA'
+    powerConnection: '300 KVA',
+    fees: {
+      'Interest Subsidy': 25000,
+      'Power Connection Charges': 15000,
+      'Electric Duty Exemption': 20000
+    }
   });
 
   const handleGeneratePDF = () => {
@@ -203,7 +208,12 @@ export default function TestPDFPage() {
                   projectCost: '₹3.50 Cr (Approx.)',
                   industriesType: 'Seed Manufacturing',
                   termLoanAmount: '₹1.40 Cr (Approx.)',
-                  powerConnection: '300 KVA'
+                  powerConnection: '300 KVA',
+                  fees: {
+                    'Interest Subsidy': 25000,
+                    'Power Connection Charges': 15000,
+                    'Electric Duty Exemption': 20000
+                  }
                 });
               }}
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium"

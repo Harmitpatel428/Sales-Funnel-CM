@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 
 export interface MandateData {
@@ -243,39 +244,51 @@ export class PDFServiceSimple {
     this.currentY += 6;
 
     this.addText('Our consulting fees are structured as follows:', this.margin, this.currentY, { fontSize: 10 });
-    this.currentY += 8;
-
-    // Simple fees list without table
-    mandateData.schemes.forEach((scheme) => {
-      this.checkPageBreak(5);
-      let feeAmount = '';
-      
-      switch (scheme) {
-        case 'Interest Subsidy':
-          feeAmount = '₹25,000';
-          break;
-        case 'Power Connection Charges':
-          feeAmount = '₹15,000';
-          break;
-        case 'Electric Duty Exemption':
-          feeAmount = '₹20,000';
-          break;
-        default:
-          feeAmount = '₹10,000';
-      }
-      
-      this.addText(`${scheme}: ${feeAmount} (Fixed Fee)`, this.margin, this.currentY, { fontSize: 10 });
-      this.currentY += 4;
-    });
-
-    // Add total
-    const totalAmount = mandateData.schemes.length * 15000; // Average fee
     this.currentY += 4;
-    this.addText(`Total: ₹${totalAmount.toLocaleString()}`, this.margin, this.currentY, { 
-      fontSize: 10, 
-      fontStyle: 'bold' 
-    });
-    this.currentY += 10;
+
+    if (mandateData.schemes.length === 0) {
+      this.addText('No specific schemes selected', this.margin, this.currentY, { fontSize: 10 });
+      this.currentY += 5;
+    } else {
+      // Create fees table
+      const tableData = mandateData.schemes.map((scheme, index) => [
+        `${index + 1}. ${scheme}`,
+        `₹${(mandateData.fees[scheme] || 0).toLocaleString()}`
+      ]);
+
+      // Add total row
+      const totalFees = Object.values(mandateData.fees).reduce((sum, fee) => sum + fee, 0);
+      tableData.push(['Total Fees:', `₹${totalFees.toLocaleString()}`]);
+
+      // Generate table
+      autoTable(this.doc, {
+        startY: this.currentY,
+        head: [['Scheme Name', 'Consultant Fee (₹)']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [240, 240, 240], 
+          textColor: [0, 0, 0], 
+          fontStyle: 'bold',
+          fontSize: 10
+        },
+        bodyStyles: { 
+          fontSize: 10,
+          textColor: [0, 0, 0]
+        },
+        columnStyles: {
+          0: { cellWidth: 120 }, // Scheme Name column
+          1: { cellWidth: 60, halign: 'right' } // Fee column
+        },
+        margin: { left: this.margin, right: this.margin },
+        tableWidth: 'wrap'
+      });
+
+      // Update current Y position after table
+      this.currentY = (this.doc as any).lastAutoTable.finalY + 5;
+    }
+
+    this.currentY += 5;
   }
 
   private generateTermsAndConditions(editableContent?: EditableContent) {
