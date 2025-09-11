@@ -187,9 +187,12 @@ export default function CMPage() {
   };
 
   // Handle PDF preview confirmation and download
-  const handlePDFConfirm = async (updatedData: MandateData) => {
+  const handlePDFConfirm = async (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: any) => {
     try {
       console.log('📄 Starting PDF generation for download...');
+      
+      // Update consultant info
+      setConsultantInfo(updatedConsultantInfo);
       
       // Create mandate record
       const newMandate: Mandate = {
@@ -217,7 +220,7 @@ export default function CMPage() {
       // Generate and download PDF
       const { pdfServiceSimple } = await import('../services/pdfServiceSimple');
       console.log('📥 Calling downloadPDF...');
-      pdfServiceSimple.downloadPDF(updatedData, consultantInfo);
+      pdfServiceSimple.downloadPDF(updatedData, updatedConsultantInfo, undefined, editableContent);
       console.log('✅ PDF download initiated');
       
       // Close modal and reset form

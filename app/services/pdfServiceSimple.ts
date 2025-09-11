@@ -15,6 +15,13 @@ export interface MandateData {
   powerConnection: string;
 }
 
+export interface EditableContent {
+  subjectLine?: string;
+  workScope?: string[];
+  eligibilityCriteria?: string[];
+  termsAndConditions?: string[];
+}
+
 export interface ConsultantInfo {
   name: string;
   address: string;
@@ -66,7 +73,7 @@ export class PDFServiceSimple {
     return false;
   }
 
-  private generateHeader(consultantInfo: ConsultantInfo, mandateData: MandateData) {
+  private generateHeader(consultantInfo: ConsultantInfo, mandateData: MandateData, editableContent?: EditableContent) {
     // Consultant Address (Top Left)
     this.addText(consultantInfo.name, this.margin, this.currentY, { fontSize: 12, fontStyle: 'bold' });
     this.currentY += 5;
@@ -85,8 +92,8 @@ export class PDFServiceSimple {
     this.addText(`Date: ${currentDate}`, this.margin, this.currentY, { fontSize: 10, align: 'right' });
     this.currentY += 8;
 
-    // Subject Line - Dynamic based on selected schemes using utility function
-    const subjectText = formatSubjectLine(mandateData.schemes);
+    // Subject Line - Use editable content if available, otherwise generate from schemes
+    const subjectText = editableContent?.subjectLine || formatSubjectLine(mandateData.schemes);
     
     this.addText(subjectText, this.margin, this.currentY, { 
       fontSize: 12, 
@@ -175,14 +182,14 @@ export class PDFServiceSimple {
     this.currentY += 5;
   }
 
-  private generateWorkScope() {
+  private generateWorkScope(editableContent?: EditableContent) {
     this.addText('WORK SCOPE', this.margin, this.currentY, { 
       fontSize: 12, 
       fontStyle: 'bold' 
     });
     this.currentY += 6;
 
-    const workScopeItems = [
+    const workScopeItems = editableContent?.workScope || [
       'Assessment of eligibility for various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022.',
       'Preparation and submission of all required documents and applications.',
       'Liaison with concerned government departments and agencies.',
@@ -201,14 +208,14 @@ export class PDFServiceSimple {
     this.currentY += 5;
   }
 
-  private generateEligibilityCriteria() {
+  private generateEligibilityCriteria(editableContent?: EditableContent) {
     this.addText('ELIGIBILITY CRITERIA', this.margin, this.currentY, { 
       fontSize: 12, 
       fontStyle: 'bold' 
     });
     this.currentY += 6;
 
-    const eligibilityItems = [
+    const eligibilityItems = editableContent?.eligibilityCriteria || [
       'The unit should be registered under the Companies Act, 2013 or Partnership Act, 1932 or any other relevant Act.',
       'The unit should be operational and engaged in manufacturing or service activities.',
       'The unit should have valid business registration and necessary licenses.',
@@ -270,14 +277,14 @@ export class PDFServiceSimple {
     this.currentY += 10;
   }
 
-  private generateTermsAndConditions() {
+  private generateTermsAndConditions(editableContent?: EditableContent) {
     this.addText('TERMS & CONDITIONS', this.margin, this.currentY, { 
       fontSize: 12, 
       fontStyle: 'bold' 
     });
     this.currentY += 6;
 
-    const termsItems = [
+    const termsItems = editableContent?.termsAndConditions || [
       'All services are subject to client cooperation and timely provision of required documents.',
       'Fees are payable as per agreed terms and conditions.',
       'We reserve the right to modify our services based on changing government policies.',
@@ -305,26 +312,26 @@ export class PDFServiceSimple {
     });
   }
 
-  public generateMandatePDF(mandateData: MandateData, consultantInfo: ConsultantInfo): jsPDF {
+  public generateMandatePDF(mandateData: MandateData, consultantInfo: ConsultantInfo, editableContent?: EditableContent): jsPDF {
     // Reset for new PDF
     this.doc = new jsPDF();
     this.currentY = 20;
 
     // Generate all sections
-    this.generateHeader(consultantInfo, mandateData);
+    this.generateHeader(consultantInfo, mandateData, editableContent);
     this.generateClientDetails(mandateData);
     this.generateCommercialOffer(mandateData);
     this.generateProposedBenefits(mandateData);
-    this.generateWorkScope();
-    this.generateEligibilityCriteria();
+    this.generateWorkScope(editableContent);
+    this.generateEligibilityCriteria(editableContent);
     this.generateFees(mandateData);
-    this.generateTermsAndConditions();
+    this.generateTermsAndConditions(editableContent);
     this.generateFooter();
 
     return this.doc;
   }
 
-  public downloadPDF(mandateData: MandateData, consultantInfo: ConsultantInfo, filename?: string): void {
+  public downloadPDF(mandateData: MandateData, consultantInfo: ConsultantInfo, filename?: string, editableContent?: EditableContent): void {
     try {
       if (typeof window === 'undefined') {
         console.error('PDF generation is only available in browser environment');
@@ -332,7 +339,7 @@ export class PDFServiceSimple {
       }
       
       console.log('Starting PDF generation...');
-      const pdf = this.generateMandatePDF(mandateData, consultantInfo);
+      const pdf = this.generateMandatePDF(mandateData, consultantInfo, editableContent);
       
       // Generate filename if not provided
       if (!filename) {

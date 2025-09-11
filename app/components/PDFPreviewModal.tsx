@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MandateData, ConsultantInfo } from '../services/pdfServiceV2';
-import { formatSubjectLine, getSchemeDescription, getAllSchemeNames } from '../utils/schemeUtils';
+import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo) => void;
+  onConfirm: (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: any) => void;
   mandateData: MandateData;
   consultantInfo: ConsultantInfo;
 }
@@ -98,16 +98,7 @@ export default function PDFPreviewModal({
     }));
   };
 
-  const handleSchemeToggle = (scheme: string) => {
-    const currentSchemes = editableData.schemes;
-    const isSelected = currentSchemes.includes(scheme);
-    
-    if (isSelected) {
-      handleFieldChange('schemes', currentSchemes.filter(s => s !== scheme));
-    } else {
-      handleFieldChange('schemes', [...currentSchemes, scheme]);
-    }
-  };
+  // Note: Scheme selection is now handled in the main form, not in the preview modal
 
   const handleContentChange = (field: keyof typeof editableContent, value: string | string[]) => {
     setEditableContent(prev => ({
@@ -125,7 +116,7 @@ export default function PDFPreviewModal({
   };
 
   const handleConfirm = () => {
-    onConfirm(editableData, editableConsultantInfo);
+    onConfirm(editableData, editableConsultantInfo, editableContent);
   };
 
   return (
@@ -160,38 +151,42 @@ export default function PDFPreviewModal({
                 <div className="mb-6">
                   {/* Consultant Info - Top Left */}
                   <div className="mb-4">
-                    <input
-                      type="text"
-                      value={editableConsultantInfo.name}
-                      onChange={(e) => handleConsultantFieldChange('name', e.target.value)}
-                      className="pdf-input text-xs font-bold"
-                      aria-label="Consultant name"
-                      title="Edit consultant name"
-                    />
-                    <input
-                      type="text"
-                      value={editableConsultantInfo.address}
-                      onChange={(e) => handleConsultantFieldChange('address', e.target.value)}
-                      className="pdf-input text-xs mt-1"
-                      aria-label="Consultant address"
-                      title="Edit consultant address"
-                    />
-                    <input
-                      type="text"
-                      value={`Email: ${editableConsultantInfo.email}`}
-                      onChange={(e) => handleConsultantFieldChange('email', e.target.value.replace('Email: ', ''))}
-                      className="pdf-input text-xs mt-1"
-                      aria-label="Consultant email"
-                      title="Edit consultant email"
-                    />
-                    <input
-                      type="text"
-                      value={`Phone: ${editableConsultantInfo.phone}`}
-                      onChange={(e) => handleConsultantFieldChange('phone', e.target.value.replace('Phone: ', ''))}
-                      className="pdf-input text-xs mt-1"
-                      aria-label="Consultant phone"
-                      title="Edit consultant phone"
-                    />
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleConsultantFieldChange('name', e.target.textContent || '')}
+                      className="pdf-input text-xs font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                      style={{ minHeight: '14px' }}
+                    >
+                      {editableConsultantInfo.name}
+                    </div>
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleConsultantFieldChange('address', e.target.textContent || '')}
+                      className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                      style={{ minHeight: '14px' }}
+                    >
+                      {editableConsultantInfo.address}
+                    </div>
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleConsultantFieldChange('email', e.target.textContent?.replace('Email: ', '') || '')}
+                      className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                      style={{ minHeight: '14px' }}
+                    >
+                      Email: {editableConsultantInfo.email}
+                    </div>
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleConsultantFieldChange('phone', e.target.textContent?.replace('Phone: ', '') || '')}
+                      className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                      style={{ minHeight: '14px' }}
+                    >
+                      Phone: {editableConsultantInfo.phone}
+                    </div>
                   </div>
 
                   {/* Date - Top Right */}
@@ -201,8 +196,14 @@ export default function PDFPreviewModal({
 
                   {/* Subject Line */}
                   <div className="mb-4">
-                    <div className="text-xs font-bold">
-                      {subjectLine}
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
+                      className="pdf-input text-xs font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                      style={{ minHeight: '14px' }}
+                    >
+                      {editableContent.subjectLine}
                     </div>
                   </div>
                 </div>
@@ -210,30 +211,33 @@ export default function PDFPreviewModal({
                 {/* Client Details */}
                 <div className="mb-6">
                   <div className="text-xs font-bold mb-2">To,</div>
-                  <input
-                    type="text"
-                    value={editableData.clientName}
-                    onChange={(e) => handleFieldChange('clientName', e.target.value)}
-                    className="pdf-input text-xs font-bold mb-1"
-                    aria-label="Client name"
-                    title="Edit client name"
-                  />
-                  <input
-                    type="text"
-                    value={editableData.company}
-                    onChange={(e) => handleFieldChange('company', e.target.value)}
-                    className="pdf-input text-xs mb-1"
-                    aria-label="Company name"
-                    title="Edit company name"
-                  />
-                  <input
-                    type="text"
-                    value={editableData.address}
-                    onChange={(e) => handleFieldChange('address', e.target.value)}
-                    className="pdf-input text-xs"
-                    aria-label="Client address"
-                    title="Edit client address"
-                  />
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleFieldChange('clientName', e.target.textContent || '')}
+                    className="pdf-input text-xs font-bold mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                    style={{ minHeight: '14px' }}
+                  >
+                    {editableData.clientName}
+                  </div>
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleFieldChange('company', e.target.textContent || '')}
+                    className="pdf-input text-xs mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                    style={{ minHeight: '14px' }}
+                  >
+                    {editableData.company}
+                  </div>
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleFieldChange('address', e.target.textContent || '')}
+                    className="pdf-input text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                    style={{ minHeight: '14px' }}
+                  >
+                    {editableData.address}
+                  </div>
                 </div>
 
                 {/* Commercial Offer */}
@@ -242,86 +246,93 @@ export default function PDFPreviewModal({
                   <div className="space-y-1">
                     <div className="flex">
                       <span className="text-xs font-bold w-24">Case Name:</span>
-                      <input
-                        type="text"
-                        value={editableData.clientName}
-                        onChange={(e) => handleFieldChange('clientName', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        aria-label="Case name"
-                        title="Edit case name"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('clientName', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                      >
+                        {editableData.clientName}
+                      </div>
                     </div>
                     <div className="flex">
                       <span className="text-xs font-bold w-24">Type of Case:</span>
-                      <input
-                        type="text"
-                        value={editableData.typeOfCase}
-                        onChange={(e) => handleFieldChange('typeOfCase', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        placeholder="Enter type of case"
-                        aria-label="Type of case"
-                        title="Edit type of case"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('typeOfCase', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                        data-placeholder="Enter type of case"
+                      >
+                        {editableData.typeOfCase || 'Enter type of case'}
+                      </div>
                     </div>
                     <div className="flex">
                       <span className="text-xs font-bold w-24">Project Cost:</span>
-                      <input
-                        type="text"
-                        value={editableData.projectCost}
-                        onChange={(e) => handleFieldChange('projectCost', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        placeholder="Enter project cost"
-                        aria-label="Project cost"
-                        title="Edit project cost"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('projectCost', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                        data-placeholder="Enter project cost"
+                      >
+                        {editableData.projectCost || 'Enter project cost'}
+                      </div>
                     </div>
                     <div className="flex">
                       <span className="text-xs font-bold w-24">Industry:</span>
-                      <input
-                        type="text"
-                        value={editableData.industriesType}
-                        onChange={(e) => handleFieldChange('industriesType', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        placeholder="Enter industry type"
-                        aria-label="Industry type"
-                        title="Edit industry type"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('industriesType', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                        data-placeholder="Enter industry type"
+                      >
+                        {editableData.industriesType || 'Enter industry type'}
+                      </div>
                     </div>
                     <div className="flex">
                       <span className="text-xs font-bold w-24">Term Loan:</span>
-                      <input
-                        type="text"
-                        value={editableData.termLoanAmount}
-                        onChange={(e) => handleFieldChange('termLoanAmount', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        placeholder="Enter term loan amount"
-                        aria-label="Term loan amount"
-                        title="Edit term loan amount"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('termLoanAmount', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                        data-placeholder="Enter term loan amount"
+                      >
+                        {editableData.termLoanAmount || 'Enter term loan amount'}
+                      </div>
                     </div>
                     <div className="flex">
                       <span className="text-xs font-bold w-24">Power Conn:</span>
-                      <input
-                        type="text"
-                        value={editableData.powerConnection}
-                        onChange={(e) => handleFieldChange('powerConnection', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        placeholder="Enter power connection"
-                        aria-label="Power connection"
-                        title="Edit power connection"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('powerConnection', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                        data-placeholder="Enter power connection"
+                      >
+                        {editableData.powerConnection || 'Enter power connection'}
+                      </div>
                     </div>
                     <div className="flex">
                       <span className="text-xs font-bold w-24">KVA:</span>
-                      <input
-                        type="text"
-                        value={editableData.kva}
-                        onChange={(e) => handleFieldChange('kva', e.target.value)}
-                        className="pdf-input flex-1 text-xs"
-                        placeholder="Enter KVA"
-                        aria-label="KVA"
-                        title="Edit KVA"
-                      />
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleFieldChange('kva', e.target.textContent || '')}
+                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                        data-placeholder="Enter KVA"
+                      >
+                        {editableData.kva || 'Enter KVA'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -345,7 +356,18 @@ export default function PDFPreviewModal({
                             {schemeDesc && (
                               <div className="ml-4 space-y-1">
                                 {schemeDesc.description.map((desc, descIndex) => (
-                                  <div key={descIndex} className="text-xs">
+                                  <div
+                                    key={descIndex}
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={(e) => {
+                                      // Update the scheme description in state
+                                      // This would require more complex state management
+                                      console.log('Scheme description edited:', e.target.textContent);
+                                    }}
+                                    className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                                    style={{ minHeight: '14px' }}
+                                  >
                                     • {desc}
                                   </div>
                                 ))}
@@ -362,13 +384,18 @@ export default function PDFPreviewModal({
                 <div className="mb-6">
                   <div className="text-xs font-bold mb-3">WORK SCOPE</div>
                   <div className="space-y-1 text-xs">
-                    <div>1. Assessment of eligibility for various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022.</div>
-                    <div>2. Preparation and submission of all required documents and applications.</div>
-                    <div>3. Liaison with concerned government departments and agencies.</div>
-                    <div>4. Follow-up on application status and expedite approvals.</div>
-                    <div>5. Guidance on compliance requirements and procedures.</div>
-                    <div>6. Support for any additional documentation or clarifications required.</div>
-                    <div>7. Regular updates on the progress of applications.</div>
+                    {editableContent.workScope.map((item, index) => (
+                      <div
+                        key={index}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleListEdit('workScope', index, e.target.textContent || '')}
+                        className="focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                      >
+                        {index + 1}. {item}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -376,13 +403,18 @@ export default function PDFPreviewModal({
                 <div className="mb-6">
                   <div className="text-xs font-bold mb-3">ELIGIBILITY CRITERIA</div>
                   <div className="space-y-1 text-xs">
-                    <div>1. The unit should be registered under the Companies Act, 2013 or Partnership Act, 1932 or any other relevant Act.</div>
-                    <div>2. The unit should be operational and engaged in manufacturing or service activities.</div>
-                    <div>3. The unit should have valid business registration and necessary licenses.</div>
-                    <div>4. The unit should comply with all applicable laws and regulations.</div>
-                    <div>5. The unit should have proper financial statements and project documentation.</div>
-                    <div>6. The unit should meet the minimum investment and employment criteria as specified in the scheme.</div>
-                    <div>7. The unit should adhere to environmental and safety standards.</div>
+                    {editableContent.eligibilityCriteria.map((item, index) => (
+                      <div
+                        key={index}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleListEdit('eligibilityCriteria', index, e.target.textContent || '')}
+                        className="focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                      >
+                        {index + 1}. {item}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -424,14 +456,18 @@ export default function PDFPreviewModal({
                 <div className="mb-6">
                   <div className="text-xs font-bold mb-3">TERMS & CONDITIONS</div>
                   <div className="space-y-1 text-xs">
-                    <div>1. All services are subject to client cooperation and timely provision of required documents.</div>
-                    <div>2. Fees are payable as per agreed terms and conditions.</div>
-                    <div>3. We reserve the right to modify our services based on changing government policies.</div>
-                    <div>4. Confidentiality of client information is maintained at all times.</div>
-                    <div>5. Any additional services beyond the scope will be charged separately.</div>
-                    <div>6. This mandate is valid for 90 days from the date of signing.</div>
-                    <div>7. Payment terms: 50% advance, 50% on completion of work.</div>
-                    <div>8. We are not responsible for delays caused by government departments or policy changes.</div>
+                    {editableContent.termsAndConditions.map((item, index) => (
+                      <div
+                        key={index}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleListEdit('termsAndConditions', index, e.target.textContent || '')}
+                        className="focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
+                        style={{ minHeight: '14px' }}
+                      >
+                        {index + 1}. {item}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
