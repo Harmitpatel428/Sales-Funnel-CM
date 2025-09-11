@@ -30,7 +30,8 @@ export default function CMPage() {
     projectCost: '',
     industriesType: '',
     termLoanAmount: '',
-    powerConnection: ''
+    powerConnection: '',
+    fees: {} as { [schemeName: string]: number }
   });
 
   // Generate UUID function
@@ -236,7 +237,8 @@ export default function CMPage() {
         projectCost: '',
         industriesType: '',
         termLoanAmount: '',
-        powerConnection: ''
+        powerConnection: '',
+        fees: {}
       });
       setSelectedLead(null);
       setShowCreateForm(false);
@@ -280,11 +282,37 @@ export default function CMPage() {
 
   // Handle scheme selection changes
   const handleSchemeChange = (scheme: string, checked: boolean) => {
+    setFormData(prev => {
+      let newSchemes: string[];
+      let newFees: { [schemeName: string]: number };
+
+      if (checked) {
+        // Add scheme with default fee
+        newSchemes = [...prev.schemes, scheme];
+        newFees = { ...prev.fees, [scheme]: 0 };
+      } else {
+        // Remove scheme and its fee
+        newSchemes = prev.schemes.filter(s => s !== scheme);
+        newFees = { ...prev.fees };
+        delete newFees[scheme];
+      }
+
+      return {
+        ...prev,
+        schemes: newSchemes,
+        fees: newFees
+      };
+    });
+  };
+
+  // Handle fee input changes
+  const handleFeeChange = (scheme: string, fee: number) => {
     setFormData(prev => ({
       ...prev,
-      schemes: checked 
-        ? [...prev.schemes, scheme]
-        : prev.schemes.filter(s => s !== scheme)
+      fees: {
+        ...prev.fees,
+        [scheme]: fee
+      }
     }));
   };
 
@@ -459,6 +487,48 @@ export default function CMPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Consultant Fees Section */}
+                  {formData.schemes.length > 0 && (
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900">Consultant Fees</h2>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-600 mb-4">Enter fees for each selected scheme:</p>
+                        <div className="space-y-3">
+                          {formData.schemes.map((scheme) => (
+                            <div key={scheme} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <label className="text-sm font-medium text-gray-700 flex-1">
+                                {scheme} Fee:
+                              </label>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-500">₹</span>
+                                <input
+                                  type="number"
+                                  value={formData.fees[scheme] || 0}
+                                  onChange={(e) => handleFeeChange(scheme, parseInt(e.target.value) || 0)}
+                                  className="w-24 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                  placeholder="0"
+                                  min="0"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-blue-900">Total Fees:</span>
+                            <span className="text-lg font-bold text-blue-900">
+                              ₹{Object.values(formData.fees).reduce((sum, fee) => sum + fee, 0).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Details of Proposed Firm Section */}
                   <div className="space-y-4 sm:space-y-6">
