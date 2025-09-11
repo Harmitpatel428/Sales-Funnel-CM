@@ -156,7 +156,7 @@ export default function PDFPreviewModal({
                       suppressContentEditableWarning
                       onBlur={(e) => handleConsultantFieldChange('name', e.target.textContent || '')}
                       className="pdf-input text-xs font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                      style={{ minHeight: '14px' }}
+                      className="pdf-input-min-height"
                     >
                       {editableConsultantInfo.name}
                     </div>
@@ -165,7 +165,7 @@ export default function PDFPreviewModal({
                       suppressContentEditableWarning
                       onBlur={(e) => handleConsultantFieldChange('address', e.target.textContent || '')}
                       className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                      style={{ minHeight: '14px' }}
+                      className="pdf-input-min-height"
                     >
                       {editableConsultantInfo.address}
                     </div>
@@ -174,7 +174,7 @@ export default function PDFPreviewModal({
                       suppressContentEditableWarning
                       onBlur={(e) => handleConsultantFieldChange('email', e.target.textContent?.replace('Email: ', '') || '')}
                       className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                      style={{ minHeight: '14px' }}
+                      className="pdf-input-min-height"
                     >
                       Email: {editableConsultantInfo.email}
                     </div>
@@ -183,7 +183,7 @@ export default function PDFPreviewModal({
                       suppressContentEditableWarning
                       onBlur={(e) => handleConsultantFieldChange('phone', e.target.textContent?.replace('Phone: ', '') || '')}
                       className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                      style={{ minHeight: '14px' }}
+                      className="pdf-input-min-height"
                     >
                       Phone: {editableConsultantInfo.phone}
                     </div>
@@ -201,7 +201,7 @@ export default function PDFPreviewModal({
                       suppressContentEditableWarning
                       onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
                       className="pdf-input text-xs font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                      style={{ minHeight: '14px' }}
+                      className="pdf-input-min-height"
                     >
                       {editableContent.subjectLine}
                     </div>
@@ -216,7 +216,7 @@ export default function PDFPreviewModal({
                     suppressContentEditableWarning
                     onBlur={(e) => handleFieldChange('clientName', e.target.textContent || '')}
                     className="pdf-input text-xs font-bold mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                    style={{ minHeight: '14px' }}
+                    className="pdf-input-min-height"
                   >
                     {editableData.clientName}
                   </div>
@@ -225,7 +225,7 @@ export default function PDFPreviewModal({
                     suppressContentEditableWarning
                     onBlur={(e) => handleFieldChange('company', e.target.textContent || '')}
                     className="pdf-input text-xs mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                    style={{ minHeight: '14px' }}
+                    className="pdf-input-min-height"
                   >
                     {editableData.company}
                   </div>
@@ -234,7 +234,7 @@ export default function PDFPreviewModal({
                     suppressContentEditableWarning
                     onBlur={(e) => handleFieldChange('address', e.target.textContent || '')}
                     className="pdf-input text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                    style={{ minHeight: '14px' }}
+                    className="pdf-input-min-height"
                   >
                     {editableData.address}
                   </div>
@@ -251,7 +251,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('clientName', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                       >
                         {editableData.clientName}
                       </div>
@@ -263,7 +263,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('typeOfCase', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                         data-placeholder="Enter type of case"
                       >
                         {editableData.typeOfCase || 'Enter type of case'}
@@ -276,7 +276,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('projectCost', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                         data-placeholder="Enter project cost"
                       >
                         {editableData.projectCost || 'Enter project cost'}
@@ -289,7 +289,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('industriesType', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                         data-placeholder="Enter industry type"
                       >
                         {editableData.industriesType || 'Enter industry type'}
@@ -302,7 +302,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('termLoanAmount', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                         data-placeholder="Enter term loan amount"
                       >
                         {editableData.termLoanAmount || 'Enter term loan amount'}
@@ -315,7 +315,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('powerConnection', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                         data-placeholder="Enter power connection"
                       >
                         {editableData.powerConnection || 'Enter power connection'}
@@ -328,7 +328,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleFieldChange('kva', e.target.textContent || '')}
                         className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                         data-placeholder="Enter KVA"
                       >
                         {editableData.kva || 'Enter KVA'}
@@ -366,7 +366,7 @@ export default function PDFPreviewModal({
                                       console.log('Scheme description edited:', e.target.textContent);
                                     }}
                                     className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                                    style={{ minHeight: '14px' }}
+                                    className="pdf-input-min-height"
                                   >
                                     • {desc}
                                   </div>
@@ -391,7 +391,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleListEdit('workScope', index, e.target.textContent || '')}
                         className="focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                       >
                         {index + 1}. {item}
                       </div>
@@ -410,7 +410,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleListEdit('eligibilityCriteria', index, e.target.textContent || '')}
                         className="focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                       >
                         {index + 1}. {item}
                       </div>
@@ -449,7 +449,7 @@ export default function PDFPreviewModal({
                                 });
                               }}
                               className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 text-right"
-                              style={{ minHeight: '14px' }}
+                              className="pdf-input-min-height"
                             >
                               ₹{(editableData.fees[scheme] || 0).toLocaleString()}
                             </div>
@@ -481,7 +481,7 @@ export default function PDFPreviewModal({
                         suppressContentEditableWarning
                         onBlur={(e) => handleListEdit('termsAndConditions', index, e.target.textContent || '')}
                         className="focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5"
-                        style={{ minHeight: '14px' }}
+                        className="pdf-input-min-height"
                       >
                         {index + 1}. {item}
                       </div>

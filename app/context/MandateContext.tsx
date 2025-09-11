@@ -124,7 +124,6 @@ export function MandateProvider({ children }: { children: ReactNode }) {
           mandate.company,
           mandate.kva,
           mandate.address,
-          mandate.phone,
           mandate.typeOfCase,
           mandate.category,
           mandate.projectCost,

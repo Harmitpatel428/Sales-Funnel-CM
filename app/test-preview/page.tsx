@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PDFServiceV2, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
+import { PDFServiceV2, MandateData, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
 
 export default function TestPreviewPage() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -18,7 +18,11 @@ export default function TestPreviewPage() {
     projectCost: '₹50,00,000',
     industriesType: 'Manufacturing',
     termLoanAmount: '₹30,00,000',
-    powerConnection: '11 KV'
+    powerConnection: '11 KV',
+    fees: {
+      'Interest Subsidy': 25000,
+      'Power Connection Charges': 15000
+    }
   };
 
   const handleTestPreview = async () => {

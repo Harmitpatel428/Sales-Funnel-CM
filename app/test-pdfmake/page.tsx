@@ -9,7 +9,6 @@ export default function TestPDFMakePage() {
     clientName: 'M/s Mangalam Seeds Ltd',
     company: 'M/s Mangalam Seeds Ltd',
     address: 'Village: Maktupur, Ta: Unjha, Dist: Mehsana, Gujarat-382430',
-    phone: '+91-9876543210',
     kva: '300',
     schemes: ['Interest Subsidy', 'Power Connection Charges', 'Electric Duty Exemption'],
     typeOfCase: 'New-Category II',
@@ -17,7 +16,12 @@ export default function TestPDFMakePage() {
     projectCost: '₹3.50 Cr (Approx.)',
     industriesType: 'Seed Manufacturing',
     termLoanAmount: '₹1.40 Cr (Approx.)',
-    powerConnection: '300 KVA'
+    powerConnection: '300 KVA',
+    fees: {
+      'Interest Subsidy': 25000,
+      'Power Connection Charges': 15000,
+      'Electric Duty Exemption': 20000
+    }
   });
 
   const handleGeneratePDF = () => {

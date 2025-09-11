@@ -475,3 +475,7 @@ input, textarea, select, button {
   border-radius: 2px;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
+
+.pdf-input-min-height {
+  min-height: 14px;
+}

@@ -21,6 +21,7 @@ export interface MandateData {
   industriesType: string;
   termLoanAmount: string;
   powerConnection: string;
+  fees: { [schemeName: string]: number };
 }
 
 export interface ConsultantInfo {
