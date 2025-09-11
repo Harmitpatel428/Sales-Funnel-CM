@@ -88,15 +88,30 @@ export function LeadProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem('leads');
       if (stored) {
-        setLeads(JSON.parse(stored));
+        const parsedLeads = JSON.parse(stored);
+        if (Array.isArray(parsedLeads)) {
+          setLeads(parsedLeads);
+        } else {
+          console.warn('Invalid leads data format, clearing localStorage');
+          localStorage.removeItem('leads');
+        }
       }
       
       const storedViews = localStorage.getItem('savedViews');
       if (storedViews) {
-        setSavedViews(JSON.parse(storedViews));
+        const parsedViews = JSON.parse(storedViews);
+        if (Array.isArray(parsedViews)) {
+          setSavedViews(parsedViews);
+        } else {
+          console.warn('Invalid views data format, clearing localStorage');
+          localStorage.removeItem('savedViews');
+        }
       }
     } catch (err) {
       console.error('Error loading data:', err);
+      // Clear corrupted data
+      localStorage.removeItem('leads');
+      localStorage.removeItem('savedViews');
     } finally {
       setIsHydrated(true);
     }

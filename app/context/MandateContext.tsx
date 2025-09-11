@@ -4,13 +4,12 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 export interface Mandate {
   mandateId: string;
-  leadId?: string; // Optional - null if standalone
+  leadId?: string | undefined; // Optional - undefined if standalone
   mandateName: string;
   clientName: string;
   company: string;
   kva: string;
   address?: string;
-  phone?: string;
   schemes: string[];
   typeOfCase?: string;
   category?: string;
@@ -33,9 +32,9 @@ interface MandateContextType {
 }
 
 export interface MandateFilters {
-  status?: Mandate['status'][];
-  searchTerm?: string;
-  leadId?: string;
+  status?: Mandate['status'][] | undefined;
+  searchTerm?: string | undefined;
+  leadId?: string | undefined;
 }
 
 const MandateContext = createContext<MandateContextType | undefined>(undefined);
@@ -49,10 +48,18 @@ export function MandateProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem('mandates');
       if (stored) {
-        setMandates(JSON.parse(stored));
+        const parsedMandates = JSON.parse(stored);
+        if (Array.isArray(parsedMandates)) {
+          setMandates(parsedMandates);
+        } else {
+          console.warn('Invalid mandates data format, clearing localStorage');
+          localStorage.removeItem('mandates');
+        }
       }
     } catch (err) {
       console.error('Error loading mandates:', err);
+      // Clear corrupted data
+      localStorage.removeItem('mandates');
     } finally {
       setIsHydrated(true);
     }

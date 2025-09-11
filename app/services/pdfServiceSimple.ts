@@ -1,13 +1,5 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
-
-// Extend jsPDF type to include autoTable
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
 
 export interface MandateData {
   clientName: string;
@@ -30,9 +22,7 @@ export interface ConsultantInfo {
   phone: string;
 }
 
-// Note: Scheme descriptions are now imported from utils/schemeUtils.ts
-
-export class PDFServiceV2 {
+export class PDFServiceSimple {
   private doc: jsPDF;
   private currentY: number = 20;
   private pageHeight: number = 280;
@@ -128,41 +118,24 @@ export class PDFServiceV2 {
     });
     this.currentY += 6;
 
-    // Commercial offer details in table format
-    const offerData = [
-      ['Case Name:', mandateData.clientName],
-      ['Type of Case:', mandateData.typeOfCase || 'Not specified'],
-      ['Project Cost:', mandateData.projectCost || 'Not specified'],
-      ['Industry:', mandateData.industriesType || 'Not specified'],
-      ['Term Loan Amount:', mandateData.termLoanAmount || 'Not specified'],
-      ['Power Connection:', mandateData.powerConnection || 'Not specified'],
-      ['KVA:', mandateData.kva || 'Not specified']
+    // Commercial offer details in simple text format
+    const offerItems = [
+      `Case Name: ${mandateData.clientName}`,
+      `Type of Case: ${mandateData.typeOfCase || 'Not specified'}`,
+      `Project Cost: ${mandateData.projectCost || 'Not specified'}`,
+      `Industry: ${mandateData.industriesType || 'Not specified'}`,
+      `Term Loan Amount: ${mandateData.termLoanAmount || 'Not specified'}`,
+      `Power Connection: ${mandateData.powerConnection || 'Not specified'}`,
+      `KVA: ${mandateData.kva || 'Not specified'}`
     ];
 
-    try {
-      this.doc.autoTable({
-        startY: this.currentY,
-        head: [],
-        body: offerData,
-        theme: 'plain',
-        styles: { fontSize: 10 },
-        columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 60 },
-          1: { cellWidth: 120 }
-        },
-        margin: { left: this.margin },
-        tableWidth: 'wrap'
-      });
+    offerItems.forEach((item) => {
+      this.checkPageBreak(5);
+      this.addText(item, this.margin, this.currentY, { fontSize: 10 });
+      this.currentY += 4;
+    });
 
-      this.currentY = (this.doc as any).lastAutoTable.finalY + 10;
-    } catch (error) {
-      console.error('Error in autoTable:', error);
-      // Fallback to simple text if autoTable fails
-      offerData.forEach(([label, value]) => {
-        this.addText(`${label} ${value}`, this.margin, this.currentY, { fontSize: 10 });
-        this.currentY += 5;
-      });
-    }
+    this.currentY += 5;
   }
 
   private generateProposedBenefits(mandateData: MandateData) {
@@ -190,7 +163,7 @@ export class PDFServiceV2 {
         this.currentY += 4;
         
         if (schemeDesc) {
-          schemeDesc.description.forEach((desc: string) => {
+          schemeDesc.description.forEach((desc) => {
             this.addText(`• ${desc}`, this.margin + 5, this.currentY, { fontSize: 9 });
             this.currentY += 4;
           });
@@ -264,56 +237,37 @@ export class PDFServiceV2 {
     this.addText('Our consulting fees are structured as follows:', this.margin, this.currentY, { fontSize: 10 });
     this.currentY += 8;
 
-    // Create fees table
-    const feesData = [
-      ['Service', 'Fee Structure', 'Amount']
-    ];
-
+    // Simple fees list without table
     mandateData.schemes.forEach((scheme) => {
+      this.checkPageBreak(5);
       let feeAmount = '';
-      let feeStructure = '';
       
       switch (scheme) {
         case 'Interest Subsidy':
           feeAmount = '₹25,000';
-          feeStructure = 'Fixed Fee';
           break;
         case 'Power Connection Charges':
           feeAmount = '₹15,000';
-          feeStructure = 'Fixed Fee';
           break;
         case 'Electric Duty Exemption':
           feeAmount = '₹20,000';
-          feeStructure = 'Fixed Fee';
           break;
         default:
           feeAmount = '₹10,000';
-          feeStructure = 'Fixed Fee';
       }
       
-      feesData.push([scheme, feeStructure, feeAmount]);
+      this.addText(`${scheme}: ${feeAmount} (Fixed Fee)`, this.margin, this.currentY, { fontSize: 10 });
+      this.currentY += 4;
     });
 
-    // Add total row
+    // Add total
     const totalAmount = mandateData.schemes.length * 15000; // Average fee
-    feesData.push(['Total', '', `₹${totalAmount.toLocaleString()}`]);
-
-    this.doc.autoTable({
-      startY: this.currentY,
-      head: [feesData[0]],
-      body: feesData.slice(1),
-      theme: 'grid',
-      styles: { fontSize: 10 },
-      headStyles: { fontStyle: 'bold' },
-      columnStyles: {
-        0: { cellWidth: 80 },
-        1: { cellWidth: 60 },
-        2: { cellWidth: 50 }
-      },
-      margin: { left: this.margin }
+    this.currentY += 4;
+    this.addText(`Total: ₹${totalAmount.toLocaleString()}`, this.margin, this.currentY, { 
+      fontSize: 10, 
+      fontStyle: 'bold' 
     });
-
-    this.currentY = (this.doc as any).lastAutoTable.finalY + 10;
+    this.currentY += 10;
   }
 
   private generateTermsAndConditions() {
@@ -352,208 +306,22 @@ export class PDFServiceV2 {
   }
 
   public generateMandatePDF(mandateData: MandateData, consultantInfo: ConsultantInfo): jsPDF {
-    try {
-      // Reset for new PDF
-      this.doc = new jsPDF();
-      this.currentY = 20;
+    // Reset for new PDF
+    this.doc = new jsPDF();
+    this.currentY = 20;
 
-      console.log('Starting PDF generation...');
-      console.log('Mandate data:', mandateData);
-      console.log('Consultant info:', consultantInfo);
+    // Generate all sections
+    this.generateHeader(consultantInfo, mandateData);
+    this.generateClientDetails(mandateData);
+    this.generateCommercialOffer(mandateData);
+    this.generateProposedBenefits(mandateData);
+    this.generateWorkScope();
+    this.generateEligibilityCriteria();
+    this.generateFees(mandateData);
+    this.generateTermsAndConditions();
+    this.generateFooter();
 
-      // Generate all sections
-      this.generateHeader(consultantInfo, mandateData);
-      console.log('Header generated');
-      
-      this.generateClientDetails(mandateData);
-      console.log('Client details generated');
-      
-      this.generateCommercialOffer(mandateData);
-      console.log('Commercial offer generated');
-      
-      this.generateProposedBenefits(mandateData);
-      console.log('Proposed benefits generated');
-      
-      this.generateWorkScope();
-      console.log('Work scope generated');
-      
-      this.generateEligibilityCriteria();
-      console.log('Eligibility criteria generated');
-      
-      this.generateFees(mandateData);
-      console.log('Fees generated');
-      
-      this.generateTermsAndConditions();
-      console.log('Terms and conditions generated');
-      
-      this.generateFooter();
-      console.log('Footer generated');
-
-      console.log('PDF generation completed successfully');
-      return this.doc;
-    } catch (error) {
-      console.error('Error in generateMandatePDF:', error);
-      throw new Error(`PDF generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
-  public generateSimpleMandatePDF(mandateData: MandateData, consultantInfo: ConsultantInfo): jsPDF {
-    try {
-      // Reset for new PDF
-      this.doc = new jsPDF();
-      this.currentY = 20;
-
-      console.log('Starting simple PDF generation...');
-
-      // Generate header
-      this.generateHeader(consultantInfo, mandateData);
-      
-      // Generate client details
-      this.generateClientDetails(mandateData);
-      
-      // Generate simple commercial offer without autoTable
-      this.addText('COMMERCIAL OFFER', this.margin, this.currentY, { 
-        fontSize: 12, 
-        fontStyle: 'bold' 
-      });
-      this.currentY += 6;
-
-      const offerData = [
-        ['Case Name:', mandateData.clientName],
-        ['Type of Case:', mandateData.typeOfCase || 'Not specified'],
-        ['Project Cost:', mandateData.projectCost || 'Not specified'],
-        ['Industry:', mandateData.industriesType || 'Not specified'],
-        ['Term Loan Amount:', mandateData.termLoanAmount || 'Not specified'],
-        ['Power Connection:', mandateData.powerConnection || 'Not specified'],
-        ['KVA:', mandateData.kva || 'Not specified']
-      ];
-
-      offerData.forEach(([label, value]) => {
-        this.addText(`${label} ${value}`, this.margin, this.currentY, { fontSize: 10 });
-        this.currentY += 5;
-      });
-
-      // Generate other sections without autoTable
-      this.generateSimpleProposedBenefits(mandateData);
-      this.generateSimpleWorkScope();
-      this.generateSimpleEligibilityCriteria();
-      this.generateSimpleFees(mandateData);
-      this.generateSimpleTermsAndConditions();
-      this.generateFooter();
-
-      console.log('Simple PDF generation completed successfully');
-      return this.doc;
-    } catch (error) {
-      console.error('Error in generateSimpleMandatePDF:', error);
-      throw new Error(`Simple PDF generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
-  private generateSimpleProposedBenefits(mandateData: MandateData) {
-    this.addText('PROPOSED BENEFITS', this.margin, this.currentY, { 
-      fontSize: 12, 
-      fontStyle: 'bold' 
-    });
-    this.currentY += 6;
-
-    if (mandateData.schemes.length === 0) {
-      this.addText('No specific schemes selected', this.margin, this.currentY, { fontSize: 10 });
-      this.currentY += 5;
-    } else {
-      mandateData.schemes.forEach((scheme, index) => {
-        this.checkPageBreak(8);
-        this.addText(`${index + 1}. ${scheme}`, this.margin, this.currentY, { 
-          fontSize: 10, 
-          fontStyle: 'bold' 
-        });
-        this.currentY += 5;
-      });
-    }
-    this.currentY += 5;
-  }
-
-  private generateSimpleWorkScope() {
-    this.addText('WORK SCOPE', this.margin, this.currentY, { 
-      fontSize: 12, 
-      fontStyle: 'bold' 
-    });
-    this.currentY += 6;
-
-    const workItems = [
-      'Documentation preparation and submission',
-      'Liaison with government departments',
-      'Follow-up and status updates',
-      'Compliance verification',
-      'Final documentation delivery'
-    ];
-
-    workItems.forEach((item, index) => {
-      this.checkPageBreak(6);
-      this.addText(`${index + 1}. ${item}`, this.margin, this.currentY, { fontSize: 10 });
-      this.currentY += 5;
-    });
-    this.currentY += 5;
-  }
-
-  private generateSimpleEligibilityCriteria() {
-    this.addText('ELIGIBILITY CRITERIA', this.margin, this.currentY, { 
-      fontSize: 12, 
-      fontStyle: 'bold' 
-    });
-    this.currentY += 6;
-
-    const criteria = [
-      'Valid business registration',
-      'Minimum investment threshold met',
-      'Compliance with environmental norms',
-      'Employment generation targets',
-      'Project completion timeline'
-    ];
-
-    criteria.forEach((criterion, index) => {
-      this.checkPageBreak(6);
-      this.addText(`${index + 1}. ${criterion}`, this.margin, this.currentY, { fontSize: 10 });
-      this.currentY += 5;
-    });
-    this.currentY += 5;
-  }
-
-  private generateSimpleFees(_mandateData: MandateData) {
-    this.addText('CONSULTANCY FEES', this.margin, this.currentY, { 
-      fontSize: 12, 
-      fontStyle: 'bold' 
-    });
-    this.currentY += 6;
-
-    this.addText('Service Fee: ₹25,000 (Non-refundable)', this.margin, this.currentY, { fontSize: 10 });
-    this.currentY += 5;
-    this.addText('Success Fee: 2% of total subsidy amount received', this.margin, this.currentY, { fontSize: 10 });
-    this.currentY += 5;
-    this.addText('Payment Terms: 50% advance, 50% on completion', this.margin, this.currentY, { fontSize: 10 });
-    this.currentY += 5;
-  }
-
-  private generateSimpleTermsAndConditions() {
-    this.addText('TERMS AND CONDITIONS', this.margin, this.currentY, { 
-      fontSize: 12, 
-      fontStyle: 'bold' 
-    });
-    this.currentY += 6;
-
-    const terms = [
-      'All fees are non-refundable once work commences',
-      'Client to provide all necessary documents',
-      'Timeline: 30-45 working days',
-      'Success not guaranteed, depends on client compliance',
-      'Additional charges for extra documentation'
-    ];
-
-    terms.forEach((term, index) => {
-      this.checkPageBreak(6);
-      this.addText(`${index + 1}. ${term}`, this.margin, this.currentY, { fontSize: 10 });
-      this.currentY += 5;
-    });
-    this.currentY += 5;
+    return this.doc;
   }
 
   public downloadPDF(mandateData: MandateData, consultantInfo: ConsultantInfo, filename?: string): void {
@@ -592,4 +360,4 @@ export const DEFAULT_CONSULTANT_INFO: ConsultantInfo = {
 };
 
 // Export singleton instance
-export const pdfServiceV2 = new PDFServiceV2();
+export const pdfServiceSimple = new PDFServiceSimple();

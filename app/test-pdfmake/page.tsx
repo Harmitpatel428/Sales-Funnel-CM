@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { pdfMakeService, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfMakeService';
+import { pdfServiceV2, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
 
 export default function TestPDFMakePage() {
-  const [consultantInfo, setConsultantInfo] = useState<ConsultantInfo>(DEFAULT_CONSULTANT_INFO);
-  const [mandateData, setMandateData] = useState<MandateData>({
+  const [consultantInfo] = useState<ConsultantInfo>(DEFAULT_CONSULTANT_INFO);
+  const [mandateData] = useState<MandateData>({
     clientName: 'M/s Mangalam Seeds Ltd',
     company: 'M/s Mangalam Seeds Ltd',
     address: 'Village: Maktupur, Ta: Unjha, Dist: Mehsana, Gujarat-382430',
@@ -20,9 +20,9 @@ export default function TestPDFMakePage() {
     powerConnection: '300 KVA'
   });
 
-  const handleGeneratePDF = async () => {
+  const handleGeneratePDF = () => {
     try {
-      await pdfMakeService.downloadPDF(mandateData, consultantInfo);
+      pdfServiceV2.downloadPDF(mandateData, consultantInfo);
       alert('PDF generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);

@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation'; // Not used currently
 import { useLeads, Lead } from '../context/LeadContext';
 import { useMandates, Mandate } from '../context/MandateContext';
-import { pdfServiceV2, MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
+import { MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceV2';
+import PDFPreviewModal from '../components/PDFPreviewModal';
 
 export default function CMPage() {
-  const router = useRouter();
+  // const router = useRouter(); // Not used currently
   const { leads } = useLeads();
   const { addMandate } = useMandates();
   
@@ -15,14 +16,14 @@ export default function CMPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showMandatesList, setShowMandatesList] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showConsultantForm, setShowConsultantForm] = useState(false);
   const [consultantInfo, setConsultantInfo] = useState<ConsultantInfo>(DEFAULT_CONSULTANT_INFO);
+  const [showConsultantForm, setShowConsultantForm] = useState(false);
+  const [showPDFPreview, setShowPDFPreview] = useState(false);
   const [formData, setFormData] = useState({
     clientName: '',
     company: '',
     kva: '',
     address: '',
-    phone: '',
     schemes: [] as string[],
     typeOfCase: '',
     category: '',
@@ -53,6 +54,7 @@ export default function CMPage() {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [showCreateForm, showMandatesList, selectedLead]); // Include dependencies that handleCancel uses
+
 
   // Filter leads based on search term
   const filteredLeads = leads.filter(lead => 
@@ -136,6 +138,20 @@ export default function CMPage() {
     }
   };
 
+  // Clear localStorage function for debugging
+  const clearLocalStorage = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.removeItem('leads');
+      localStorage.removeItem('mandates');
+      localStorage.removeItem('savedViews');
+      alert('LocalStorage cleared successfully!');
+      window.location.reload();
+    } catch (error) {
+      console.error('Error clearing localStorage:', error);
+    }
+  };
+
   // Handle lead selection for creating mandate from existing lead
   const handleLeadSelection = (lead: Lead) => {
     setSelectedLead(lead);
@@ -148,7 +164,6 @@ export default function CMPage() {
       company: lead.company,
       kva: lead.kva,
       address: lead.companyLocation || '',
-      phone: mainContact?.number || lead.mobileNumber || '',
       schemes: [],
       typeOfCase: '',
       category: '',
@@ -160,75 +175,74 @@ export default function CMPage() {
     setShowCreateForm(true);
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const newMandate: Mandate = {
-      mandateId: generateId(),
-      leadId: selectedLead?.id || null,
-      mandateName: `${formData.clientName} - ${formData.company}`,
-      clientName: formData.clientName,
-      company: formData.company,
-      kva: formData.kva,
-      address: formData.address,
-      phone: formData.phone,
-      schemes: formData.schemes,
-      typeOfCase: formData.typeOfCase,
-      category: formData.category,
-      projectCost: formData.projectCost,
-      industriesType: formData.industriesType,
-      termLoanAmount: formData.termLoanAmount,
-      powerConnection: formData.powerConnection,
-      createdAt: new Date().toISOString(),
-      status: 'draft',
-      isDeleted: false
-    };
 
-    addMandate(newMandate);
+
+  // Handle form submission - Show PDF preview modal
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('🚀 HANDLE SUBMIT CALLED - Showing PDF preview modal');
     
-    // Generate PDF
+    // Show PDF preview modal instead of directly downloading
+    setShowPDFPreview(true);
+  };
+
+  // Handle PDF preview confirmation and download
+  const handlePDFConfirm = async (updatedData: MandateData) => {
     try {
-      const mandateData: MandateData = {
-        clientName: formData.clientName,
-        company: formData.company,
-        address: formData.address || '',
-        phone: formData.phone || '',
-        kva: formData.kva,
-        schemes: formData.schemes,
-        typeOfCase: formData.typeOfCase,
-        category: formData.category,
-        projectCost: formData.projectCost,
-        industriesType: formData.industriesType,
-        termLoanAmount: formData.termLoanAmount,
-        powerConnection: formData.powerConnection
+      console.log('📄 Starting PDF generation for download...');
+      
+      // Create mandate record
+      const newMandate: Mandate = {
+        mandateId: generateId(),
+        leadId: selectedLead?.id || undefined,
+        mandateName: `${updatedData.clientName} - ${updatedData.company}`,
+        clientName: updatedData.clientName,
+        company: updatedData.company,
+        kva: updatedData.kva,
+        address: updatedData.address,
+        schemes: updatedData.schemes,
+        typeOfCase: updatedData.typeOfCase,
+        category: updatedData.category,
+        projectCost: updatedData.projectCost,
+        industriesType: updatedData.industriesType,
+        termLoanAmount: updatedData.termLoanAmount,
+        powerConnection: updatedData.powerConnection,
+        createdAt: new Date().toISOString(),
+        status: 'draft',
+        isDeleted: false
       };
 
-      // Generate PDF
-      pdfServiceV2.downloadPDF(mandateData, consultantInfo);
+      addMandate(newMandate);
+
+      // Generate and download PDF
+      const { pdfServiceSimple } = await import('../services/pdfServiceSimple');
+      console.log('📥 Calling downloadPDF...');
+      pdfServiceSimple.downloadPDF(updatedData, consultantInfo);
+      console.log('✅ PDF download initiated');
+      
+      // Close modal and reset form
+      setShowPDFPreview(false);
+      setFormData({
+        clientName: '',
+        company: '',
+        kva: '',
+        address: '',
+        schemes: [],
+        typeOfCase: '',
+        category: '',
+        projectCost: '',
+        industriesType: '',
+        termLoanAmount: '',
+        powerConnection: ''
+      });
+      setSelectedLead(null);
+      setShowCreateForm(false);
+      
       alert('Mandate created and PDF generated successfully!');
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('❌ Error generating PDF:', error);
       alert('Mandate created successfully, but there was an error generating the PDF.');
     }
-    
-    // Reset form and go back to main view
-    setFormData({
-      clientName: '',
-      company: '',
-      kva: '',
-      address: '',
-      phone: '',
-      schemes: [],
-      typeOfCase: '',
-      category: '',
-      projectCost: '',
-      industriesType: '',
-      termLoanAmount: '',
-      powerConnection: ''
-    });
-    setSelectedLead(null);
-    setShowCreateForm(false);
   };
 
   // Handle cancel
@@ -238,7 +252,6 @@ export default function CMPage() {
       company: '',
       kva: '',
       address: '',
-      phone: '',
       schemes: [],
       typeOfCase: '',
       category: '',
@@ -250,6 +263,7 @@ export default function CMPage() {
     setSelectedLead(null);
     setShowCreateForm(false);
     setShowMandatesList(false);
+    setShowPDFPreview(false);
   };
 
   // Handle input changes
@@ -379,20 +393,6 @@ export default function CMPage() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                            Client Phone Number
-                          </label>
-                          <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter client phone number"
-                          />
-                        </div>
 
                       </div>
                     </div>
@@ -415,13 +415,11 @@ export default function CMPage() {
                         <div className="space-y-3">
                           {[
                             'Interest Subsidy',
+                            'SGST Subsidy',
+                            'Rent',
                             'Power Connection Charges',
                             'Electric Duty Exemption',
-                            'Capital Subsidy',
-                            'Technology Upgradation',
-                            'Infrastructure Development',
-                            'Export Promotion',
-                            'Skill Development'
+                            'Solar Subsidy'
                           ].map((scheme) => (
                             <label 
                               key={scheme} 
@@ -590,13 +588,21 @@ export default function CMPage() {
                   <button
                     type="button"
                     onClick={() => setShowConsultantForm(!showConsultantForm)}
-                    className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                   >
-                    {showConsultantForm ? 'Hide' : 'Edit'} Consultant Info
+                    <span>{showConsultantForm ? 'Hide' : 'Edit'} Consultant Info</span>
+                    <svg 
+                      className={`w-4 h-4 transition-transform duration-200 ${showConsultantForm ? 'rotate-180' : ''}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </button>
                 </div>
                 
-                {showConsultantForm ? (
+                {showConsultantForm && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label htmlFor="consultantName" className="block text-sm font-medium text-gray-700">
@@ -654,29 +660,10 @@ export default function CMPage() {
                       />
                     </div>
                   </div>
-                ) : (
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-700">Name:</span>
-                        <span className="ml-2 text-gray-900">{consultantInfo.name}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Email:</span>
-                        <span className="ml-2 text-gray-900">{consultantInfo.email}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Phone:</span>
-                        <span className="ml-2 text-gray-900">{consultantInfo.phone}</span>
-                      </div>
-                      <div className="md:col-span-2">
-                        <span className="font-medium text-gray-700">Address:</span>
-                        <span className="ml-2 text-gray-900">{consultantInfo.address}</span>
-                      </div>
-                    </div>
-                  </div>
                 )}
               </div>
+
+
 
               {/* Form Actions - Desktop */}
               <div className="hidden sm:block px-4 sm:px-6 py-4 sm:py-6 border-t border-gray-200 bg-gray-50">
@@ -699,7 +686,7 @@ export default function CMPage() {
 
               {/* Form Actions - Mobile (Sticky) */}
               <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <button
                     type="submit"
                     className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 font-medium text-sm"
@@ -709,7 +696,7 @@ export default function CMPage() {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium text-sm"
+                    className="px-3 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium text-sm"
                   >
                     Cancel
                   </button>
@@ -721,12 +708,34 @@ export default function CMPage() {
             </form>
           </div>
         </div>
+
+        {/* PDF Preview Modal */}
+        <PDFPreviewModal
+          isOpen={showPDFPreview}
+          onClose={() => setShowPDFPreview(false)}
+          onConfirm={handlePDFConfirm}
+          mandateData={{
+            clientName: formData.clientName,
+            company: formData.company,
+            address: formData.address || '',
+            kva: formData.kva,
+            schemes: formData.schemes,
+            typeOfCase: formData.typeOfCase,
+            category: formData.category,
+            projectCost: formData.projectCost,
+            industriesType: formData.industriesType,
+            termLoanAmount: formData.termLoanAmount,
+            powerConnection: formData.powerConnection
+          }}
+          consultantInfo={consultantInfo}
+        />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+
       <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Header */}
@@ -783,12 +792,20 @@ export default function CMPage() {
                           {searchTerm ? 'No leads found matching your search.' : 'No leads available.'}
                         </p>
                         {leads.length === 0 && (
-                          <button
-                            onClick={addSampleLeads}
-                            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm"
-                          >
-                            Add Sample Leads
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={addSampleLeads}
+                              className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm"
+                            >
+                              Add Sample Leads
+                            </button>
+                            <button
+                              onClick={clearLocalStorage}
+                              className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm"
+                            >
+                              Clear Storage
+                            </button>
+                          </div>
                         )}
                       </div>
                     ) : (
@@ -847,7 +864,7 @@ export default function CMPage() {
 
 // Mandates List View Component
 function MandatesListView({ onBack }: { onBack: () => void }) {
-  const { mandates, getFilteredMandates, deleteMandate } = useMandates();
+  const { getFilteredMandates, deleteMandate } = useMandates();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'active' | 'closed'>('all');
 
