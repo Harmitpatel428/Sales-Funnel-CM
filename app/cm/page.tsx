@@ -472,7 +472,8 @@ export default function CMPage() {
                             'Rent',
                             'Power Connection Charges',
                             'Electric Duty Exemption',
-                            'Solar Subsidy'
+                            'Solar Subsidy',
+                            'Capital Subsidy'
                           ].map((scheme) => (
                             <label 
                               key={scheme} 
@@ -563,15 +564,6 @@ export default function CMPage() {
                               </div>
                             </div>
                           ))}
-                        </div>
-                        
-                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-blue-900">Total Fees:</span>
-                            <span className="text-lg font-bold text-blue-900">
-                              ₹{Object.values(formData.fees).reduce((sum, fee) => sum + fee, 0).toLocaleString()}
-                            </span>
-                          </div>
                         </div>
                       </div>
                     </div>
