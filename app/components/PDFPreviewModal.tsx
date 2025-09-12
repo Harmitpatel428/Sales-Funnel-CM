@@ -165,45 +165,49 @@ export default function PDFPreviewModal({
                     <span className="text-xs font-medium">Date: {formatDate()}</span>
                   </div>
 
-                  {/* Subject Line */}
-                  <div className="mb-4">
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
-                      className="pdf-input text-lg font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                    >
-                      {editableContent.subjectLine}
-                    </div>
-                  </div>
                 </div>
 
                 {/* Client Details */}
                 <div className="mb-6">
-                  <div className="text-xs font-bold mb-2">To,</div>
-                  <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={(e) => handleFieldChange('clientName', e.target.textContent || '')}
-                    className="pdf-input text-xs font-bold mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                  >
-                    {editableData.clientName}
+                  <div className="bg-blue-100 rounded-lg p-4 mb-4">
+                    <div className="text-sm font-bold mb-2">To,</div>
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleFieldChange('company', e.target.textContent || '')}
+                      className="pdf-input text-sm font-bold mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      M/S {editableData.company}
+                    </div>
+                    <div className="text-sm mb-1">Address: {editableData.address}</div>
+                    <div className="text-sm">Gujarat-382430</div>
                   </div>
-                  <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={(e) => handleFieldChange('company', e.target.textContent || '')}
-                    className="pdf-input text-xs mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                  >
-                    {editableData.company}
+                </div>
+
+                {/* Subject Line */}
+                <div className="mb-4">
+                  <div className="text-sm">
+                    <span className="font-bold underline">Subject:</span> 
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height ml-1"
+                    >
+                      {editableContent.subjectLine}
+                    </span>
                   </div>
-                  <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={(e) => handleFieldChange('address', e.target.textContent || '')}
-                    className="pdf-input text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                  >
-                    {editableData.address}
+                </div>
+
+                {/* Salutation */}
+                <div className="mb-4">
+                  <div className="text-sm">Dear Sir,</div>
+                </div>
+
+                {/* Opening Paragraph */}
+                <div className="mb-6">
+                  <div className="text-sm">
+                    With reference to above said subject & as per discussion with <span className="font-bold underline">Mr Ashish sir</span> hereby we are sending our commercial offer and scope of work.
                   </div>
                 </div>
 
