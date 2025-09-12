@@ -544,57 +544,62 @@ export default function CMPage() {
                           {formData.schemes.map((scheme) => (
                             <div key={scheme} className="bg-gray-50 rounded-lg p-4">
                               <h3 className="text-sm font-medium text-gray-700 mb-3">{scheme}</h3>
-                              <div className="space-y-3">
+                              <div className="space-y-2">
                                 <label className="block text-xs font-medium text-gray-600">
                                   Our Fees
                                 </label>
                                 
-                                {/* Fee Type Selector */}
-                                <div className="flex space-x-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleFeeTypeChange(scheme, 'fee')}
-                                    className={`px-3 py-1.5 text-xs rounded-md border transition-colors duration-200 ${
-                                      formData.feeTypes[scheme] === 'fee'
-                                        ? 'bg-purple-600 text-white border-purple-600'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                    }`}
-                                  >
-                                    Fee Amount (₹)
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleFeeTypeChange(scheme, 'percentage')}
-                                    className={`px-3 py-1.5 text-xs rounded-md border transition-colors duration-200 ${
-                                      formData.feeTypes[scheme] === 'percentage'
-                                        ? 'bg-purple-600 text-white border-purple-600'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                    }`}
-                                  >
-                                    Percentage (%)
-                                  </button>
-                                </div>
-                                
-                                {/* Input Field */}
-                                <div className="relative">
-                                  <input
-                                    type="text"
-                                    value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || '') : (formData.percentages[scheme] || '')}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      const numericValue = value === '' ? 0 : parseInt(value) || 0;
-                                      if (formData.feeTypes[scheme] === 'fee') {
-                                        handleFeeChange(scheme, numericValue);
-                                      } else {
-                                        handlePercentageChange(scheme, numericValue);
-                                      }
-                                    }}
-                                    className="w-full px-3 py-2 pr-8 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                    placeholder="Enter amount"
-                                  />
-                                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                                    {formData.feeTypes[scheme] === 'fee' ? '₹' : '%'}
-                                  </span>
+                                {/* Compact Inline Layout: Selector + Input in one line */}
+                                <div className="flex items-center space-x-2">
+                                  {/* Fee Type Selector - Icon Style */}
+                                  <div className="flex space-x-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleFeeTypeChange(scheme, 'fee')}
+                                      className={`px-2 py-1 text-xs rounded border transition-colors duration-200 ${
+                                        formData.feeTypes[scheme] === 'fee'
+                                          ? 'bg-purple-600 text-white border-purple-600'
+                                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                      }`}
+                                      title="Fee Amount"
+                                    >
+                                      ₹
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleFeeTypeChange(scheme, 'percentage')}
+                                      className={`px-2 py-1 text-xs rounded border transition-colors duration-200 ${
+                                        formData.feeTypes[scheme] === 'percentage'
+                                          ? 'bg-purple-600 text-white border-purple-600'
+                                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                      }`}
+                                      title="Percentage"
+                                    >
+                                      %
+                                    </button>
+                                  </div>
+                                  
+                                  {/* Input Field */}
+                                  <div className="flex-1 relative">
+                                    <input
+                                      type="text"
+                                      value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || '') : (formData.percentages[scheme] || '')}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        const numericValue = value === '' ? 0 : parseInt(value) || 0;
+                                        if (formData.feeTypes[scheme] === 'fee') {
+                                          handleFeeChange(scheme, numericValue);
+                                        } else {
+                                          handlePercentageChange(scheme, numericValue);
+                                        }
+                                      }}
+                                      className="w-full px-3 py-1.5 pr-6 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                      placeholder="Enter amount"
+                                    />
+                                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                                      {formData.feeTypes[scheme] === 'fee' ? '₹' : '%'}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>

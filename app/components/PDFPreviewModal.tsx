@@ -449,7 +449,7 @@ export default function PDFPreviewModal({
                                 }}
                                 className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 text-right pdf-input-min-height"
                               >
-                                {displaySymbol}{displayValue.toLocaleString()}
+                                {displayValue.toLocaleString()}{displaySymbol}
                               </div>
                             </div>
                             <div className="w-20 text-center text-xs text-gray-600 p-2">

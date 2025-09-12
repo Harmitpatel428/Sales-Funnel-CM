@@ -275,7 +275,7 @@ export class PDFServiceSimple {
         
         return [
           `${index + 1}. ${scheme}`,
-          `${displaySymbol}${displayValue.toLocaleString()}`,
+          `${displayValue.toLocaleString()}${displaySymbol}`,
           description
         ];
       });
