@@ -91,12 +91,6 @@ export default function PDFPreviewModal({
     }
   };
 
-  const handleConsultantFieldChange = (field: keyof ConsultantInfo, value: string) => {
-    setEditableConsultantInfo(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
 
   // Note: Scheme selection is now handled in the main form, not in the preview modal
 
@@ -149,41 +143,11 @@ export default function PDFPreviewModal({
                 
                 {/* Document Header */}
                 <div className="mb-6">
-                  {/* Company Header */}
+                  {/* Company Logo */}
                   <div className="text-center mb-6">
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => handleConsultantFieldChange('name', e.target.textContent || '')}
-                      className="pdf-input text-sm font-bold mb-2 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-2 py-1 pdf-input-min-height"
-                    >
-                      {editableConsultantInfo.name}
-                    </div>
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => handleConsultantFieldChange('address', e.target.textContent || '')}
-                      className="pdf-input text-xs mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-2 py-1 pdf-input-min-height"
-                    >
-                      {editableConsultantInfo.address}
-                    </div>
-                    <div className="flex justify-center space-x-4 text-xs">
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleConsultantFieldChange('email', e.target.textContent?.replace('Email: ', '') || '')}
-                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                      >
-                        Email: {editableConsultantInfo.email}
-                      </div>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleConsultantFieldChange('phone', e.target.textContent?.replace('Phone: ', '') || '')}
-                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                      >
-                        Phone: {editableConsultantInfo.phone}
-                      </div>
+                    <div className="mb-4">
+                      <div className="text-lg font-bold text-blue-600 mb-1">V4U Biz Solutions</div>
+                      <div className="text-sm text-gray-600">Ahmedabad, Gujarat</div>
                     </div>
                   </div>
 
