@@ -22,6 +22,7 @@ export interface MandateData {
   termLoanAmount: string;
   powerConnection: string;
   fees: { [schemeName: string]: number };
+  percentages: { [schemeName: string]: number };
 }
 
 export interface ConsultantInfo {
@@ -55,8 +56,16 @@ export class PDFServiceV2 {
   private addText(text: string, x: number, y: number, options: any = {}) {
     const { fontSize = 10, fontStyle = 'normal', color = '#000000', align = 'left' } = options;
     
+    // Set font first, then font size for proper bold support
+    if (fontStyle === 'bold') {
+      this.doc.setFont('helvetica', 'bold');
+    } else if (fontStyle === 'italic') {
+      this.doc.setFont('helvetica', 'italic');
+    } else {
+      this.doc.setFont('helvetica', 'normal');
+    }
+    
     this.doc.setFontSize(fontSize);
-    this.doc.setFont('helvetica', fontStyle);
     this.doc.setTextColor(color);
     
     if (align === 'center') {

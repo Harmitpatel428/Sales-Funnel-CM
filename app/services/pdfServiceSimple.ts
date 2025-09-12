@@ -15,6 +15,7 @@ export interface MandateData {
   termLoanAmount: string;
   powerConnection: string;
   fees: { [schemeName: string]: number };
+  percentages: { [schemeName: string]: number };
 }
 
 export interface EditableContent {
@@ -53,8 +54,17 @@ export class PDFServiceSimple {
   private addText(text: string, x: number, y: number, options: any = {}) {
     const { fontSize = 10, fontStyle = 'normal', color = '#000000', align = 'left' } = options;
     
+    // Set font first, then font size for proper bold support
+    if (fontStyle === 'bold') {
+      console.log('🔍 Setting bold font for text:', text.substring(0, 50) + '...');
+      this.doc.setFont('helvetica', 'bold');
+    } else if (fontStyle === 'italic') {
+      this.doc.setFont('helvetica', 'italic');
+    } else {
+      this.doc.setFont('helvetica', 'normal');
+    }
+    
     this.doc.setFontSize(fontSize);
-    this.doc.setFont('helvetica', fontStyle);
     this.doc.setTextColor(color);
     
     if (align === 'center') {
@@ -97,6 +107,7 @@ export class PDFServiceSimple {
     // Subject Line - Use editable content if available, otherwise generate from schemes
     const subjectText = editableContent?.subjectLine || formatSubjectLine(mandateData.schemes);
     
+    console.log('🔍 Generating subject line with bold formatting:', subjectText);
     this.addText(subjectText, this.margin, this.currentY, { 
       fontSize: 12, 
       fontStyle: 'bold' 
@@ -253,17 +264,19 @@ export class PDFServiceSimple {
       // Create fees table
       const tableData = mandateData.schemes.map((scheme, index) => [
         `${index + 1}. ${scheme}`,
-        `₹${(mandateData.fees[scheme] || 0).toLocaleString()}`
+        `₹${(mandateData.fees[scheme] || 0).toLocaleString()}`,
+        `${(mandateData.percentages?.[scheme] || 0)}%`
       ]);
 
       // Add total row
       const totalFees = Object.values(mandateData.fees).reduce((sum, fee) => sum + fee, 0);
-      tableData.push(['Total Fees:', `₹${totalFees.toLocaleString()}`]);
+      const totalPercentages = Object.values(mandateData.percentages || {}).reduce((sum, percentage) => sum + percentage, 0);
+      tableData.push(['Total Fees:', `₹${totalFees.toLocaleString()}`, `${totalPercentages}%`]);
 
       // Generate table
       autoTable(this.doc, {
         startY: this.currentY,
-        head: [['Scheme Name', 'Consultant Fee (₹)']],
+        head: [['Scheme Name', 'Consultant Fee (₹)', 'Percentage (%)']],
         body: tableData,
         theme: 'grid',
         headStyles: { 

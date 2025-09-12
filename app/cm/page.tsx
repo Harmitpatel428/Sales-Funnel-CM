@@ -31,7 +31,8 @@ export default function CMPage() {
     industriesType: '',
     termLoanAmount: '',
     powerConnection: '',
-    fees: {} as { [schemeName: string]: number }
+    fees: {} as { [schemeName: string]: number },
+    percentages: {} as { [schemeName: string]: number }
   });
 
   // Generate UUID function
@@ -172,7 +173,8 @@ export default function CMPage() {
       industriesType: '',
       termLoanAmount: '',
       powerConnection: '',
-      fees: {}
+      fees: {},
+      percentages: {}
     });
     setShowCreateForm(true);
   };
@@ -239,7 +241,8 @@ export default function CMPage() {
         industriesType: '',
         termLoanAmount: '',
         powerConnection: '',
-        fees: {}
+        fees: {},
+        percentages: {}
       });
       setSelectedLead(null);
       setShowCreateForm(false);
@@ -265,7 +268,8 @@ export default function CMPage() {
       industriesType: '',
       termLoanAmount: '',
       powerConnection: '',
-      fees: {}
+      fees: {},
+      percentages: {}
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -287,22 +291,27 @@ export default function CMPage() {
     setFormData(prev => {
       let newSchemes: string[];
       let newFees: { [schemeName: string]: number };
+      let newPercentages: { [schemeName: string]: number };
 
       if (checked) {
-        // Add scheme with default fee
+        // Add scheme with default fee and percentage
         newSchemes = [...prev.schemes, scheme];
         newFees = { ...prev.fees, [scheme]: 0 };
+        newPercentages = { ...prev.percentages, [scheme]: 0 };
       } else {
-        // Remove scheme and its fee
+        // Remove scheme and its fee/percentage
         newSchemes = prev.schemes.filter(s => s !== scheme);
         newFees = { ...prev.fees };
+        newPercentages = { ...prev.percentages };
         delete newFees[scheme];
+        delete newPercentages[scheme];
       }
 
       return {
         ...prev,
         schemes: newSchemes,
-        fees: newFees
+        fees: newFees,
+        percentages: newPercentages
       };
     });
   };
@@ -314,6 +323,17 @@ export default function CMPage() {
       fees: {
         ...prev.fees,
         [scheme]: fee
+      }
+    }));
+  };
+
+  // Handle percentage input changes
+  const handlePercentageChange = (scheme: string, percentage: number) => {
+    setFormData(prev => ({
+      ...prev,
+      percentages: {
+        ...prev.percentages,
+        [scheme]: percentage
       }
     }));
   };
@@ -498,23 +518,48 @@ export default function CMPage() {
                       </div>
                       
                       <div className="space-y-4">
-                        <p className="text-sm text-gray-600 mb-4">Enter fees for each selected scheme:</p>
-                        <div className="space-y-3">
+                        <p className="text-sm text-gray-600 mb-4">Enter fees and percentages for each selected scheme:</p>
+                        <div className="space-y-4">
                           {formData.schemes.map((scheme) => (
-                            <div key={scheme} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <label className="text-sm font-medium text-gray-700 flex-1">
-                                {scheme} Fee:
-                              </label>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-sm text-gray-500">₹</span>
-                                <input
-                                  type="number"
-                                  value={formData.fees[scheme] || 0}
-                                  onChange={(e) => handleFeeChange(scheme, parseInt(e.target.value) || 0)}
-                                  className="w-24 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                  placeholder="0"
-                                  min="0"
-                                />
+                            <div key={scheme} className="bg-gray-50 rounded-lg p-4">
+                              <h3 className="text-sm font-medium text-gray-700 mb-3">{scheme}</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Fee Amount */}
+                                <div className="space-y-2">
+                                  <label className="block text-xs font-medium text-gray-600">
+                                    Fee Amount
+                                  </label>
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-sm text-gray-500">₹</span>
+                                    <input
+                                      type="number"
+                                      value={formData.fees[scheme] || 0}
+                                      onChange={(e) => handleFeeChange(scheme, parseInt(e.target.value) || 0)}
+                                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                      placeholder="0"
+                                      min="0"
+                                    />
+                                  </div>
+                                </div>
+                                
+                                {/* Percentage */}
+                                <div className="space-y-2">
+                                  <label className="block text-xs font-medium text-gray-600">
+                                    Percentage
+                                  </label>
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="number"
+                                      value={formData.percentages[scheme] || 0}
+                                      onChange={(e) => handlePercentageChange(scheme, parseInt(e.target.value) || 0)}
+                                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                      placeholder="0"
+                                      min="0"
+                                      max="100"
+                                    />
+                                    <span className="text-sm text-gray-500">%</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -801,7 +846,8 @@ export default function CMPage() {
             industriesType: formData.industriesType,
             termLoanAmount: formData.termLoanAmount,
             powerConnection: formData.powerConnection,
-            fees: formData.fees
+            fees: formData.fees,
+            percentages: formData.percentages
           }}
           consultantInfo={consultantInfo}
         />
