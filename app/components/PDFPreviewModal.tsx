@@ -147,15 +147,15 @@ export default function PDFPreviewModal({
               {/* PDF Content */}
               <div className="p-8 text-black pdf-content">
                 
-                {/* Header Section */}
+                {/* Document Header */}
                 <div className="mb-6">
-                  {/* Consultant Info - Top Left */}
-                  <div className="mb-4">
+                  {/* Company Header */}
+                  <div className="text-center mb-6">
                     <div
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={(e) => handleConsultantFieldChange('name', e.target.textContent || '')}
-                      className="pdf-input text-xs font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      className="pdf-input text-sm font-bold mb-2 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-2 py-1 pdf-input-min-height"
                     >
                       {editableConsultantInfo.name}
                     </div>
@@ -163,42 +163,54 @@ export default function PDFPreviewModal({
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={(e) => handleConsultantFieldChange('address', e.target.textContent || '')}
-                      className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      className="pdf-input text-xs mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-2 py-1 pdf-input-min-height"
                     >
                       {editableConsultantInfo.address}
                     </div>
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => handleConsultantFieldChange('email', e.target.textContent?.replace('Email: ', '') || '')}
-                      className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                    >
-                      Email: {editableConsultantInfo.email}
-                    </div>
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => handleConsultantFieldChange('phone', e.target.textContent?.replace('Phone: ', '') || '')}
-                      className="pdf-input text-xs mt-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                    >
-                      Phone: {editableConsultantInfo.phone}
+                    <div className="flex justify-center space-x-4 text-xs">
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleConsultantFieldChange('email', e.target.textContent?.replace('Email: ', '') || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        Email: {editableConsultantInfo.email}
+                      </div>
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleConsultantFieldChange('phone', e.target.textContent?.replace('Phone: ', '') || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        Phone: {editableConsultantInfo.phone}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Date - Top Right */}
+                  {/* Date */}
                   <div className="text-right mb-4">
-                    <span className="text-xs">Date: {formatDate()}</span>
+                    <span className="text-xs font-medium">Date: {formatDate()}</span>
                   </div>
 
                   {/* Subject Line */}
                   <div className="mb-4">
+                    <div className="text-xs font-bold mb-1">Subject:</div>
                     <div
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
-                      className="pdf-input text-xs font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      className="pdf-input text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
                     >
                       {editableContent.subjectLine}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Commercial Offer Container */}
+                <div className="mb-6">
+                  <div className="text-center mb-4">
+                    <div className="text-xs font-bold text-gray-800">
+                      Commercial Offer for Subsidy Work
                     </div>
                   </div>
                 </div>
