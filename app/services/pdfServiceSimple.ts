@@ -290,11 +290,19 @@ export class PDFServiceSimple {
           fillColor: [240, 240, 240], 
           textColor: [0, 0, 0], 
           fontStyle: 'bold',
-          fontSize: 10
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 1.0
         },
         bodyStyles: { 
           fontSize: 10,
-          textColor: [0, 0, 0]
+          textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
+          lineWidth: 1.0
+        },
+        styles: {
+          lineColor: [0, 0, 0],
+          lineWidth: 1.0
         },
         columnStyles: {
           0: { cellWidth: 120 }, // Scheme Name column

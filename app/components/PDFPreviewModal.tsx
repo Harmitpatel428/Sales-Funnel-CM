@@ -408,7 +408,7 @@ export default function PDFPreviewModal({
                   {editableData.schemes.length > 0 ? (
                     <div className="space-y-2">
                       {/* Fees Table Header */}
-                      <div className="flex border-b border-gray-300 pb-1">
+                      <div className="flex border-b-2 border-black pb-1">
                         <div className="flex-1 text-xs font-bold">Scheme Name</div>
                         <div className="w-24 text-xs font-bold text-right">Our Fees</div>
                         <div className="w-20 text-xs font-bold text-center">Description</div>
@@ -425,7 +425,7 @@ export default function PDFPreviewModal({
                         const displaySymbol = feeType === 'fee' ? '₹' : '%';
                         
                         return (
-                          <div key={scheme} className="flex items-center border-b border-gray-200 pb-1">
+                          <div key={scheme} className="flex items-center border-b-2 border-black pb-1">
                             <div className="flex-1 text-xs">
                               {index + 1}. {scheme}
                             </div>
