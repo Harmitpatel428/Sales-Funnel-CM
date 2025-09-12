@@ -578,20 +578,19 @@ export default function CMPage() {
                                 {/* Input Field */}
                                 <div className="relative">
                                   <input
-                                    type="number"
-                                    value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || 0) : (formData.percentages[scheme] || 0)}
+                                    type="text"
+                                    value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || '') : (formData.percentages[scheme] || '')}
                                     onChange={(e) => {
-                                      const value = parseInt(e.target.value) || 0;
+                                      const value = e.target.value;
+                                      const numericValue = value === '' ? 0 : parseInt(value) || 0;
                                       if (formData.feeTypes[scheme] === 'fee') {
-                                        handleFeeChange(scheme, value);
+                                        handleFeeChange(scheme, numericValue);
                                       } else {
-                                        handlePercentageChange(scheme, value);
+                                        handlePercentageChange(scheme, numericValue);
                                       }
                                     }}
                                     className="w-full px-3 py-2 pr-8 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                    placeholder="0"
-                                    min="0"
-                                    max={formData.feeTypes[scheme] === 'percentage' ? 100 : undefined}
+                                    placeholder="Enter amount"
                                   />
                                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
                                     {formData.feeTypes[scheme] === 'fee' ? '₹' : '%'}
