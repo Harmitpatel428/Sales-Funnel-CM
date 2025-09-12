@@ -146,8 +146,7 @@ export default function PDFPreviewModal({
                   {/* Company Logo */}
                   <div className="text-center mb-6">
                     <div className="mb-4">
-                      <div className="text-lg font-bold text-blue-600 mb-1">V4U Biz Solutions</div>
-                      <div className="text-sm text-gray-600">Ahmedabad, Gujarat</div>
+                      <div className="text-3xl font-bold text-blue-600">V4U Biz Solutions</div>
                     </div>
                   </div>
 
