@@ -188,8 +188,8 @@ export default function PDFPreviewModal({
                   </div>
 
                   {/* Commercial Offer Container */}
-                  <div className="mb-4">
-                    <div className="text-sm font-bold text-gray-800 bg-gray-100 border border-gray-300 py-2 px-4 w-full text-center">
+                  <div className="mb-4 -mx-8">
+                    <div className="text-base font-bold text-gray-800 bg-gray-100 border border-gray-300 py-2 px-4 w-full text-center">
                       Commercial Offer for Subsidy Work
                     </div>
                   </div>
