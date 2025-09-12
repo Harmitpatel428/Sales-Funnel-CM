@@ -276,7 +276,7 @@ export class PDFServiceSimple {
       // Generate table
       autoTable(this.doc, {
         startY: this.currentY,
-        head: [['Scheme Name', 'Consultant Fee (₹)', 'Percentage (%)']],
+        head: [['Scheme Name', 'Our Fees', 'Our Fees']],
         body: tableData,
         theme: 'grid',
         headStyles: { 
