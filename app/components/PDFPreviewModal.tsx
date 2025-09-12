@@ -410,50 +410,50 @@ export default function PDFPreviewModal({
                       {/* Fees Table Header */}
                       <div className="flex border-b border-gray-300 pb-1">
                         <div className="flex-1 text-xs font-bold">Scheme Name</div>
-                        <div className="w-20 text-xs font-bold text-right">Our Fees</div>
-                        <div className="w-16 text-xs font-bold text-right">Our Fees</div>
+                        <div className="w-24 text-xs font-bold text-right">Our Fees</div>
                       </div>
                       
                       {/* Fees Table Rows */}
-                      {editableData.schemes.map((scheme, index) => (
-                        <div key={scheme} className="flex items-center border-b border-gray-200 pb-1">
-                          <div className="flex-1 text-xs">
-                            {index + 1}. {scheme}
-                          </div>
-                          <div className="w-20 text-right">
-                            <div
-                              contentEditable
-                              suppressContentEditableWarning
-                              onBlur={(e) => {
-                                const fee = parseInt(e.target.textContent?.replace(/[₹,]/g, '') || '0') || 0;
-                                handleFieldChange('fees', {
-                                  ...editableData.fees,
-                                  [scheme]: fee
-                                });
-                              }}
-                              className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 text-right pdf-input-min-height"
-                            >
-                              ₹{(editableData.fees[scheme] || 0).toLocaleString()}
+                      {editableData.schemes.map((scheme, index) => {
+                        const fee = editableData.fees[scheme] || 0;
+                        const percentage = editableData.percentages?.[scheme] || 0;
+                        
+                        // Determine which value to show (priority: fee if > 0, otherwise percentage)
+                        const displayValue = fee > 0 ? fee : percentage;
+                        const displaySymbol = fee > 0 ? '₹' : '%';
+                        const isFee = fee > 0;
+                        
+                        return (
+                          <div key={scheme} className="flex items-center border-b border-gray-200 pb-1">
+                            <div className="flex-1 text-xs">
+                              {index + 1}. {scheme}
+                            </div>
+                            <div className="w-24 text-right">
+                              <div
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e) => {
+                                  const value = parseInt(e.target.textContent?.replace(/[₹%,]/g, '') || '0') || 0;
+                                  if (isFee) {
+                                    handleFieldChange('fees', {
+                                      ...editableData.fees,
+                                      [scheme]: value
+                                    });
+                                  } else {
+                                    handleFieldChange('percentages', {
+                                      ...editableData.percentages,
+                                      [scheme]: value
+                                    });
+                                  }
+                                }}
+                                className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 text-right pdf-input-min-height"
+                              >
+                                {displayValue.toLocaleString()}{displaySymbol}
+                              </div>
                             </div>
                           </div>
-                          <div className="w-16 text-right">
-                            <div
-                              contentEditable
-                              suppressContentEditableWarning
-                              onBlur={(e) => {
-                                const percentage = parseInt(e.target.textContent?.replace(/[%,]/g, '') || '0') || 0;
-                                handleFieldChange('percentages', {
-                                  ...editableData.percentages,
-                                  [scheme]: percentage
-                                });
-                              }}
-                              className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 text-right pdf-input-min-height"
-                            >
-                              {(editableData.percentages?.[scheme] || 0)}%
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       
                       {/* Total Row */}
                       <div className="flex items-center pt-2 border-t border-gray-300">

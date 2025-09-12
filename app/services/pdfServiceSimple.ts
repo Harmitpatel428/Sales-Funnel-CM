@@ -262,21 +262,24 @@ export class PDFServiceSimple {
       this.currentY += 5;
     } else {
       // Create fees table
-      const tableData = mandateData.schemes.map((scheme, index) => [
-        `${index + 1}. ${scheme}`,
-        `₹${(mandateData.fees[scheme] || 0).toLocaleString()}`,
-        `${(mandateData.percentages?.[scheme] || 0)}%`
-      ]);
-
-      // Add total row
-      const totalFees = Object.values(mandateData.fees).reduce((sum, fee) => sum + fee, 0);
-      const totalPercentages = Object.values(mandateData.percentages || {}).reduce((sum, percentage) => sum + percentage, 0);
-      tableData.push(['Total Fees:', `₹${totalFees.toLocaleString()}`, `${totalPercentages}%`]);
+      const tableData = mandateData.schemes.map((scheme, index) => {
+        const fee = mandateData.fees[scheme] || 0;
+        const percentage = mandateData.percentages?.[scheme] || 0;
+        
+        // Determine which value to show (priority: fee if > 0, otherwise percentage)
+        const displayValue = fee > 0 ? fee : percentage;
+        const displaySymbol = fee > 0 ? '₹' : '%';
+        
+        return [
+          `${index + 1}. ${scheme}`,
+          `${displayValue.toLocaleString()}${displaySymbol}`
+        ];
+      });
 
       // Generate table
       autoTable(this.doc, {
         startY: this.currentY,
-        head: [['Scheme Name', 'Our Fees', 'Our Fees']],
+        head: [['Scheme Name', 'Our Fees']],
         body: tableData,
         theme: 'grid',
         headStyles: { 

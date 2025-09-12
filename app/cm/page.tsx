@@ -524,42 +524,42 @@ export default function CMPage() {
                           {formData.schemes.map((scheme) => (
                             <div key={scheme} className="bg-gray-50 rounded-lg p-4">
                               <h3 className="text-sm font-medium text-gray-700 mb-3">{scheme}</h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Fee Amount */}
-                                <div className="space-y-2">
-                                  <label className="block text-xs font-medium text-gray-600">
-                                    Fee Amount
-                                  </label>
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-sm text-gray-500">₹</span>
-                                    <input
-                                      type="number"
-                                      value={formData.fees[scheme] || 0}
-                                      onChange={(e) => handleFeeChange(scheme, parseInt(e.target.value) || 0)}
-                                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                      placeholder="0"
-                                      min="0"
-                                    />
-                                  </div>
+                              <div className="space-y-2">
+                                <label className="block text-xs font-medium text-gray-600">
+                                  Our Fees (Enter either amount or percentage)
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="number"
+                                    value={formData.fees[scheme] || formData.percentages[scheme] || 0}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value) || 0;
+                                      // If user enters a value, determine if it should be fee or percentage
+                                      // Priority: if fee is already set and > 0, update fee; otherwise update percentage
+                                      if ((formData.fees[scheme] || 0) > 0) {
+                                        handleFeeChange(scheme, value);
+                                        // Clear percentage if fee is being set
+                                        if (value > 0) {
+                                          handlePercentageChange(scheme, 0);
+                                        }
+                                      } else {
+                                        handlePercentageChange(scheme, value);
+                                        // Clear fee if percentage is being set
+                                        if (value > 0) {
+                                          handleFeeChange(scheme, 0);
+                                        }
+                                      }
+                                    }}
+                                    className="w-full px-3 py-2 pr-8 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                    placeholder="0"
+                                    min="0"
+                                  />
+                                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                                    {(formData.fees[scheme] || 0) > 0 ? '₹' : '%'}
+                                  </span>
                                 </div>
-                                
-                                {/* Percentage */}
-                                <div className="space-y-2">
-                                  <label className="block text-xs font-medium text-gray-600">
-                                    Percentage
-                                  </label>
-                                  <div className="flex items-center space-x-2">
-                                    <input
-                                      type="number"
-                                      value={formData.percentages[scheme] || 0}
-                                      onChange={(e) => handlePercentageChange(scheme, parseInt(e.target.value) || 0)}
-                                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                      placeholder="0"
-                                      min="0"
-                                      max="100"
-                                    />
-                                    <span className="text-sm text-gray-500">%</span>
-                                  </div>
+                                <div className="text-xs text-gray-500">
+                                  Currently showing: {(formData.fees[scheme] || 0) > 0 ? 'Fee Amount' : 'Percentage'}
                                 </div>
                               </div>
                             </div>
