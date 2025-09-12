@@ -146,7 +146,10 @@ export default function PDFPreviewModal({
                   {/* Company Logo */}
                   <div className="text-center mb-6">
                     <div className="mb-4">
-                      <div className="text-3xl font-bold text-blue-600">V4U Biz Solutions</div>
+                      <div className="text-5xl font-bold text-blue-600">
+                        <div>V4U</div>
+                        <div className="text-base -mt-2">Biz Solutions</div>
+                      </div>
                     </div>
                   </div>
 
