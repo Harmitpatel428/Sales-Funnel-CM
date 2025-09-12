@@ -144,8 +144,8 @@ export default function PDFPreviewModal({
                 {/* Document Header */}
                 <div className="mb-6">
                   {/* Company Logo */}
-                  <div className="text-center mb-6">
-                    <div className="mb-4">
+                  <div className="text-center mb-6 -mt-4">
+                    <div className="mb-1">
                       <div className="text-5xl font-bold text-blue-600">
                         <div>V4U</div>
                         <div className="text-base -mt-2">Biz Solutions</div>
@@ -167,12 +167,11 @@ export default function PDFPreviewModal({
 
                   {/* Subject Line */}
                   <div className="mb-4">
-                    <div className="text-xs font-bold mb-1">Subject:</div>
                     <div
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
-                      className="pdf-input text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      className="pdf-input text-lg font-bold focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
                     >
                       {editableContent.subjectLine}
                     </div>
