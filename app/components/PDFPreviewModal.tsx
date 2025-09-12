@@ -187,6 +187,13 @@ export default function PDFPreviewModal({
                     </div>
                   </div>
 
+                  {/* Commercial Offer Container */}
+                  <div className="mb-4">
+                    <div className="text-sm font-bold text-gray-800 bg-gray-100 border border-gray-300 py-2 px-4 w-full text-center">
+                      Commercial Offer for Subsidy Work
+                    </div>
+                  </div>
+
                   {/* Date */}
                   <div className="text-right mb-4">
                     <span className="text-xs font-medium">Date: {formatDate()}</span>
@@ -202,15 +209,6 @@ export default function PDFPreviewModal({
                       className="pdf-input text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
                     >
                       {editableContent.subjectLine}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Commercial Offer Container */}
-                <div className="mb-6">
-                  <div className="text-center mb-4">
-                    <div className="text-xs font-bold text-gray-800">
-                      Commercial Offer for Subsidy Work
                     </div>
                   </div>
                 </div>
