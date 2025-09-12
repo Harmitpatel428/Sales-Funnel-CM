@@ -171,15 +171,10 @@ export default function PDFPreviewModal({
                 <div className="mb-6">
                   <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
                     <div className="text-sm font-bold mb-2">To,</div>
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => handleFieldChange('company', e.target.textContent || '')}
-                      className="pdf-input text-sm font-bold mb-1 focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                    >
+                    <div className="text-sm font-bold mb-1">
                       M/S {editableData.company}
                     </div>
-                    <div className="text-sm mb-1">Address: {editableData.address}</div>
+                    <div className="text-sm font-bold mb-1">Address: {editableData.address}</div>
                     <div className="text-sm">Gujarat-382430</div>
                   </div>
                 </div>
