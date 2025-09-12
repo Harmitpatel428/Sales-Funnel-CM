@@ -410,8 +410,8 @@ export default function PDFPreviewModal({
                       {/* Fees Table Header */}
                       <div className="flex border-b border-gray-300 pb-1">
                         <div className="flex-1 text-xs font-bold">Scheme Name</div>
-                        <div className="w-20 text-xs font-bold text-right">Fee (₹)</div>
-                        <div className="w-16 text-xs font-bold text-right">Percentage (%)</div>
+                        <div className="w-20 text-xs font-bold text-right">Our Fees</div>
+                        <div className="w-16 text-xs font-bold text-right">Our Fees</div>
                       </div>
                       
                       {/* Fees Table Rows */}
