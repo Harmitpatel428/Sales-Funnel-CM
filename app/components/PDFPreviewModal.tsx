@@ -169,7 +169,7 @@ export default function PDFPreviewModal({
 
                 {/* Client Details */}
                 <div className="mb-6">
-                  <div className="bg-blue-100 rounded-lg p-4 mb-4">
+                  <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
                     <div className="text-sm font-bold mb-2">To,</div>
                     <div
                       contentEditable
