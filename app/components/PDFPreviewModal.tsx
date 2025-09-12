@@ -415,13 +415,13 @@ export default function PDFPreviewModal({
                       
                       {/* Fees Table Rows */}
                       {editableData.schemes.map((scheme, index) => {
+                        const feeType = editableData.feeTypes?.[scheme] || 'percentage';
                         const fee = editableData.fees[scheme] || 0;
                         const percentage = editableData.percentages?.[scheme] || 0;
                         
-                        // Determine which value to show (priority: fee if > 0, otherwise percentage)
-                        const displayValue = fee > 0 ? fee : percentage;
-                        const displaySymbol = fee > 0 ? '₹' : '%';
-                        const isFee = fee > 0;
+                        // Use the selected fee type to determine what to show
+                        const displayValue = feeType === 'fee' ? fee : percentage;
+                        const displaySymbol = feeType === 'fee' ? '₹' : '%';
                         
                         return (
                           <div key={scheme} className="flex items-center border-b border-gray-200 pb-1">
@@ -434,7 +434,7 @@ export default function PDFPreviewModal({
                                 suppressContentEditableWarning
                                 onBlur={(e) => {
                                   const value = parseInt(e.target.textContent?.replace(/[₹%,]/g, '') || '0') || 0;
-                                  if (isFee) {
+                                  if (feeType === 'fee') {
                                     handleFieldChange('fees', {
                                       ...editableData.fees,
                                       [scheme]: value
@@ -454,17 +454,6 @@ export default function PDFPreviewModal({
                           </div>
                         );
                       })}
-                      
-                      {/* Total Row */}
-                      <div className="flex items-center pt-2 border-t border-gray-300">
-                        <div className="flex-1 text-xs font-bold">Total Fees:</div>
-                        <div className="w-20 text-xs font-bold text-right">
-                          ₹{Object.values(editableData.fees).reduce((sum, fee) => sum + fee, 0).toLocaleString()}
-                        </div>
-                        <div className="w-16 text-xs font-bold text-right">
-                          {Object.values(editableData.percentages || {}).reduce((sum, percentage) => sum + percentage, 0)}%
-                        </div>
-                      </div>
                     </div>
                   ) : (
                     <div className="text-xs text-gray-500">No schemes selected</div>

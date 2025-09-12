@@ -32,7 +32,8 @@ export default function CMPage() {
     termLoanAmount: '',
     powerConnection: '',
     fees: {} as { [schemeName: string]: number },
-    percentages: {} as { [schemeName: string]: number }
+    percentages: {} as { [schemeName: string]: number },
+    feeTypes: {} as { [schemeName: string]: 'fee' | 'percentage' }
   });
 
   // Generate UUID function
@@ -174,7 +175,8 @@ export default function CMPage() {
       termLoanAmount: '',
       powerConnection: '',
       fees: {},
-      percentages: {}
+      percentages: {},
+      feeTypes: {}
     });
     setShowCreateForm(true);
   };
@@ -242,7 +244,8 @@ export default function CMPage() {
         termLoanAmount: '',
         powerConnection: '',
         fees: {},
-        percentages: {}
+        percentages: {},
+        feeTypes: {}
       });
       setSelectedLead(null);
       setShowCreateForm(false);
@@ -269,7 +272,8 @@ export default function CMPage() {
       termLoanAmount: '',
       powerConnection: '',
       fees: {},
-      percentages: {}
+      percentages: {},
+      feeTypes: {}
     });
     setSelectedLead(null);
     setShowCreateForm(false);
@@ -292,26 +296,31 @@ export default function CMPage() {
       let newSchemes: string[];
       let newFees: { [schemeName: string]: number };
       let newPercentages: { [schemeName: string]: number };
+      let newFeeTypes: { [schemeName: string]: 'fee' | 'percentage' };
 
       if (checked) {
-        // Add scheme with default fee and percentage
+        // Add scheme with default fee, percentage, and fee type
         newSchemes = [...prev.schemes, scheme];
         newFees = { ...prev.fees, [scheme]: 0 };
         newPercentages = { ...prev.percentages, [scheme]: 0 };
+        newFeeTypes = { ...prev.feeTypes, [scheme]: 'percentage' }; // Default to percentage
       } else {
-        // Remove scheme and its fee/percentage
+        // Remove scheme and its fee/percentage/type
         newSchemes = prev.schemes.filter(s => s !== scheme);
         newFees = { ...prev.fees };
         newPercentages = { ...prev.percentages };
+        newFeeTypes = { ...prev.feeTypes };
         delete newFees[scheme];
         delete newPercentages[scheme];
+        delete newFeeTypes[scheme];
       }
 
       return {
         ...prev,
         schemes: newSchemes,
         fees: newFees,
-        percentages: newPercentages
+        percentages: newPercentages,
+        feeTypes: newFeeTypes
       };
     });
   };
@@ -334,6 +343,17 @@ export default function CMPage() {
       percentages: {
         ...prev.percentages,
         [scheme]: percentage
+      }
+    }));
+  };
+
+  // Handle fee type changes
+  const handleFeeTypeChange = (scheme: string, feeType: 'fee' | 'percentage') => {
+    setFormData(prev => ({
+      ...prev,
+      feeTypes: {
+        ...prev.feeTypes,
+        [scheme]: feeType
       }
     }));
   };
@@ -524,42 +544,58 @@ export default function CMPage() {
                           {formData.schemes.map((scheme) => (
                             <div key={scheme} className="bg-gray-50 rounded-lg p-4">
                               <h3 className="text-sm font-medium text-gray-700 mb-3">{scheme}</h3>
-                              <div className="space-y-2">
+                              <div className="space-y-3">
                                 <label className="block text-xs font-medium text-gray-600">
-                                  Our Fees (Enter either amount or percentage)
+                                  Our Fees
                                 </label>
+                                
+                                {/* Fee Type Selector */}
+                                <div className="flex space-x-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFeeTypeChange(scheme, 'fee')}
+                                    className={`px-3 py-1.5 text-xs rounded-md border transition-colors duration-200 ${
+                                      formData.feeTypes[scheme] === 'fee'
+                                        ? 'bg-purple-600 text-white border-purple-600'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    Fee Amount (₹)
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFeeTypeChange(scheme, 'percentage')}
+                                    className={`px-3 py-1.5 text-xs rounded-md border transition-colors duration-200 ${
+                                      formData.feeTypes[scheme] === 'percentage'
+                                        ? 'bg-purple-600 text-white border-purple-600'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    Percentage (%)
+                                  </button>
+                                </div>
+                                
+                                {/* Input Field */}
                                 <div className="relative">
                                   <input
                                     type="number"
-                                    value={formData.fees[scheme] || formData.percentages[scheme] || 0}
+                                    value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || 0) : (formData.percentages[scheme] || 0)}
                                     onChange={(e) => {
                                       const value = parseInt(e.target.value) || 0;
-                                      // If user enters a value, determine if it should be fee or percentage
-                                      // Priority: if fee is already set and > 0, update fee; otherwise update percentage
-                                      if ((formData.fees[scheme] || 0) > 0) {
+                                      if (formData.feeTypes[scheme] === 'fee') {
                                         handleFeeChange(scheme, value);
-                                        // Clear percentage if fee is being set
-                                        if (value > 0) {
-                                          handlePercentageChange(scheme, 0);
-                                        }
                                       } else {
                                         handlePercentageChange(scheme, value);
-                                        // Clear fee if percentage is being set
-                                        if (value > 0) {
-                                          handleFeeChange(scheme, 0);
-                                        }
                                       }
                                     }}
                                     className="w-full px-3 py-2 pr-8 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                     placeholder="0"
                                     min="0"
+                                    max={formData.feeTypes[scheme] === 'percentage' ? 100 : undefined}
                                   />
                                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                                    {(formData.fees[scheme] || 0) > 0 ? '₹' : '%'}
+                                    {formData.feeTypes[scheme] === 'fee' ? '₹' : '%'}
                                   </span>
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  Currently showing: {(formData.fees[scheme] || 0) > 0 ? 'Fee Amount' : 'Percentage'}
                                 </div>
                               </div>
                             </div>
@@ -839,7 +875,8 @@ export default function CMPage() {
             termLoanAmount: formData.termLoanAmount,
             powerConnection: formData.powerConnection,
             fees: formData.fees,
-            percentages: formData.percentages
+            percentages: formData.percentages,
+            feeTypes: formData.feeTypes
           }}
           consultantInfo={consultantInfo}
         />

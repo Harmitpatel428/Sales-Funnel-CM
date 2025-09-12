@@ -16,6 +16,7 @@ export interface MandateData {
   powerConnection: string;
   fees: { [schemeName: string]: number };
   percentages: { [schemeName: string]: number };
+  feeTypes: { [schemeName: string]: 'fee' | 'percentage' };
 }
 
 export interface EditableContent {
@@ -263,12 +264,13 @@ export class PDFServiceSimple {
     } else {
       // Create fees table
       const tableData = mandateData.schemes.map((scheme, index) => {
+        const feeType = mandateData.feeTypes?.[scheme] || 'percentage';
         const fee = mandateData.fees[scheme] || 0;
         const percentage = mandateData.percentages?.[scheme] || 0;
         
-        // Determine which value to show (priority: fee if > 0, otherwise percentage)
-        const displayValue = fee > 0 ? fee : percentage;
-        const displaySymbol = fee > 0 ? '₹' : '%';
+        // Use the selected fee type to determine what to show
+        const displayValue = feeType === 'fee' ? fee : percentage;
+        const displaySymbol = feeType === 'fee' ? '₹' : '%';
         
         return [
           `${index + 1}. ${scheme}`,

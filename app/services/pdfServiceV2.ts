@@ -23,6 +23,7 @@ export interface MandateData {
   powerConnection: string;
   fees: { [schemeName: string]: number };
   percentages: { [schemeName: string]: number };
+  feeTypes: { [schemeName: string]: 'fee' | 'percentage' };
 }
 
 export interface ConsultantInfo {
