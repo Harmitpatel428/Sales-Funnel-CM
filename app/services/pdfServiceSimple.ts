@@ -271,17 +271,19 @@ export class PDFServiceSimple {
         // Use the selected fee type to determine what to show
         const displayValue = feeType === 'fee' ? fee : percentage;
         const displaySymbol = feeType === 'fee' ? '₹' : '%';
+        const description = feeType === 'fee' ? 'One time' : 'of subsidy amount';
         
         return [
           `${index + 1}. ${scheme}`,
-          `${displayValue.toLocaleString()}${displaySymbol}`
+          `${displayValue.toLocaleString()}${displaySymbol}`,
+          description
         ];
       });
 
       // Generate table
       autoTable(this.doc, {
         startY: this.currentY,
-        head: [['Scheme Name', 'Our Fees']],
+        head: [['Scheme Name', 'Our Fees', 'Description']],
         body: tableData,
         theme: 'grid',
         headStyles: { 

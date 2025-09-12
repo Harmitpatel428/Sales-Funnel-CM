@@ -411,6 +411,7 @@ export default function PDFPreviewModal({
                       <div className="flex border-b border-gray-300 pb-1">
                         <div className="flex-1 text-xs font-bold">Scheme Name</div>
                         <div className="w-24 text-xs font-bold text-right">Our Fees</div>
+                        <div className="w-20 text-xs font-bold text-center">Description</div>
                       </div>
                       
                       {/* Fees Table Rows */}
@@ -450,6 +451,9 @@ export default function PDFPreviewModal({
                               >
                                 {displayValue.toLocaleString()}{displaySymbol}
                               </div>
+                            </div>
+                            <div className="w-20 text-center text-xs text-gray-600">
+                              {feeType === 'fee' ? 'One time' : 'Of subsidy amount'}
                             </div>
                           </div>
                         );
