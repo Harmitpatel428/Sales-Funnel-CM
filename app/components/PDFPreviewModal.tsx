@@ -406,12 +406,12 @@ export default function PDFPreviewModal({
                   <div className="text-xs mb-2">Our consulting fees are structured as follows:</div>
                   
                   {editableData.schemes.length > 0 ? (
-                    <div className="space-y-2">
+                    <div className="border border-gray-400 rounded">
                       {/* Fees Table Header */}
-                      <div className="flex border-b-2 border-black pb-1">
-                        <div className="flex-1 text-xs font-bold">Scheme Name</div>
-                        <div className="w-24 text-xs font-bold text-right">Our Fees</div>
-                        <div className="w-20 text-xs font-bold text-center">Description</div>
+                      <div className="flex border-b border-gray-400 bg-gray-100">
+                        <div className="flex-1 text-xs font-bold p-2 border-r border-gray-400">Scheme Name</div>
+                        <div className="w-24 text-xs font-bold text-right p-2 border-r border-gray-400">Our Fees</div>
+                        <div className="w-20 text-xs font-bold text-center p-2">Description</div>
                       </div>
                       
                       {/* Fees Table Rows */}
@@ -425,11 +425,11 @@ export default function PDFPreviewModal({
                         const displaySymbol = feeType === 'fee' ? '₹' : '%';
                         
                         return (
-                          <div key={scheme} className="flex items-center border-b-2 border-black pb-1">
-                            <div className="flex-1 text-xs">
+                          <div key={scheme} className={`flex items-center ${index < editableData.schemes.length - 1 ? 'border-b border-gray-400' : ''}`}>
+                            <div className="flex-1 text-xs p-2 border-r border-gray-400">
                               {index + 1}. {scheme}
                             </div>
-                            <div className="w-24 text-right">
+                            <div className="w-24 text-right p-2 border-r border-gray-400">
                               <div
                                 contentEditable
                                 suppressContentEditableWarning
@@ -452,7 +452,7 @@ export default function PDFPreviewModal({
                                 {displayValue.toLocaleString()}{displaySymbol}
                               </div>
                             </div>
-                            <div className="w-20 text-center text-xs text-gray-600">
+                            <div className="w-20 text-center text-xs text-gray-600 p-2">
                               {feeType === 'fee' ? 'One time' : 'Of subsidy amount'}
                             </div>
                           </div>
