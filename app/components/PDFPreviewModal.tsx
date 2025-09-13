@@ -463,11 +463,13 @@ export default function PDFPreviewModal({
                         );
                       })
                     )}
-                  </div>
-                  
-                  {/* Note */}
-                  <div className="text-xs text-red-600 mt-2">
-                    Note: - DOCP means Date of commercial production
+                    
+                    {/* Note Row - Merged */}
+                    <div className="border-b border-black bg-blue-100">
+                      <div className="text-xs p-2 text-center font-bold text-red-600">
+                        Note: - DOCP means Date of commercial production
+                      </div>
+                    </div>
                   </div>
                 </div>
 
