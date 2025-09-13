@@ -107,7 +107,7 @@ export class PDFServiceSimple {
     this.currentY += 8;
 
     // Subject Line - Use editable content if available, otherwise generate from schemes
-    const subjectText = editableContent?.subjectLine || formatSubjectLine(mandateData.schemes, mandateData.policy);
+    const subjectText = editableContent?.subjectLine || formatSubjectLine(mandateData.schemes, mandateData.policy, mandateData.typeOfCase);
     
     console.log('🔍 Generating subject line with bold formatting:', subjectText);
     this.addText(subjectText, this.margin, this.currentY, { 

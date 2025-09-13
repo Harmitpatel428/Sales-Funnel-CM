@@ -474,7 +474,9 @@ export default function CMPage() {
                             KVA <span className="text-red-500">*</span>
                           </label>
                           <input
-                            type="text"
+                            type="number"
+                            step="0.01"
+                            min="0"
                             id="kva"
                             name="kva"
                             value={formData.kva}
@@ -616,15 +618,16 @@ export default function CMPage() {
                                   {/* Input Field */}
                                   <div className="flex-1 relative">
                                     <input
-                                      type="text"
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
                                       value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || '') : (formData.percentages[scheme] || '')}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        const numericValue = value === '' ? 0 : parseInt(value) || 0;
                                         if (formData.feeTypes[scheme] === 'fee') {
-                                          handleFeeChange(scheme, numericValue);
+                                          handleFeeChange(scheme, value === '' ? 0 : parseFloat(value) || 0);
                                         } else {
-                                          handlePercentageChange(scheme, numericValue);
+                                          handlePercentageChange(scheme, value === '' ? 0 : parseFloat(value) || 0);
                                         }
                                       }}
                                       className="w-full px-3 py-1.5 pr-6 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -661,15 +664,17 @@ export default function CMPage() {
                           <label htmlFor="typeOfCase" className="block text-sm font-medium text-gray-700">
                             Type of Case
                           </label>
-                          <input
-                            type="text"
+                          <select
                             id="typeOfCase"
                             name="typeOfCase"
                             value={formData.typeOfCase}
                             onChange={handleChange}
                             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
-                            placeholder="Enter type of case"
-                          />
+                          >
+                            <option value="">Select Type of Case</option>
+                            <option value="New Unit">New Unit</option>
+                            <option value="Expansion Unit">Expansion Unit</option>
+                          </select>
                         </div>
 
                         {/* Category Dropdown */}
@@ -698,7 +703,9 @@ export default function CMPage() {
                           </label>
                           <div className="relative">
                             <input
-                              type="text"
+                              type="number"
+                              step="0.01"
+                              min="0"
                               id="projectCost"
                               name="projectCost"
                               value={formData.projectCost}
@@ -736,7 +743,9 @@ export default function CMPage() {
                             Term Loan Amount
                           </label>
                           <input
-                            type="text"
+                            type="number"
+                            step="0.01"
+                            min="0"
                             id="termLoanAmount"
                             name="termLoanAmount"
                             value={formData.termLoanAmount}
@@ -752,7 +761,9 @@ export default function CMPage() {
                             Power Connection
                           </label>
                           <input
-                            type="text"
+                            type="number"
+                            step="0.01"
+                            min="0"
                             id="powerConnection"
                             name="powerConnection"
                             value={formData.powerConnection}
