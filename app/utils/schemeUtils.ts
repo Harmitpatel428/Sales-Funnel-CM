@@ -71,24 +71,27 @@ export const SCHEME_DESCRIPTIONS: { [key: string]: SchemeDescription } = {
 };
 
 /**
- * Formats the subject line based on selected schemes
+ * Formats the subject line based on selected schemes and policy
  * @param schemes Array of selected scheme names
+ * @param policy Selected policy (optional)
  * @returns Formatted subject line string
  */
-export function formatSubjectLine(schemes: string[]): string {
+export function formatSubjectLine(schemes: string[], policy?: string): string {
+  const policyText = policy ? `under the ${policy}` : 'under the Atmanirbhar Gujarat Scheme 2022';
+  
   if (schemes.length === 0) {
-    return 'Subject: Consulting fees for government subsidy work for government subsidy schemes for your new firm under the Atmanirbhar Gujarat Scheme 2022.';
+    return `Consulting fees for government subsidy work for government subsidy schemes for your new firm ${policyText}.`;
   }
 
   if (schemes.length === 1) {
     const schemeName = SCHEME_DESCRIPTIONS[schemes[0]!]?.shortName || schemes[0]!;
-    return `Subject: Consulting fees for government subsidy work for ${schemeName} for your new firm under the Atmanirbhar Gujarat Scheme 2022.`;
+    return `Consulting fees for government subsidy work for ${schemeName} for your new firm ${policyText}.`;
   }
 
   if (schemes.length === 2) {
     const scheme1 = SCHEME_DESCRIPTIONS[schemes[0]!]?.shortName || schemes[0]!;
     const scheme2 = SCHEME_DESCRIPTIONS[schemes[1]!]?.shortName || schemes[1]!;
-    return `Subject: Consulting fees for government subsidy work for ${scheme1} & ${scheme2} for your new firm under the Atmanirbhar Gujarat Scheme 2022.`;
+    return `Consulting fees for government subsidy work for ${scheme1} & ${scheme2} for your new firm ${policyText}.`;
   }
 
   // 3 or more schemes
@@ -99,7 +102,7 @@ export function formatSubjectLine(schemes: string[]): string {
   const lastScheme = formattedSchemes.pop();
   const otherSchemes = formattedSchemes.join(', ');
   
-  return `Subject: Consulting fees for government subsidy work for ${otherSchemes}, & ${lastScheme} for your new firm under the Atmanirbhar Gujarat Scheme 2022.`;
+  return `Consulting fees for government subsidy work for ${otherSchemes}, & ${lastScheme} for your new firm ${policyText}.`;
 }
 
 /**

@@ -107,7 +107,7 @@ export class PDFServiceV2 {
     this.currentY += 8;
 
     // Subject Line - Dynamic based on selected schemes using utility function
-    const subjectText = formatSubjectLine(mandateData.schemes);
+    const subjectText = formatSubjectLine(mandateData.schemes, mandateData.policy);
     
     this.addText(subjectText, this.margin, this.currentY, { 
       fontSize: 12, 

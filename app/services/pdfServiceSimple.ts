@@ -14,6 +14,7 @@ export interface MandateData {
   industriesType: string;
   termLoanAmount: string;
   powerConnection: string;
+  policy: string;
   fees: { [schemeName: string]: number };
   percentages: { [schemeName: string]: number };
   feeTypes: { [schemeName: string]: 'fee' | 'percentage' };
@@ -106,7 +107,7 @@ export class PDFServiceSimple {
     this.currentY += 8;
 
     // Subject Line - Use editable content if available, otherwise generate from schemes
-    const subjectText = editableContent?.subjectLine || formatSubjectLine(mandateData.schemes);
+    const subjectText = editableContent?.subjectLine || formatSubjectLine(mandateData.schemes, mandateData.policy);
     
     console.log('🔍 Generating subject line with bold formatting:', subjectText);
     this.addText(subjectText, this.margin, this.currentY, { 

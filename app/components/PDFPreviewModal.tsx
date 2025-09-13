@@ -58,7 +58,7 @@ export default function PDFPreviewModal({
     setEditableData(mandateData);
     setEditableContent(prev => ({
       ...prev,
-      subjectLine: formatSubjectLine(mandateData.schemes)
+      subjectLine: formatSubjectLine(mandateData.schemes, mandateData.policy)
     }));
   }, [mandateData]);
 
@@ -86,7 +86,7 @@ export default function PDFPreviewModal({
     if (field === 'schemes') {
       setEditableContent(prev => ({
         ...prev,
-        subjectLine: formatSubjectLine(value as string[])
+        subjectLine: formatSubjectLine(value as string[], editableData.policy)
       }));
     }
   };
@@ -111,6 +111,170 @@ export default function PDFPreviewModal({
 
   const handleConfirm = () => {
     onConfirm(editableData, editableConsultantInfo, editableContent);
+  };
+
+  // Function to convert number to Roman numeral
+  const toRomanNumeral = (num: number): string => {
+    const romanNumerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+    return romanNumerals[num] || num.toString();
+  };
+
+  // Function to get the policy header text with taluka category if applicable
+  const getPolicyHeaderText = (): string => {
+    if (!editableData.policy) return 'Work description';
+    
+    const policyText = `Under ${editableData.policy}`;
+    
+    // Check if policy is "Under Atmanirbhar Gujarat Scheme MSMEs 2022" and taluka category exists
+    if (editableData.policy === 'Atmanirbhar Gujarat Scheme MSMEs 2022' && editableData.category) {
+      const romanCategory = toRomanNumeral(parseInt(editableData.category));
+      return `${policyText} (Taluka Category ${romanCategory})`;
+    }
+    
+    return policyText;
+  };
+
+  // Function to get benefit details based on scheme and taluka category
+  const getBenefitDetails = (scheme: string, category: string): string => {
+    // Handle Capital Subsidy with category-specific details
+    if (scheme === 'Capital Subsidy' && category) {
+      switch (category) {
+        case '1':
+          return '25% of Term Loan, up to ₹35 lakhs';
+        case '2':
+          return '20% of Term Loan, up to ₹30 lakhs';
+        case '3':
+          return '10% of Term Loan, up to ₹10 lakhs';
+        default:
+          return 'Benefit details as per taluka category';
+      }
+    }
+
+    // Handle Interest Subsidy with category-specific details
+    if (scheme === 'Interest Subsidy' && category) {
+      switch (category) {
+        case '1':
+          return '7% subsidy, max ₹35 lakhs/year';
+        case '2':
+          return '6% subsidy, max ₹30 lakhs/year';
+        case '3':
+          return '5% subsidy, max ₹25 lakhs/year';
+        default:
+          return 'Interest subsidy as per taluka category';
+      }
+    }
+
+    // Handle SGST Subsidy with category-specific details
+    if (scheme === 'SGST Subsidy' && category) {
+      switch (category) {
+        case '1':
+          return '100% SGST reimbursement (max 7.5% of FCI/year)';
+        case '2':
+          return '90% SGST reimbursement';
+        case '3':
+          return '80% SGST reimbursement';
+        default:
+          return 'SGST reimbursement as per taluka category';
+      }
+    }
+
+    // Handle Electric Duty Exemption
+    if (scheme === 'Electric Duty Exemption') {
+      return '100% exemption on electricity duty';
+    }
+
+    // Handle Power Connection Charges
+    if (scheme === 'Power Connection Charges') {
+      return '35% of DISCOM charges (Maximum 5 Lakhs)';
+    }
+
+    // Handle Solar Subsidy with category-specific details (same as Interest Subsidy)
+    if (scheme === 'Solar Subsidy' && category) {
+      switch (category) {
+        case '1':
+          return '7% subsidy, max ₹35 lakhs/year';
+        case '2':
+          return '6% subsidy, max ₹30 lakhs/year';
+        case '3':
+          return '5% subsidy, max ₹25 lakhs/year';
+        default:
+          return 'Solar subsidy as per taluka category';
+      }
+    }
+
+    // Handle Rent
+    if (scheme === 'Rent') {
+      return '65% of rent amount (Maximum 1 Lakh) - PA';
+    }
+
+    // For other schemes, use the scheme description or default
+    const schemeDesc = getSchemeDescription(scheme);
+    return schemeDesc?.description[0] || 'Benefit details';
+  };
+
+  // Function to get duration based on scheme and taluka category
+  const getDuration = (scheme: string, category: string): string => {
+    // Handle Interest Subsidy with category-specific durations
+    if (scheme === 'Interest Subsidy' && category) {
+      switch (category) {
+        case '1':
+          return '7 Years';
+        case '2':
+          return '6 Years';
+        case '3':
+          return '5 Years';
+        default:
+          return 'As per scheme';
+      }
+    }
+
+    // Handle Solar Subsidy with category-specific durations (same as Interest Subsidy)
+    if (scheme === 'Solar Subsidy' && category) {
+      switch (category) {
+        case '1':
+          return '7 Years';
+        case '2':
+          return '6 Years';
+        case '3':
+          return '5 Years';
+        default:
+          return 'As per scheme';
+      }
+    }
+
+    // Handle SGST Subsidy with category-specific durations
+    if (scheme === 'SGST Subsidy' && category) {
+      return '10 Years';
+    }
+
+    // Handle Capital Subsidy
+    if (scheme === 'Capital Subsidy') {
+      return 'One Time Benefit';
+    }
+
+    // For other schemes, use default durations
+    if (scheme === 'Power Connection Charges') return 'One Time Benefit';
+    if (scheme === 'Electric Duty Exemption') return '5 Years';
+    if (scheme === 'Rent') return '5 Years';
+    
+    return 'As per scheme';
+  };
+
+  // Function to get application timeline based on scheme
+  const getApplicationTimeline = (scheme: string): string => {
+    // Handle Capital Subsidy and Interest Subsidy with updated timeline
+    if (scheme === 'Capital Subsidy' || scheme === 'Interest Subsidy') {
+      return 'Within 1 year from DOCP or First disbursement';
+    }
+
+    // Handle other schemes with their specific timelines
+    if (scheme === 'Power Connection Charges') return 'Within 1 year from estimate payment receipt date to DISCOM';
+    if (scheme === 'Electric Duty Exemption') return 'Within 90 days from Date of production or trail production';
+    if (scheme === 'SGST Subsidy') return 'Within 1 year from DOCP';
+    if (scheme === 'Rent') return 'Within one year from the date of Rent agreement/lease';
+    if (scheme === 'Solar Subsidy') return 'Within 1 year from commissioning';
+    
+    return 'As per scheme guidelines';
   };
 
   return (
@@ -175,14 +339,13 @@ export default function PDFPreviewModal({
                       M/S {editableData.company}
                     </div>
                     <div className="text-sm font-bold mb-1">Address: {editableData.address}</div>
-                    <div className="text-sm">Gujarat-382430</div>
                   </div>
                 </div>
 
                 {/* Subject Line */}
                 <div className="mb-4">
                   <div className="text-sm">
-                    <span className="font-bold underline">Subject:</span> 
+                    <span className="font-bold">Subject:</span> 
                     <span
                       contentEditable
                       suppressContentEditableWarning
@@ -195,147 +358,117 @@ export default function PDFPreviewModal({
                 </div>
 
                 {/* Salutation */}
-                <div className="mb-4">
+                <div className="mb-0">
                   <div className="text-sm">Dear Sir,</div>
                 </div>
 
                 {/* Opening Paragraph */}
                 <div className="mb-6">
                   <div className="text-sm">
-                    With reference to above said subject & as per discussion with <span className="font-bold underline">Mr Ashish sir</span> hereby we are sending our commercial offer and scope of work.
+                    With reference to above said subject & as per discussion with <span className="font-bold underline">Mr {editableData.clientName} sir</span> hereby we are sending our commercial offer and scope of work.
                   </div>
                 </div>
 
                 {/* Commercial Offer */}
                 <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">COMMERCIAL OFFER</div>
-                  <div className="space-y-1">
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">Case Name:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('clientName', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                      >
-                        {editableData.clientName}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">Type of Case:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('typeOfCase', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                        data-placeholder="Enter type of case"
-                      >
-                        {editableData.typeOfCase || 'Enter type of case'}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">Project Cost:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('projectCost', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                        data-placeholder="Enter project cost"
-                      >
-                        {editableData.projectCost || 'Enter project cost'}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">Industry:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('industriesType', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                        data-placeholder="Enter industry type"
-                      >
-                        {editableData.industriesType || 'Enter industry type'}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">Term Loan:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('termLoanAmount', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                        data-placeholder="Enter term loan amount"
-                      >
-                        {editableData.termLoanAmount || 'Enter term loan amount'}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">Power Conn:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('powerConnection', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                        data-placeholder="Enter power connection"
-                      >
-                        {editableData.powerConnection || 'Enter power connection'}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <span className="text-xs font-bold w-24">KVA:</span>
-                      <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleFieldChange('kva', e.target.textContent || '')}
-                        className="pdf-input flex-1 text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                        data-placeholder="Enter KVA"
-                      >
-                        {editableData.kva || 'Enter KVA'}
-                      </div>
+                  <div className="text-sm font-bold mb-3">Details of Proposed Firm are as under:</div>
+                  <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
+                    <div className="text-sm font-bold mb-2">Case name: M/S {editableData.company}</div>
+                    <div className="space-y-1 text-xs">
+                      {editableData.typeOfCase && (
+                        <div className="flex">
+                          <span className="font-bold w-32">Type of Case:</span>
+                          <span>{editableData.typeOfCase}</span>
+                        </div>
+                      )}
+                      {editableData.category && (
+                        <div className="flex">
+                          <span className="font-bold w-32">Taluka Category:</span>
+                          <span>{editableData.category}</span>
+                        </div>
+                      )}
+                      {editableData.projectCost && (
+                        <div className="flex">
+                          <span className="font-bold w-32">Cost of Project:</span>
+                          <span>₹. {editableData.projectCost} (Approx.)</span>
+                        </div>
+                      )}
+                      {editableData.industriesType && (
+                        <div className="flex">
+                          <span className="font-bold w-32">Industries Type:</span>
+                          <span>{editableData.industriesType}</span>
+                        </div>
+                      )}
+                      {editableData.termLoanAmount && (
+                        <div className="flex">
+                          <span className="font-bold w-32">Term Loan Amount:</span>
+                          <span>₹. {editableData.termLoanAmount}</span>
+                        </div>
+                      )}
+                      {editableData.powerConnection && (
+                        <div className="flex">
+                          <span className="font-bold w-32">Power Connection:</span>
+                          <span>{editableData.powerConnection} KVA</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
 
+
                 {/* Proposed Benefits */}
                 <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">PROPOSED BENEFITS</div>
-                  {editableData.schemes.length === 0 ? (
-                    <div className="text-xs text-gray-500">No specific schemes selected</div>
-                  ) : (
-                    <div className="space-y-3">
-                      {editableData.schemes.map((scheme, index) => {
+                  <div className="text-xs font-bold mb-3">WORK DESCRIPTION & PROPOSED BENEFITS</div>
+                  <div className="border border-black rounded bg-blue-100">
+                    {/* Merged Header Row */}
+                    <div className="bg-blue-100 border-b border-black">
+                      <div className="text-xs font-bold p-2 text-center">{getPolicyHeaderText()}</div>
+                    </div>
+                    
+                      {/* Table Header */}
+                      <div className="flex border-b border-black bg-blue-100">
+                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">Benefits </div>
+                        <div className="w-32 text-xs font-bold p-2 border-r border-black text-center">Subsidy Name</div>
+                        <div className="flex-1 text-xs font-bold p-2 border-r border-black text-center">Benefit Details</div>
+                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">Duration</div>
+                        <div className="flex-1 text-xs font-bold p-2 text-center">Application Time Line</div>
+                      </div>
+                    
+                    {/* Table Rows */}
+                    {editableData.schemes.length === 0 ? (
+                      <div className="text-xs text-gray-500 p-4 text-center">No specific schemes selected</div>
+                    ) : (
+                      editableData.schemes.map((scheme, index) => {
                         const schemeDesc = getSchemeDescription(scheme);
-                        const schemeTitle = schemeDesc?.title || scheme;
+                        const benefitCategory = `Benefit - ${String.fromCharCode(65 + index)}`; // A, B, C, etc.
                         
                         return (
-                          <div key={scheme} className="space-y-1">
-                            <div className="text-xs font-bold">
-                              {index + 1}. {schemeTitle}
+                          <div key={scheme} className="flex border-b border-black bg-blue-100">
+                            <div className="w-20 text-xs p-2 border-r border-black text-center font-bold">
+                              {benefitCategory}
                             </div>
-                            {schemeDesc && (
-                              <div className="ml-4 space-y-1">
-                                {schemeDesc.description.map((desc, descIndex) => (
-                                  <div
-                                    key={descIndex}
-                                    contentEditable
-                                    suppressContentEditableWarning
-                                    onBlur={(e) => {
-                                      // Update the scheme description in state
-                                      // This would require more complex state management
-                                      console.log('Scheme description edited:', e.target.textContent);
-                                    }}
-                                    className="text-xs focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
-                                  >
-                                    • {desc}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                            <div className="w-32 text-xs p-2 border-r border-black">
+                              {schemeDesc?.title || scheme}
+                            </div>
+                            <div className="flex-1 text-xs p-2 border-r border-black">
+                              {getBenefitDetails(scheme, editableData.category)}
+                            </div>
+                            <div className="w-20 text-xs p-2 border-r border-black text-center">
+                              {getDuration(scheme, editableData.category)}
+                            </div>
+                            <div className="flex-1 text-xs p-2 text-center">
+                              {getApplicationTimeline(scheme)}
+                            </div>
                           </div>
                         );
-                      })}
-                    </div>
-                  )}
+                      })
+                    )}
+                  </div>
+                  
+                  {/* Note */}
+                  <div className="text-xs text-red-600 mt-2">
+                    Note: - DOCP means Date of commercial production
+                  </div>
                 </div>
 
                 {/* Work Scope */}
