@@ -686,15 +686,6 @@ export default function PDFPreviewModal({
                       let termNumber = 9;
                       const terms = [];
                       
-                      // Interest Subsidy & Solar Subsidy Processing Fees
-                      if (editableData.schemes.includes('Interest Subsidy') || editableData.schemes.includes('Solar Subsidy')) {
-                        terms.push(
-                          <div key={termNumber}>
-                            {termNumber}. Processing fees application to sanctions of Rs.15000/- (non-adjustable) at the time of assignment finalization, Rs.50000/- (adjustable) against sanction of subsidy and rest against fund release.
-                          </div>
-                        );
-                        termNumber++;
-                      }
                       
                       // SGST Subsidy Specific
                       if (editableData.schemes.includes('SGST Subsidy')) {
