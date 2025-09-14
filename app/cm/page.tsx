@@ -431,12 +431,12 @@ export default function CMPage() {
                 {/* Desktop: Two columns, Mobile: Single column */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                   {/* Left Column - Lead Information */}
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Lead Information</h2>
-                      <div className="space-y-4">
+                  <div className="space-y-0">
+                    <div className="bg-gray-50 rounded-lg p-2">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-3">Lead Information</h2>
+                      <div className="space-y-0">
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
                             Client Name <span className="text-red-500">*</span>
                           </label>
@@ -447,12 +447,12 @@ export default function CMPage() {
                             value={formData.clientName}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter client name"
                           />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="company" className="block text-sm font-medium text-gray-700">
                             Company <span className="text-red-500">*</span>
                           </label>
@@ -463,13 +463,12 @@ export default function CMPage() {
                             value={formData.company}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter company name"
                           />
                         </div>
 
-
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="kva" className="block text-sm font-medium text-gray-700">
                             KVA <span className="text-red-500">*</span>
                           </label>
@@ -482,12 +481,12 @@ export default function CMPage() {
                             value={formData.kva}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter KVA"
                           />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="address" className="block text-sm font-medium text-gray-700">
                             Address
                           </label>
@@ -497,20 +496,19 @@ export default function CMPage() {
                             name="address"
                             value={formData.address}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter address"
                           />
                         </div>
-
 
                       </div>
                     </div>
                   </div>
 
                   {/* Right Column - Scheme Options */}
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                      <div className="flex items-center mb-6">
+                  <div className="space-y-0">
+                    <div className="bg-gray-50 rounded-lg p-2">
+                      <div className="flex items-center mb-4">
                         <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
                           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -519,9 +517,9 @@ export default function CMPage() {
                         <h2 className="text-lg font-semibold text-gray-900">Scheme Options</h2>
                       </div>
                       
-                      <div className="space-y-3">
-                        <p className="text-sm text-gray-600 mb-4">Select applicable schemes:</p>
-                        <div className="space-y-3">
+                      <div className="space-y-0">
+                        <p className="text-sm text-gray-600 mb-3">Select applicable schemes:</p>
+                        <div className="space-y-0">
                           {[
                             'Capital Subsidy',
                             'Interest Subsidy',
@@ -533,7 +531,7 @@ export default function CMPage() {
                           ].map((scheme) => (
                             <label 
                               key={scheme} 
-                              className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors duration-200 ${
+                              className={`flex items-center p-2 rounded-lg border cursor-pointer transition-colors duration-200 ${
                                 formData.schemes.includes(scheme)
                                   ? 'border-purple-500 bg-purple-50'
                                   : 'border-gray-200 bg-white hover:border-purple-300'
@@ -576,9 +574,9 @@ export default function CMPage() {
                       
                       <div className="space-y-4">
                         <p className="text-sm text-gray-600 mb-4">Enter fees and percentages for each selected scheme:</p>
-                        <div className="space-y-3">
+                        <div className="space-y-0">
                           {formData.schemes.map((scheme) => (
-                            <div key={scheme} className="bg-gray-50 rounded-lg p-4">
+                            <div key={scheme} className="bg-gray-50 rounded-lg p-2">
                               {/* Inline Layout: Label + Selector + Input in one line */}
                               <div className="flex items-center justify-between">
                                 {/* Scheme Label */}
@@ -616,8 +614,8 @@ export default function CMPage() {
                                     </button>
                                   </div>
                                   
-                                  {/* Compact Input Field */}
-                                  <div className="relative w-24">
+                                  {/* Input Field */}
+                                  <div className="relative w-32">
                                     <input
                                       type="number"
                                       step="0.01"
@@ -631,10 +629,10 @@ export default function CMPage() {
                                           handlePercentageChange(scheme, value === '' ? 0 : parseFloat(value) || 0);
                                         }
                                       }}
-                                      className="w-full px-2 py-1.5 pr-5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                      className="w-full px-3 py-1.5 pr-6 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                       placeholder="Enter amount"
                                     />
-                                    <span className="absolute right-1 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
                                       {formData.feeTypes[scheme] === 'fee' ? '₹' : '%'}
                                     </span>
                                   </div>
@@ -648,9 +646,9 @@ export default function CMPage() {
                   )}
 
                   {/* Details of Proposed Firm Section */}
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                      <div className="flex items-center mb-6">
+                  <div className="space-y-0">
+                    <div className="bg-gray-50 rounded-lg p-2">
+                      <div className="flex items-center mb-4">
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
                           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -659,9 +657,9 @@ export default function CMPage() {
                         <h2 className="text-lg font-semibold text-gray-900">Details of Proposed Firm</h2>
                       </div>
                       
-                      <div className="space-y-4">
+                      <div className="space-y-0">
                         {/* Type of Case */}
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="typeOfCase" className="block text-sm font-medium text-gray-700">
                             Type of Case
                           </label>
@@ -670,7 +668,7 @@ export default function CMPage() {
                             name="typeOfCase"
                             value={formData.typeOfCase}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                           >
                             <option value="">Select Type of Case</option>
                             <option value="New Unit">New Unit</option>
@@ -679,7 +677,7 @@ export default function CMPage() {
                         </div>
 
                         {/* Category Dropdown */}
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="category" className="block text-sm font-medium text-gray-700">
                             Category
                           </label>
@@ -688,7 +686,7 @@ export default function CMPage() {
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                           >
                             <option value="">Select Category</option>
                             <option value="1">1</option>
@@ -698,7 +696,7 @@ export default function CMPage() {
                         </div>
 
                         {/* Project Cost */}
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="projectCost" className="block text-sm font-medium text-gray-700">
                             Project Cost
                           </label>
@@ -711,7 +709,7 @@ export default function CMPage() {
                               name="projectCost"
                               value={formData.projectCost}
                               onChange={handleChange}
-                              className="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                              className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                               placeholder="Enter project cost"
                             />
                             <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -721,7 +719,7 @@ export default function CMPage() {
                         </div>
 
                         {/* Industries Type Dropdown */}
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="industriesType" className="block text-sm font-medium text-gray-700">
                             Industries Type
                           </label>
@@ -730,7 +728,7 @@ export default function CMPage() {
                             name="industriesType"
                             value={formData.industriesType}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                           >
                             <option value="">Select Industry Type</option>
                             <option value="Manufacturing">Manufacturing</option>
@@ -739,7 +737,7 @@ export default function CMPage() {
                         </div>
 
                         {/* Term Loan Amount */}
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="termLoanAmount" className="block text-sm font-medium text-gray-700">
                             Term Loan Amount
                           </label>
@@ -751,13 +749,13 @@ export default function CMPage() {
                             name="termLoanAmount"
                             value={formData.termLoanAmount}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter term loan amount"
                           />
                         </div>
 
                         {/* Power Connection */}
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <label htmlFor="powerConnection" className="block text-sm font-medium text-gray-700">
                             Power Connection
                           </label>
@@ -769,7 +767,7 @@ export default function CMPage() {
                             name="powerConnection"
                             value={formData.powerConnection}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter power connection details"
                           />
                         </div>
