@@ -18,6 +18,15 @@ export interface MandateData {
   fees: { [schemeName: string]: number };
   percentages: { [schemeName: string]: number };
   feeTypes: { [schemeName: string]: 'fee' | 'percentage' };
+  applicationFees: number;
+  sanctioningFees: number;
+  additionalFees: Array<{
+    id: string;
+    name: string;
+    amount: number;
+    feeType: 'fee' | 'percentage';
+  }>;
+  customFeeName: string;
 }
 
 export interface EditableContent {

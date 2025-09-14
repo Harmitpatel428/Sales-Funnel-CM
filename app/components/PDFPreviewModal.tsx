@@ -19,7 +19,13 @@ export default function PDFPreviewModal({
   mandateData,
   consultantInfo
 }: PDFPreviewModalProps) {
-  const [editableData, setEditableData] = useState<MandateData>(mandateData);
+  const [editableData, setEditableData] = useState<MandateData>({
+    ...mandateData,
+    applicationFees: mandateData.applicationFees || 0,
+    sanctioningFees: mandateData.sanctioningFees || 0,
+    additionalFees: mandateData.additionalFees || [],
+    customFeeName: mandateData.customFeeName || ''
+  });
   const [editableConsultantInfo, setEditableConsultantInfo] = useState<ConsultantInfo>(consultantInfo);
   const [editableContent, setEditableContent] = useState({
     subjectLine: '',
@@ -47,7 +53,13 @@ export default function PDFPreviewModal({
 
   // Update editable data when mandateData changes
   useEffect(() => {
-    setEditableData(mandateData);
+    setEditableData({
+      ...mandateData,
+      applicationFees: mandateData.applicationFees || 0,
+      sanctioningFees: mandateData.sanctioningFees || 0,
+      additionalFees: mandateData.additionalFees || [],
+      customFeeName: mandateData.customFeeName || ''
+    });
     setEditableContent((prev: EditableContent) => ({
       ...prev,
       subjectLine: formatSubjectLine(mandateData.schemes, mandateData.policy, mandateData.typeOfCase)
@@ -645,7 +657,44 @@ export default function PDFPreviewModal({
                   ) : (
                     <div className="text-xs text-gray-500">No schemes selected</div>
                   )}
+                  
+                  {/* Payment Method Text - Only show when both fees have values */}
+                  {(editableData.applicationFees > 0 && editableData.sanctioningFees > 0) && (
+                    <div className="mt-4 text-xs">
+                      <div className="font-bold mb-2">Payment Method:</div>
+                      <div className="text-xs">
+                        Processing fees application to sanctions of Rs.{editableData.applicationFees.toLocaleString('en-IN')}/- (non-adjustable) at the time of assignment finalization, Rs.{editableData.sanctioningFees.toLocaleString('en-IN')}/- (adjustable) against sanction of subsidy and rest against fund release.
+                      </div>
+                    </div>
+                  )}
                 </div>
+
+                {/* Additional Fees */}
+                {((editableData.additionalFees && editableData.additionalFees.length > 0) || editableData.customFeeName) && (
+                  <div className="mb-6">
+                    <div className="text-xs font-bold mb-3">ADDITIONAL FEES</div>
+                    
+                    <div className="space-y-1 text-xs">
+                      {editableData.additionalFees && editableData.additionalFees.map((fee, index) => {
+                        const displayValue = fee.feeType === 'fee' ? fee.amount : fee.amount;
+                        const displaySymbol = fee.feeType === 'fee' ? '₹' : '%';
+                        
+                        return (
+                          <div key={fee.id} className="text-xs">
+                            {index + 1}. {fee.name} {displayValue.toLocaleString('en-IN')}{displaySymbol}
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Custom Fee */}
+                      {editableData.customFeeName && (
+                        <div className="text-xs">
+                          {(editableData.additionalFees ? editableData.additionalFees.length : 0) + 1}. {editableData.customFeeName}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Eligibility Criteria */}
                 <div className="mb-6">
@@ -779,7 +828,7 @@ export default function PDFPreviewModal({
               Confirm & Download PDF
             </button>
           </div>
-        </div>
+        </div>Lead Information
       </div>
     </div>
   );
