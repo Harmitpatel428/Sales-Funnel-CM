@@ -44,6 +44,18 @@ export default function CMPage() {
     feeType: 'fee' | 'percentage';
   }>>([]);
 
+  // Multiple lead entries management
+  const [leadEntries, setLeadEntries] = useState<Array<{
+    id: string;
+    clientName: string;
+    company: string;
+    kva: number;
+    address: string;
+    createdAt: Date;
+  }>>([]);
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
+  const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
+
   // Generate UUID function
   const generateId = (): string => {
     if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
@@ -383,6 +395,36 @@ export default function CMPage() {
     setAdditionalFees(prev => prev.filter(fee => fee.id !== id));
   };
 
+  // Lead entries management functions
+  const addLeadEntry = (leadData: { clientName: string; company: string; kva: number; address: string }) => {
+    const newLead = {
+      id: generateId(),
+      ...leadData,
+      createdAt: new Date()
+    };
+    setLeadEntries(prev => [...prev, newLead]);
+    setShowAddLeadModal(false);
+  };
+
+  const updateLeadEntry = (id: string, updatedData: Partial<{ clientName: string; company: string; kva: number; address: string }>) => {
+    setLeadEntries(prev => prev.map(lead => 
+      lead.id === id ? { ...lead, ...updatedData } : lead
+    ));
+    setEditingLeadId(null);
+  };
+
+  const deleteLeadEntry = (id: string) => {
+    setLeadEntries(prev => prev.filter(lead => lead.id !== id));
+  };
+
+  const startEditingLead = (id: string) => {
+    setEditingLeadId(id);
+  };
+
+  const cancelEditingLead = () => {
+    setEditingLeadId(null);
+  };
+
   // Handle fee type changes
   const handleFeeTypeChange = (scheme: string, feeType: 'fee' | 'percentage') => {
     setFormData(prev => ({
@@ -531,6 +573,151 @@ export default function CMPage() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
                             placeholder="Enter address"
                           />
+                        </div>
+
+                        {/* Dynamic Lead Entries */}
+                        {leadEntries.length > 0 && (
+                          <div className="mt-4">
+                            <h3 className="text-sm font-medium text-gray-700 mb-3">Lead Entries ({leadEntries.length})</h3>
+                            <div className="space-y-3">
+                              {leadEntries.map((lead) => (
+                                <div key={lead.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                                  {editingLeadId === lead.id ? (
+                                    // Edit Mode
+                                    <div className="space-y-3">
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                          <label className="block text-xs font-medium text-gray-600 mb-1">Client Name</label>
+                                          <input
+                                            type="text"
+                                            defaultValue={lead.clientName}
+                                            onChange={(e) => {
+                                              const updatedData = { clientName: e.target.value };
+                                              updateLeadEntry(lead.id, updatedData);
+                                            }}
+                                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-xs font-medium text-gray-600 mb-1">Company</label>
+                                          <input
+                                            type="text"
+                                            defaultValue={lead.company}
+                                            onChange={(e) => {
+                                              const updatedData = { company: e.target.value };
+                                              updateLeadEntry(lead.id, updatedData);
+                                            }}
+                                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-xs font-medium text-gray-600 mb-1">KVA</label>
+                                          <input
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            defaultValue={lead.kva}
+                                            onChange={(e) => {
+                                              const updatedData = { kva: parseFloat(e.target.value) || 0 };
+                                              updateLeadEntry(lead.id, updatedData);
+                                            }}
+                                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-xs font-medium text-gray-600 mb-1">Address</label>
+                                          <input
+                                            type="text"
+                                            defaultValue={lead.address}
+                                            onChange={(e) => {
+                                              const updatedData = { address: e.target.value };
+                                              updateLeadEntry(lead.id, updatedData);
+                                            }}
+                                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-end space-x-2">
+                                        <button
+                                          type="button"
+                                          onClick={cancelEditingLead}
+                                          className="px-3 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={cancelEditingLead}
+                                          className="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
+                                        >
+                                          Save
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    // View Mode
+                                    <div>
+                                      <div className="flex justify-between items-start mb-2">
+                                        <div className="flex-1">
+                                          <h4 className="font-medium text-gray-900 text-sm">{lead.clientName}</h4>
+                                          <p className="text-xs text-gray-600">{lead.company}</p>
+                                        </div>
+                                        <div className="flex space-x-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => startEditingLead(lead.id)}
+                                            className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors duration-200"
+                                            title="Edit lead"
+                                          >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => deleteLeadEntry(lead.id)}
+                                            className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors duration-200"
+                                            title="Delete lead"
+                                          >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                        <div>
+                                          <span className="font-medium">KVA:</span> {lead.kva}
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Added:</span> {lead.createdAt.toLocaleDateString()}
+                                        </div>
+                                      </div>
+                                      {lead.address && (
+                                        <div className="mt-2 text-xs text-gray-600">
+                                          <span className="font-medium">Address:</span> {lead.address}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Add Lead Button */}
+                        <div className="mt-4">
+                          <button
+                            type="button"
+                            onClick={() => setShowAddLeadModal(true)}
+                            className="flex items-center space-x-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>+ Add Lead</span>
+                          </button>
                         </div>
 
                       </div>
@@ -1368,6 +1555,90 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
           </div>
         </div>
       </div>
+
+      {/* Add Lead Modal */}
+      {showAddLeadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Add New Lead Entry</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              addLeadEntry({
+                clientName: formData.get('clientName') as string,
+                company: formData.get('company') as string,
+                kva: parseFloat(formData.get('kva') as string) || 0,
+                address: formData.get('address') as string
+              });
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Client Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="clientName"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter client name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Company <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter company name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    KVA <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    name="kva"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter KVA"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <input
+                    type="text"
+                    name="address"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter address"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowAddLeadModal(false)}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Add Lead
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
