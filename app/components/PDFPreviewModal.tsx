@@ -155,11 +155,11 @@ export default function PDFPreviewModal({
     if (scheme === 'SGST Subsidy' && category) {
       switch (category) {
         case '1':
-          return '100% SGST reimbursement (max 7.5% of FCI/year)';
+          return '100% of net SGST for up to 7.5% of eFCI PA';
         case '2':
-          return '90% SGST reimbursement';
+          return '90% of net SGST for upto 6.5% of eFCI p.a.';
         case '3':
-          return '80% SGST reimbursement';
+          return '80% of net SGST for up to 5% of eFCI PA';
         default:
           return 'SGST reimbursement as per taluka category';
       }
