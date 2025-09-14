@@ -771,7 +771,7 @@ export default function CMPage() {
                                 if (formData.kva) {
                                   setFormData(prev => ({
                                     ...prev,
-                                    powerConnection: formData.kva + ' KVA'
+                                    powerConnection: formData.kva
                                   }));
                                 }
                               }}
