@@ -36,7 +36,7 @@ export default function CMPage() {
     percentages: {} as { [schemeName: string]: number },
     feeTypes: {} as { [schemeName: string]: 'fee' | 'percentage' }
   });
-  
+
   const [additionalFees, setAdditionalFees] = useState<Array<{
     id: string;
     name: string;
@@ -710,7 +710,10 @@ export default function CMPage() {
                         <div className="mt-4">
                           <button
                             type="button"
-                            onClick={() => setShowAddLeadModal(true)}
+                            onClick={() => {
+                              console.log('Add Lead button clicked');
+                              setShowAddLeadModal(true);
+                            }}
                             className="flex items-center space-x-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1068,15 +1071,15 @@ export default function CMPage() {
                             Power Connection
                           </label>
                           <div className="flex items-center space-x-2">
-                            <input
+                          <input
                               type="text"
-                              id="powerConnection"
-                              name="powerConnection"
-                              value={formData.powerConnection}
-                              onChange={handleChange}
+                            id="powerConnection"
+                            name="powerConnection"
+                            value={formData.powerConnection}
+                            onChange={handleChange}
                               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
-                              placeholder="Enter power connection details"
-                            />
+                            placeholder="Enter power connection details"
+                          />
                             <button
                               type="button"
                               onClick={() => {
@@ -1557,7 +1560,7 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Add Lead Modal */}
-      {showAddLeadModal && (
+      {showAddLeadModal ? (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Add New Lead Entry</h3>
@@ -1638,7 +1641,7 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
             </form>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
