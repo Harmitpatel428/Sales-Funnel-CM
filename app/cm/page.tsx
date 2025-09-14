@@ -288,19 +288,10 @@ export default function CMPage() {
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        [name]: value
-      };
-      
-      // Auto-populate Power Connection when KVA changes
-      if (name === 'kva' && value) {
-        newData.powerConnection = value + ' KVA';
-      }
-      
-      return newData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   // Handle scheme selection changes
@@ -764,15 +755,35 @@ export default function CMPage() {
                           <label htmlFor="powerConnection" className="block text-sm font-medium text-gray-700">
                             Power Connection
                           </label>
-                          <input
-                            type="text"
-                            id="powerConnection"
-                            name="powerConnection"
-                            value={formData.powerConnection}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
-                            placeholder="Enter power connection details"
-                          />
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="text"
+                              id="powerConnection"
+                              name="powerConnection"
+                              value={formData.powerConnection}
+                              onChange={handleChange}
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm"
+                              placeholder="Enter power connection details"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (formData.kva) {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    powerConnection: formData.kva + ' KVA'
+                                  }));
+                                }
+                              }}
+                              className="px-3 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-1"
+                              title="Auto-detect from KVA"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                              <span>Auto Detect</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
