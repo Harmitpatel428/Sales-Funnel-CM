@@ -124,6 +124,18 @@ function createCommit() {
   }
 }
 
+// Push to remote repository
+function pushToRemote() {
+  try {
+    execSync('git push', { encoding: 'utf8' });
+    log('Successfully pushed to remote repository');
+    return true;
+  } catch (error) {
+    log(`Error pushing to remote: ${error.message}`);
+    return false;
+  }
+}
+
 // Rotate log file if it gets too large
 function rotateLogFile() {
   try {
@@ -166,6 +178,8 @@ function autoCommit() {
     const committed = createCommit();
     if (committed) {
       log('Auto-commit completed successfully');
+      // Push to remote repository after successful commit
+      pushToRemote();
     } else {
       log('Auto-commit failed');
     }
