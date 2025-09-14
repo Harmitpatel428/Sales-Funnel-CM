@@ -576,16 +576,17 @@ export default function CMPage() {
                       
                       <div className="space-y-4">
                         <p className="text-sm text-gray-600 mb-4">Enter fees and percentages for each selected scheme:</p>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                           {formData.schemes.map((scheme) => (
                             <div key={scheme} className="bg-gray-50 rounded-lg p-4">
-                              <h3 className="text-sm font-medium text-gray-700 mb-3">{scheme}</h3>
-                              <div className="space-y-2">
-                                <label className="block text-xs font-medium text-gray-600">
-                                  Our Fees
-                                </label>
+                              {/* Inline Layout: Label + Selector + Input in one line */}
+                              <div className="flex items-center justify-between">
+                                {/* Scheme Label */}
+                                <div className="flex-shrink-0 w-48">
+                                  <h3 className="text-sm font-medium text-gray-700">{scheme}</h3>
+                                </div>
                                 
-                                {/* Compact Inline Layout: Selector + Input in one line */}
+                                {/* Right side: Toggle buttons + Input */}
                                 <div className="flex items-center space-x-2">
                                   {/* Fee Type Selector - Icon Style */}
                                   <div className="flex space-x-1">
@@ -615,8 +616,8 @@ export default function CMPage() {
                                     </button>
                                   </div>
                                   
-                                  {/* Input Field */}
-                                  <div className="flex-1 relative">
+                                  {/* Compact Input Field */}
+                                  <div className="relative w-24">
                                     <input
                                       type="number"
                                       step="0.01"
@@ -630,10 +631,10 @@ export default function CMPage() {
                                           handlePercentageChange(scheme, value === '' ? 0 : parseFloat(value) || 0);
                                         }
                                       }}
-                                      className="w-full px-3 py-1.5 pr-6 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                      className="w-full px-2 py-1.5 pr-5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                       placeholder="Enter amount"
                                     />
-                                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                                    <span className="absolute right-1 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
                                       {formData.feeTypes[scheme] === 'fee' ? '₹' : '%'}
                                     </span>
                                   </div>
