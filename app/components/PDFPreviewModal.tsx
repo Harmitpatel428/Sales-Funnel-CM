@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MandateData, ConsultantInfo } from '../services/pdfServiceSimple';
+import { MandateData, ConsultantInfo, EditableContent } from '../services/pdfServiceSimple';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: any) => void;
+  onConfirm: (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: EditableContent) => void;
   mandateData: MandateData;
   consultantInfo: ConsultantInfo;
 }
@@ -32,8 +32,7 @@ export default function PDFPreviewModal({
       'Support for any additional documentation or clarifications required.',
       'Regular updates on the progress of applications.'
     ],
-    eligibilityCriteria: [
-    ],
+    eligibilityCriteria: [] as string[],
     termsAndConditions: [
       'All services are subject to client cooperation and timely provision of required documents.',
       'Fees are payable as per agreed terms and conditions.',
@@ -49,7 +48,7 @@ export default function PDFPreviewModal({
   // Update editable data when mandateData changes
   useEffect(() => {
     setEditableData(mandateData);
-    setEditableContent(prev => ({
+    setEditableContent((prev: EditableContent) => ({
       ...prev,
       subjectLine: formatSubjectLine(mandateData.schemes, mandateData.policy, mandateData.typeOfCase)
     }));
@@ -70,7 +69,7 @@ export default function PDFPreviewModal({
   };
 
   const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number }) => {
-    setEditableData(prev => ({
+    setEditableData((prev: MandateData) => ({
       ...prev,
       [field]: value
     }));
@@ -78,7 +77,7 @@ export default function PDFPreviewModal({
     // Update subject line when schemes or typeOfCase change
     if (field === 'schemes' || field === 'typeOfCase') {
       const updatedData = { ...editableData, [field]: value };
-      setEditableContent(prev => ({
+      setEditableContent((prev: EditableContent) => ({
         ...prev,
         subjectLine: formatSubjectLine(updatedData.schemes, updatedData.policy, updatedData.typeOfCase)
       }));
@@ -89,19 +88,13 @@ export default function PDFPreviewModal({
   // Note: Scheme selection is now handled in the main form, not in the preview modal
 
   const handleContentChange = (field: keyof typeof editableContent, value: string | string[]) => {
-    setEditableContent(prev => ({
+    setEditableContent((prev: EditableContent) => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleListEdit = (listName: keyof typeof editableContent, index: number, value: string) => {
-    if (Array.isArray(editableContent[listName])) {
-      const newList = [...(editableContent[listName] as string[])];
-      newList[index] = value;
-      handleContentChange(listName, newList);
-    }
-  };
+  // Removed unused handleListEdit function
 
   const handleConfirm = () => {
     onConfirm(editableData, editableConsultantInfo, editableContent);
@@ -278,7 +271,7 @@ export default function PDFPreviewModal({
     }
 
     // Generate benefit letters (A, B, C, etc.)
-    const benefitLetters = editableData.schemes.map((_, index) => 
+    const benefitLetters = editableData.schemes.map((_: string, index: number) => 
       String.fromCharCode(65 + index) // A, B, C, etc.
     ).join(', ');
 
@@ -350,7 +343,7 @@ export default function PDFPreviewModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden" style={{backgroundColor: '#E6F3FF'}}>
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
@@ -372,9 +365,9 @@ export default function PDFPreviewModal({
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6">
             {/* PDF Preview Container */}
-            <div className="bg-white border border-gray-300 shadow-lg mx-auto pdf-preview-container">
+            <div className="border border-gray-300 shadow-lg mx-auto pdf-preview-container" style={{backgroundColor: '#E6F3FF'}}>
               {/* PDF Content */}
-              <div className="p-8 text-black pdf-content">
+              <div className="p-8 text-black pdf-content" style={{backgroundColor: '#E6F3FF'}}>
                 
                 {/* Document Header */}
                 <div className="mb-6">
@@ -390,7 +383,7 @@ export default function PDFPreviewModal({
 
                   {/* Commercial Offer Container */}
                   <div className="mb-4 -mx-8">
-                    <div className="text-base font-bold text-gray-800 bg-gray-100 border border-gray-300 py-2 px-4 w-full text-center">
+                    <div className="text-base font-bold text-gray-800 py-2 px-4 w-full text-center" style={{backgroundColor: '#E6F3FF', border: '1px solid #B3D9FF'}}>
                       Commercial Offer for Subsidy Work
                     </div>
                   </div>
@@ -420,7 +413,7 @@ export default function PDFPreviewModal({
                     <span
                       contentEditable
                       suppressContentEditableWarning
-                      onBlur={(e) => handleContentChange('subjectLine', e.target.textContent || '')}
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('subjectLine', e.target.textContent || '')}
                       className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height ml-1"
                     >
                       {editableContent.subjectLine}
@@ -509,7 +502,7 @@ export default function PDFPreviewModal({
                     {editableData.schemes.length === 0 ? (
                       <div className="text-xs text-gray-500 p-4 text-center">No specific schemes selected</div>
                     ) : (
-                      editableData.schemes.map((scheme, index) => {
+                      editableData.schemes.map((scheme: string, index: number) => {
                         const schemeDesc = getSchemeDescription(scheme);
                         const benefitCategory = `Benefit - ${String.fromCharCode(65 + index)}`; // A, B, C, etc.
                         
@@ -575,7 +568,7 @@ export default function PDFPreviewModal({
                       </div>
                       <div className="w-[70%] text-xs p-2">
                         <div className="space-y-1">
-                          <div>• Basic doc's collection as per check list.</div>
+                          <div>• Basic doc&apos;s collection as per check list.</div>
                           <div>• Check eligibility as per scheme norms.</div>
                           <div>• Application to concern dept. online in Govt portal within stipulated time line.</div>
                           <div>• Query solving & hearing support as and when required.</div>
@@ -603,7 +596,7 @@ export default function PDFPreviewModal({
                           </tr>
                         </thead>
                         <tbody>
-                          {editableData.schemes.map((scheme, index) => {
+                          {editableData.schemes.map((scheme: string, index: number) => {
                             const feeType = editableData.feeTypes?.[scheme] || 'percentage';
                             const fee = editableData.fees[scheme] || 0;
                             const percentage = editableData.percentages?.[scheme] || 0;
@@ -621,7 +614,7 @@ export default function PDFPreviewModal({
                                   <div
                                     contentEditable
                                     suppressContentEditableWarning
-                                    onBlur={(e) => {
+                                    onBlur={(e: React.FocusEvent<HTMLDivElement>) => {
                                       const value = parseInt(e.target.textContent?.replace(/[₹%,]/g, '') || '0') || 0;
                                       if (feeType === 'fee') {
                                         handleFieldChange('fees', {
@@ -682,7 +675,7 @@ export default function PDFPreviewModal({
                   <div className="text-xs font-bold mb-3">TERMS & CONDITIONS</div>
                   <div className="space-y-1 text-xs">
                     <div>1. Once the FEE is finalized, there will be NO CHANGES made to it and it will be considered as full and final.</div>
-                    <div>2. We will affix your company's authorized seal on all documents related to the subsidy and then sign them. This is exclusively for the subsidy.</div>
+                    <div>2. We will affix your company&apos;s authorized seal on all documents related to the subsidy and then sign them. This is exclusively for the subsidy.</div>
                     <div>3. We shall strive maximum to avail benefit under the said scheme however we do not guarantee the end results or outcome as this is a Government Scheme, which depends upon the policy framework and changes coming from time to time, as well as the documents provided to us.</div>
                     <div>4. This offer is valid till 7 days from the date of initial communication.</div>
                     <div>5. Subsidy will be as per Govt norms – Main GR of particular scheme is base for any clarification.</div>

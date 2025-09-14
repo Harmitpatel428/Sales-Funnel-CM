@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 // import { useRouter } from 'next/navigation'; // Not used currently
 import { useLeads, Lead } from '../context/LeadContext';
 import { useMandates, Mandate } from '../context/MandateContext';
-import { MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceSimple';
+import { MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO, EditableContent } from '../services/pdfServiceSimple';
 import PDFPreviewModal from '../components/PDFPreviewModal';
 
 export default function CMPage() {
@@ -195,7 +195,7 @@ export default function CMPage() {
   };
 
   // Handle PDF preview confirmation and download
-  const handlePDFConfirm = async (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: any) => {
+  const handlePDFConfirm = async (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: EditableContent) => {
     try {
       console.log('📄 Starting PDF generation for download...');
       
@@ -1142,7 +1142,7 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
               </div>
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
+                onChange={(e) => setStatusFilter(e.target.value as "all" | "draft" | "active" | "closed")}
                 className="px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-black text-sm sm:text-base"
                 aria-label="Filter by status"
                 title="Filter by status"

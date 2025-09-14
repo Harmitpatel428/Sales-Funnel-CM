@@ -93,7 +93,7 @@ export default function AddLeadPage() {
           const { address, cleanNotes } = extractAddressFromNotes(leadData.notes || '');
           
           // Handle mobile numbers - convert old format to new format if needed
-          let mobileNumbers: MobileNumber[] = [
+          const mobileNumbers: MobileNumber[] = [
             { id: '1', number: '', name: '', isMain: true },
             { id: '2', number: '', name: '', isMain: false },
             { id: '3', number: '', name: '', isMain: false }
@@ -384,7 +384,7 @@ export default function AddLeadPage() {
 
   // Handle connection date changes with auto-formatting
   const handleConnectionDateChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    let value = e.target.value;
+    const value = e.target.value;
     
     // Allow user to delete dashes, but auto-add them back
     // Remove all non-numeric characters first

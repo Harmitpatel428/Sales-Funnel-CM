@@ -21,10 +21,10 @@ export interface MandateData {
 }
 
 export interface EditableContent {
-  subjectLine?: string;
-  workScope?: string[];
-  eligibilityCriteria?: string[];
-  termsAndConditions?: string[];
+  subjectLine: string;
+  workScope: string[];
+  eligibilityCriteria: string[];
+  termsAndConditions: string[];
 }
 
 export interface ConsultantInfo {
@@ -53,7 +53,7 @@ export class PDFServiceSimple {
     return `${day}-${month}-${year}`;
   }
 
-  private addText(text: string, x: number, y: number, options: any = {}) {
+  private addText(text: string, x: number, y: number, options: { fontSize?: number; fontStyle?: string; color?: string; align?: string } = {}) {
     const { fontSize = 10, fontStyle = 'normal', color = '#000000', align = 'left' } = options;
     
     // Set font first, then font size for proper bold support
@@ -314,7 +314,7 @@ export class PDFServiceSimple {
       });
 
       // Update current Y position after table
-      this.currentY = (this.doc as any).lastAutoTable.finalY + 5;
+      this.currentY = (this.doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
     }
 
     this.currentY += 5;

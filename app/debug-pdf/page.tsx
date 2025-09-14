@@ -19,8 +19,15 @@ export default function DebugPDFPage() {
       industriesType: 'Test Industry',
       termLoanAmount: '₹50 Lakhs',
       powerConnection: '100 KVA',
+      policy: 'Test Policy',
       fees: {
         'Interest Subsidy': 25000
+      },
+      percentages: {
+        'Interest Subsidy': 2.5
+      },
+      feeTypes: {
+        'Interest Subsidy': 'fee'
       }
     };
 

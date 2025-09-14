@@ -18,10 +18,21 @@ export default function TestPDFPage() {
     industriesType: 'Seed Manufacturing',
     termLoanAmount: '₹1.40 Cr (Approx.)',
     powerConnection: '300 KVA',
+    policy: 'MSME Policy',
     fees: {
       'Interest Subsidy': 25000,
       'Power Connection Charges': 15000,
       'Electric Duty Exemption': 20000
+    },
+    percentages: {
+      'Interest Subsidy': 2.5,
+      'Power Connection Charges': 1.5,
+      'Electric Duty Exemption': 2.0
+    },
+    feeTypes: {
+      'Interest Subsidy': 'fee',
+      'Power Connection Charges': 'fee',
+      'Electric Duty Exemption': 'fee'
     }
   });
 
@@ -209,10 +220,21 @@ export default function TestPDFPage() {
                   industriesType: 'Seed Manufacturing',
                   termLoanAmount: '₹1.40 Cr (Approx.)',
                   powerConnection: '300 KVA',
+                  policy: 'MSME Policy',
                   fees: {
                     'Interest Subsidy': 25000,
                     'Power Connection Charges': 15000,
                     'Electric Duty Exemption': 20000
+                  },
+                  percentages: {
+                    'Interest Subsidy': 2.5,
+                    'Power Connection Charges': 1.5,
+                    'Electric Duty Exemption': 2.0
+                  },
+                  feeTypes: {
+                    'Interest Subsidy': 'fee',
+                    'Power Connection Charges': 'fee',
+                    'Electric Duty Exemption': 'fee'
                   }
                 });
               }}

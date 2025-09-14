@@ -5,7 +5,7 @@ import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: (options: any) => jsPDF;
+    autoTable: (options: Record<string, unknown>) => jsPDF;
   }
 }
 
@@ -21,6 +21,7 @@ export interface MandateData {
   industriesType: string;
   termLoanAmount: string;
   powerConnection: string;
+  policy: string;
   fees: { [schemeName: string]: number };
   percentages: { [schemeName: string]: number };
   feeTypes: { [schemeName: string]: 'fee' | 'percentage' };
@@ -54,7 +55,7 @@ export class PDFServiceV2 {
     return `${day}-${month}-${year}`;
   }
 
-  private addText(text: string, x: number, y: number, options: any = {}) {
+  private addText(text: string, x: number, y: number, options: { fontSize?: number; fontStyle?: string; color?: string; align?: string } = {}) {
     const { fontSize = 10, fontStyle = 'normal', color = '#000000', align = 'left' } = options;
     
     // Set font first, then font size for proper bold support
@@ -165,7 +166,7 @@ export class PDFServiceV2 {
         tableWidth: 'wrap'
       });
 
-      this.currentY = (this.doc as any).lastAutoTable.finalY + 10;
+      this.currentY = (this.doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
     } catch (error) {
       console.error('Error in autoTable:', error);
       // Fallback to simple text if autoTable fails
@@ -324,7 +325,7 @@ export class PDFServiceV2 {
       margin: { left: this.margin }
     });
 
-    this.currentY = (this.doc as any).lastAutoTable.finalY + 10;
+    this.currentY = (this.doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
   }
 
   private generateTermsAndConditions() {
@@ -448,7 +449,7 @@ export class PDFServiceV2 {
       this.generateSimpleProposedBenefits(mandateData);
       this.generateSimpleWorkScope();
       this.generateSimpleEligibilityCriteria();
-      this.generateSimpleFees(mandateData);
+      this.generateSimpleFees();
       this.generateSimpleTermsAndConditions();
       this.generateFooter();
 
@@ -529,7 +530,7 @@ export class PDFServiceV2 {
     this.currentY += 5;
   }
 
-  private generateSimpleFees(_mandateData: MandateData) {
+  private generateSimpleFees() {
     this.addText('CONSULTANCY FEES', this.margin, this.currentY, { 
       fontSize: 12, 
       fontStyle: 'bold' 

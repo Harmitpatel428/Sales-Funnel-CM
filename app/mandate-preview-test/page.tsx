@@ -34,7 +34,10 @@ export default function MandatePreviewTestPage() {
         industriesType: formData.industriesType,
         termLoanAmount: formData.termLoanAmount,
         powerConnection: formData.powerConnection,
-        fees: {}
+        policy: 'Default Policy',
+        fees: {},
+        percentages: {},
+        feeTypes: {}
       };
 
       console.log('Generating PDF with data:', mandateData);

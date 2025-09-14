@@ -19,9 +19,18 @@ export default function TestPreviewPage() {
     industriesType: 'Manufacturing',
     termLoanAmount: '₹30,00,000',
     powerConnection: '11 KV',
+    policy: 'Test Policy',
     fees: {
       'Interest Subsidy': 25000,
       'Power Connection Charges': 15000
+    },
+    percentages: {
+      'Interest Subsidy': 2.5,
+      'Power Connection Charges': 1.5
+    },
+    feeTypes: {
+      'Interest Subsidy': 'fee',
+      'Power Connection Charges': 'fee'
     }
   };
 

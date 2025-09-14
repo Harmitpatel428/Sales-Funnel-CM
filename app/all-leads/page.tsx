@@ -1106,7 +1106,7 @@ export default function AllLeadsPage() {
             console.log('Excel Headers:', headers);
             
             const leads = jsonData.slice(1).map((row: unknown, index: number) => {
-              const rowArray = row as any[];
+              const rowArray = row as unknown[];
               const lead: Partial<Lead> = {};
               
               headers.forEach((header, colIndex) => {
@@ -1221,7 +1221,7 @@ export default function AllLeadsPage() {
           }
           
           // Auto-populate main mobile number contact name if not provided
-          let mobileNumbers = lead.mobileNumbers || [];
+          const mobileNumbers = lead.mobileNumbers || [];
           if (mobileNumbers.length > 0 && mobileNumbers[0] && mobileNumbers[0].number && !mobileNumbers[0].name) {
             mobileNumbers[0] = {
               ...mobileNumbers[0],
