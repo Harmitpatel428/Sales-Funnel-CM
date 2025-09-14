@@ -288,10 +288,19 @@ export default function CMPage() {
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: value
+      };
+      
+      // Auto-populate Power Connection when KVA changes
+      if (name === 'kva' && value) {
+        newData.powerConnection = value + ' KVA';
+      }
+      
+      return newData;
+    });
   };
 
   // Handle scheme selection changes
