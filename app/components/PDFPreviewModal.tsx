@@ -343,7 +343,7 @@ export default function PDFPreviewModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden" style={{backgroundColor: '#E6F3FF'}}>
+      <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden pdf-modal-bg">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
@@ -365,9 +365,9 @@ export default function PDFPreviewModal({
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6">
             {/* PDF Preview Container */}
-            <div className="border border-gray-300 shadow-lg mx-auto pdf-preview-container" style={{backgroundColor: '#E6F3FF'}}>
+            <div className="border border-gray-300 shadow-lg mx-auto pdf-preview-container pdf-modal-bg">
               {/* PDF Content */}
-              <div className="p-8 text-black pdf-content" style={{backgroundColor: '#E6F3FF'}}>
+              <div className="p-8 text-black pdf-content pdf-modal-bg">
                 
                 {/* Document Header */}
                 <div className="mb-6">
@@ -383,7 +383,7 @@ export default function PDFPreviewModal({
 
                   {/* Commercial Offer Container */}
                   <div className="mb-4 -mx-8">
-                    <div className="text-base font-bold text-gray-800 py-2 px-4 w-full text-center" style={{backgroundColor: '#E6F3FF', border: '1px solid #B3D9FF'}}>
+                    <div className="text-base font-bold text-gray-800 py-2 px-4 w-full text-center pdf-commercial-offer-header">
                       Commercial Offer for Subsidy Work
                     </div>
                   </div>

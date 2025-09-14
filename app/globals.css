@@ -479,3 +479,13 @@ input, textarea, select, button {
 .pdf-input-min-height {
   min-height: 14px;
 }
+
+/* PDF Preview Modal Background Styles */
+.pdf-modal-bg {
+  background-color: #E6F3FF;
+}
+
+.pdf-commercial-offer-header {
+  background-color: #E6F3FF;
+  border: 1px solid #B3D9FF;
+}
