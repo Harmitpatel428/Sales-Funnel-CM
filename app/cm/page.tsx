@@ -702,9 +702,7 @@ export default function CMPage() {
                           </label>
                           <div className="relative">
                             <input
-                              type="number"
-                              step="0.01"
-                              min="0"
+                              type="text"
                               id="projectCost"
                               name="projectCost"
                               value={formData.projectCost}
@@ -742,9 +740,7 @@ export default function CMPage() {
                             Term Loan Amount
                           </label>
                           <input
-                            type="number"
-                            step="0.01"
-                            min="0"
+                            type="text"
                             id="termLoanAmount"
                             name="termLoanAmount"
                             value={formData.termLoanAmount}
@@ -760,9 +756,7 @@ export default function CMPage() {
                             Power Connection
                           </label>
                           <input
-                            type="number"
-                            step="0.01"
-                            min="0"
+                            type="text"
                             id="powerConnection"
                             name="powerConnection"
                             value={formData.powerConnection}
