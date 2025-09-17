@@ -85,8 +85,6 @@ function LeadTable({
     });
   }, [filteredLeads, sortField, sortDirection]);
   
-  console.log('LeadTable - sorted leads:', sortedLeads);
-  
   // Handle column header click for sorting
   const handleSort = useCallback((field: SortField) => {
     if (sortField === field) {
@@ -134,7 +132,7 @@ function LeadTable({
     switch (status) {
       case 'New': return 'bg-blue-100 text-blue-800';
       case 'CNR': return 'bg-orange-100 text-orange-800';
-      case 'Busy': return 'bg-yellow-80 text-yellow-800';
+      case 'Busy': return 'bg-yellow-100 text-yellow-800';
       case 'Follow-up': return 'bg-purple-100 text-purple-800';
       case 'Deal Close': return 'bg-green-100 text-green-800';
       case 'Work Alloted': return 'bg-indigo-100 text-indigo-800';

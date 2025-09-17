@@ -69,7 +69,7 @@ interface EditableContent {
 
 // Default PDF options
 const defaultPDFOptions: PDFOptions = {
-  margin: [10, 10, 10, 10], // top, left, bottom, right (mm)
+  margin: [15, 10, 15, 10], // balanced margins for proper spacing
   filename: "Commercial-Offer.pdf",
   image: {
     type: "jpeg",
@@ -103,8 +103,24 @@ const fixOKLCHColors = () => {
     .text-gray-500 { color: #6b7280 !important; }
     .border-gray-300 { border-color: #d1d5db !important; }
     .border-black { border-color: #000000 !important; }
+    .border-blue-300 { border-color: #93c5fd !important; }
+    .rounded-lg { border-radius: 8px !important; }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
   `;
   document.head.appendChild(style);
+};
+
+// Force box styling for PDF generation
+const forceBoxStyling = () => {
+  const boxes = document.querySelectorAll('#pdf-preview .bg-blue-100.rounded-lg');
+  boxes.forEach((box: Element) => {
+    const htmlBox = box as HTMLElement;
+    htmlBox.style.backgroundColor = '#dbeafe';
+    htmlBox.style.borderRadius = '8px';
+    htmlBox.style.border = '1px solid #93c5fd';
+    htmlBox.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    htmlBox.style.padding = '16px';
+  });
 };
 
 const cleanupColorFixes = () => {
@@ -129,6 +145,9 @@ export const generatePDF = async (
 
     // Apply color fixes for html2canvas compatibility
     fixOKLCHColors();
+    
+    // Force box styling
+    forceBoxStyling();
 
     // Generate filename
     const filename = customFilename || `Commercial_Offer_${editableData.company}_${formatDate()}.pdf`;
@@ -137,7 +156,7 @@ export const generatePDF = async (
     const opt = {
       ...defaultPDFOptions,
       filename,
-      margin: [35, 10, 20, 10], // top margin increased for header, bottom for footer
+      margin: [15, 10, 15, 10], // balanced margins for proper spacing
     };
 
     // Generate PDF
@@ -169,11 +188,14 @@ export const generatePDFBlob = async (
 
     // Apply color fixes for html2canvas compatibility
     fixOKLCHColors();
+    
+    // Force box styling
+    forceBoxStyling();
 
     // PDF options
     const opt = {
       ...defaultPDFOptions,
-      margin: [35, 10, 20, 10], // top margin increased for header, bottom for footer
+      margin: [15, 10, 15, 10], // balanced margins for proper spacing
     };
 
     // Generate PDF as Blob

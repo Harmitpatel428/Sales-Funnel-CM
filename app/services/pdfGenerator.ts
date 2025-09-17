@@ -3,12 +3,12 @@ import { getSchemeDescription } from '../utils/schemeUtils';
 
 export class PDFGenerator {
   private mandateData: MandateData;
-  private consultantInfo: ConsultantInfo;
+  private _consultantInfo: ConsultantInfo; // TODO: Use in future implementations
   private editableContent: EditableContent;
 
   constructor(mandateData: MandateData, consultantInfo: ConsultantInfo, editableContent: EditableContent) {
     this.mandateData = mandateData;
-    this.consultantInfo = consultantInfo;
+    this._consultantInfo = consultantInfo;
     this.editableContent = editableContent;
   }
 

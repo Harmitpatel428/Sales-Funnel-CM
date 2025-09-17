@@ -5,6 +5,7 @@ import { LeadProvider } from "./context/LeadContext";
 import { MandateProvider } from "./context/MandateContext";
 import { NavigationProvider } from "./context/NavigationContext";
 import NavigationWrapper from "./components/NavigationWrapper";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 
 const geistSans = Geist({
@@ -33,18 +34,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
-        <LeadProvider>
-          <MandateProvider>
-            <NavigationProvider>
-              <div className="flex flex-col h-screen">
-                <NavigationWrapper />
-                <main className="flex-1 overflow-y-auto p-0">
-                  {children}
-                </main>
-              </div>
-            </NavigationProvider>
-          </MandateProvider>
-        </LeadProvider>
+        <ErrorBoundary>
+          <LeadProvider>
+            <MandateProvider>
+              <NavigationProvider>
+                <div className="flex flex-col h-screen">
+                  <NavigationWrapper />
+                  <main className="flex-1 overflow-y-auto p-0">
+                    {children}
+                  </main>
+                </div>
+              </NavigationProvider>
+            </MandateProvider>
+          </LeadProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

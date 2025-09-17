@@ -37,20 +37,24 @@
 
 /* Compact spacing for better layout */
 #pdf-preview .mb-4 {
-  margin-bottom: 0.5rem !important;
-}
-
-#pdf-preview .mb-2 {
   margin-bottom: 0.25rem !important;
 }
 
+#pdf-preview .mb-2 {
+  margin-bottom: 0.125rem !important;
+}
+
 #pdf-preview .mb-3 {
-  margin-bottom: 0.375rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+#pdf-preview .mb-6 {
+  margin-bottom: 0.3rem !important;
 }
 
 /* Reduce spacing between major sections */
 #pdf-preview .text-xs.font-bold.mb-2 {
-  margin-bottom: 0.25rem !important;
+  margin-bottom: 0.125rem !important;
 }
 
 /* Ensure proper styling for PDF generation */
@@ -243,6 +247,67 @@
   background-color: #ffffff !important;
 }
 
+/* Box styling for client details and company details */
+#pdf-preview .bg-blue-100 {
+  background-color: #dbeafe !important;
+}
+
+#pdf-preview .rounded-lg {
+  border-radius: 8px !important;
+}
+
+#pdf-preview .border-blue-300 {
+  border-color: #93c5fd !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+
+#pdf-preview .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Ensure consistent padding for boxes */
+#pdf-preview .p-4 {
+  padding: 1rem !important;
+}
+
+#pdf-preview .mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Force box rendering consistency */
+#pdf-preview .bg-blue-100.rounded-lg {
+  background-color: #dbeafe !important;
+  border-radius: 8px !important;
+  border: 1px solid #93c5fd !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  padding: 1rem !important;
+}
+
+/* Override any conflicting styles */
+#pdf-preview div[style*="background-color"] {
+  background-color: #dbeafe !important;
+}
+
+#pdf-preview div[style*="border-radius"] {
+  border-radius: 8px !important;
+}
+
+#pdf-preview div[style*="border"] {
+  border: 1px solid #93c5fd !important;
+}
+
+/* Box styling classes for client details and company details */
+.pdf-box-styled {
+  background-color: #dbeafe !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin-bottom: 8px !important;
+  width: 50% !important;
+  border: 1px solid #93c5fd !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
 #pdf-preview .flex.border-b.border-black:not(.bg-blue-100) > div {
   background-color: #ffffff !important;
 }
@@ -390,36 +455,32 @@
 
 /* Header and Footer Styles for PDF */
 #pdf-preview .pdf-header {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 30mm !important;
+  position: relative !important;
+  height: auto !important;
   background-color: #E6F3FF !important;
   text-align: center !important;
   border-bottom: 1px solid #ccc !important;
   padding: 5mm 10mm !important;
-  z-index: 1000 !important;
   page-break-inside: avoid !important;
+  margin-bottom: 5mm !important;
 }
 
 #pdf-preview .pdf-footer {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 15mm !important;
+  position: relative !important;
+  height: auto !important;
   background-color: #E6F3FF !important;
   text-align: center !important;
   border-top: 1px solid #ccc !important;
-  padding: 2mm 10mm !important;
-  z-index: 1000 !important;
+  padding: 5mm 10mm !important;
   page-break-inside: avoid !important;
+  margin-top: 5mm !important;
 }
 
 #pdf-preview .pdf-content {
-  margin-top: 35mm !important;
-  margin-bottom: 20mm !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 /* Hide document header in PDF/print mode */
@@ -460,44 +521,68 @@
 
   /* Header and Footer for Print */
   .pdf-header {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 30mm !important;
+    position: relative !important;
+    height: auto !important;
     background-color: #E6F3FF !important;
     text-align: center !important;
     border-bottom: 1px solid #ccc !important;
     padding: 5mm 10mm !important;
-    z-index: 1000 !important;
     page-break-inside: avoid !important;
     display: block !important;
+    margin-bottom: 5mm !important;
   }
 
   .pdf-footer {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 15mm !important;
+    position: relative !important;
+    height: auto !important;
     background-color: #E6F3FF !important;
     text-align: center !important;
     border-top: 1px solid #ccc !important;
-    padding: 2mm 10mm !important;
-    z-index: 1000 !important;
+    padding: 5mm 10mm !important;
     page-break-inside: avoid !important;
     display: block !important;
+    margin-top: 5mm !important;
   }
 
   .pdf-content {
-    margin-top: 35mm !important;
-    margin-bottom: 20mm !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
   
   /* Ensure colors print */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* Box styling for print/PDF */
+  .bg-blue-100 {
+    background-color: #dbeafe !important;
+  }
+
+  .rounded-lg {
+    border-radius: 8px !important;
+  }
+
+  .border-blue-300 {
+    border-color: #93c5fd !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+  }
+
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Ensure consistent padding for boxes in print */
+  .p-4 {
+    padding: 1rem !important;
+  }
+
+  .mb-2 {
+    margin-bottom: 0.5rem !important;
   }
   
   /* Page breaks */
@@ -515,87 +600,16 @@
    * and can cause unexpected spacing in PDF generation.
    */
 
-  /* SGST Application Procedure Stages - Only shows when SGST Subsidy is selected */
-  .sgst-procedure-stages {
-    /* SOLUTION A: Hide the element completely (Most Common Fix) */
-    display: none !important;
-
-    /* SOLUTION B: Keep the element but remove all spacing (Alternative) */
-    /* Uncomment the lines below if you need to see the content but without spacing */
-    /*
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    border: none !important;
-    */
-  }
-
-  /* Payment Method Section - Only shows when applicationFees > 0 && sanctioningFees > 0 */
-  .payment-method-section {
-    /* SOLUTION B: Keep the element but remove all spacing (Alternative) */
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    border: none !important;
-  }
-
-  /* Additional Fees Section - Only shows when there are additional fees */
-  .additional-fees-section {
-    /* SOLUTION B: Keep the element but remove all spacing (Alternative) */
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    border: none !important;
-  }
-
-  /* Scheme-specific Terms & Conditions - Only shows for specific schemes */
-  .scheme-specific-terms {
-    /* SOLUTION A: Hide the element completely (Most Common Fix) */
-    display: none !important;
-
-    /* SOLUTION B: Keep the element but remove all spacing (Alternative) */
-    /* Uncomment the lines below if you need to see the content but without spacing */
-    /*
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    border: none !important;
-    */
-  }
-
-  /* Eligibility Criteria Sections - Only show for specific schemes */
-  .eligibility-criteria-section {
-    /* SOLUTION A: Hide the element completely (Most Common Fix) */
-    display: none !important;
-
-    /* SOLUTION B: Keep the element but remove all spacing (Alternative) */
-    /* Uncomment the lines below if you need to see the content but without spacing */
-    /*
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    border: none !important;
-    */
-  }
-
-  /* Generic fix for any conditional element causing spacing issues */
+  /* Reduce spacing for conditional elements */
+  .sgst-procedure-stages,
+  .payment-method-section,
+  .additional-fees-section,
+  .scheme-specific-terms,
+  .eligibility-criteria-section,
   .conditional-element {
-    /* SOLUTION A: Hide the element completely (Most Common Fix) */
-    display: none !important;
-
-    /* SOLUTION B: Keep the element but remove all spacing (Alternative) */
-    /* Uncomment the lines below if you need to see the content but without spacing */
-    /*
     margin: 0 !important;
     padding: 0 !important;
     height: auto !important;
     min-height: 0 !important;
-    border: none !important;
-    */
   }
 }

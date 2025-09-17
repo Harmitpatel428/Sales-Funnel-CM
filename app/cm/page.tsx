@@ -201,8 +201,6 @@ export default function CMPage() {
   // Handle form submission - Show PDF preview modal
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('🚀 HANDLE SUBMIT CALLED - Showing PDF preview modal');
-    
     // Show PDF preview modal instead of directly downloading
     setShowPDFPreview(true);
   };

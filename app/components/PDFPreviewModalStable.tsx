@@ -32,6 +32,14 @@ export default function PDFPreviewModalStable({
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
 
+  const formatDate = (): string => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   // Update editable data when mandateData changes
   useEffect(() => {
     setEditableData({
@@ -58,28 +66,30 @@ export default function PDFPreviewModalStable({
 
   if (!isOpen) return null;
 
-  const formatDate = (): string => {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
 
   const handleDownloadPDF = async () => {
     if (isGeneratingPDF) return;
     
     try {
       setIsGeneratingPDF(true);
-      console.log('Starting PDF generation...');
+      // Starting PDF generation
       
       if (typeof window === 'undefined') {
         throw new Error('PDF generation only available in browser environment');
       }
       
-      await generatePDF(editableData, editableConsultantInfo, {
+      const content = {
         subjectLine: formatSubjectLine(editableData.schemes, editableData.policy, editableData.typeOfCase),
+        salutation: 'Dear Sir,',
+        openingParagraph: 'With reference to above said subject & as per discussion with Mr {clientName} sir hereby we are sending our commercial offer and scope of work.',
+        detailsHeader: 'Details of Proposed Firm are as under:',
+        benefitsHeader: 'WORK DESCRIPTION & PROPOSED BENEFITS',
+        policyHeader: getPolicyHeaderText(),
+        benefitsColumnHeader: 'Benefits',
+        subsidyNameColumnHeader: 'Subsidy Name',
+        benefitDetailsColumnHeader: 'Benefit Details',
+        durationColumnHeader: 'Duration',
+        applicationTimelineColumnHeader: 'Application Time Line',
         workScope: [
           'Assessment of eligibility for various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022.',
           'Preparation and submission of all required documents and applications.',
@@ -91,11 +101,13 @@ export default function PDFPreviewModalStable({
         ],
         eligibilityCriteria: getDynamicEligibilityCriteria(),
         termsAndConditions: getDynamicTermsAndConditions(),
-        dutyOfClient: 'To provide all required documents within stipulated timeline and inform immediately once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.',
+        dutyOfClient: ['To provide all required documents within stipulated timeline and inform immediately once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.'],
         proposedBenefits: 'Various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022 including Capital Subsidy, Interest Subsidy, Electric Duty Exemption, and other applicable benefits.'
-      }, `Commercial_Offer_${editableData.company}_${formatDate()}.pdf`);
+      };
       
-      console.log('PDF generation completed successfully');
+      await generatePDF(editableData, editableConsultantInfo, content, `Commercial_Offer_${editableData.company}_${formatDate()}.pdf`);
+      
+      // PDF generation completed successfully
       
     } catch (error) {
       console.error('PDF generation failed:', error);
@@ -111,14 +123,24 @@ export default function PDFPreviewModalStable({
     
     try {
       setIsGeneratingWord(true);
-      console.log('Starting Word document generation...');
+      // Starting Word document generation
       
       if (typeof window === 'undefined') {
         throw new Error('Word generation only available in browser environment');
       }
       
-      await generateWord(editableData, editableConsultantInfo, {
+      const content = {
         subjectLine: formatSubjectLine(editableData.schemes, editableData.policy, editableData.typeOfCase),
+        salutation: 'Dear Sir,',
+        openingParagraph: 'With reference to above said subject & as per discussion with Mr {clientName} sir hereby we are sending our commercial offer and scope of work.',
+        detailsHeader: 'Details of Proposed Firm are as under:',
+        benefitsHeader: 'WORK DESCRIPTION & PROPOSED BENEFITS',
+        policyHeader: getPolicyHeaderText(),
+        benefitsColumnHeader: 'Benefits',
+        subsidyNameColumnHeader: 'Subsidy Name',
+        benefitDetailsColumnHeader: 'Benefit Details',
+        durationColumnHeader: 'Duration',
+        applicationTimelineColumnHeader: 'Application Time Line',
         workScope: [
           'Assessment of eligibility for various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022.',
           'Preparation and submission of all required documents and applications.',
@@ -130,11 +152,13 @@ export default function PDFPreviewModalStable({
         ],
         eligibilityCriteria: getDynamicEligibilityCriteria(),
         termsAndConditions: getDynamicTermsAndConditions(),
-        dutyOfClient: 'To provide all required documents within stipulated timeline and inform immediately once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.',
+        dutyOfClient: ['To provide all required documents within stipulated timeline and inform immediately once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.'],
         proposedBenefits: 'Various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022 including Capital Subsidy, Interest Subsidy, Electric Duty Exemption, and other applicable benefits.'
-      }, `Commercial_Offer_${editableData.company}_${formatDate()}.docx`);
+      };
       
-      console.log('Word document generation completed successfully');
+      await generateWord(editableData, editableConsultantInfo, content, `Commercial_Offer_${editableData.company}_${formatDate()}.docx`);
+      
+      // Word document generation completed successfully
       
     } catch (error) {
       console.error('Word generation failed:', error);
@@ -448,12 +472,12 @@ export default function PDFPreviewModalStable({
               </header>
 
               {/* PDF Content */}
-              <div className="p-8 text-black pdf-content pdf-modal-bg pdf-content-styled">
+              <div className="p-6 text-black pdf-content pdf-modal-bg pdf-content-styled">
                 
                 {/* Document Header - Hidden in print/PDF */}
-                <div className="mb-6 print:hidden">
+                <div className="mb-4 print:hidden">
                   {/* Company Logo */}
-                  <div className="text-center mb-6 -mt-4">
+                  <div className="text-center mb-4 -mt-2">
                     <div className="mb-1">
                       <div className="text-5xl font-bold text-blue-600">
                         <div>V4U</div>
@@ -463,7 +487,7 @@ export default function PDFPreviewModalStable({
                   </div>
 
                   {/* Commercial Offer Container */}
-                  <div className="mb-4 -mx-8">
+                  <div className="mb-4 -mx-6">
                     <div className="text-base font-bold text-gray-800 py-2 px-4 w-full text-center pdf-commercial-offer-header">
                       Commercial Offer for Subsidy Work
                     </div>
@@ -477,8 +501,8 @@ export default function PDFPreviewModalStable({
                 </div>
 
                 {/* Client Details */}
-                <div className="mb-6">
-                  <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
+                <div className="mb-4">
+                  <div className="bg-blue-100 rounded-lg p-4 mb-2 w-1/2 border border-blue-300 shadow-lg pdf-box-styled">
                     <div className="text-sm font-bold mb-2">To,</div>
                     <div className="text-sm font-bold mb-1">
                       M/S {editableData.company}
@@ -498,57 +522,159 @@ export default function PDFPreviewModalStable({
                 </div>
 
                 {/* Salutation */}
-                <div className="mb-0">
-                  <div className="text-sm">Dear Sir,</div>
+                <div className="mb-2">
+                  <div className="text-sm">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        // Store salutation in a new state field
+                        console.log('Salutation updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      Dear Sir,
+                    </span>
+                  </div>
                 </div>
 
                 {/* Opening Paragraph */}
-                <div className="mb-6">
+                <div className="mb-4">
                   <div className="text-sm">
-                    With reference to above said subject & as per discussion with <span className="font-bold underline">Mr {editableData.clientName} sir</span> hereby we are sending our commercial offer and scope of work.
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        // Store opening paragraph in a new state field
+                        console.log('Opening paragraph updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      With reference to above said subject & as per discussion with <span className="font-bold underline">Mr {editableData.clientName} sir</span> hereby we are sending our commercial offer and scope of work.
+                    </span>
                   </div>
                 </div>
 
                 {/* Commercial Offer */}
-                <div className="mb-6">
-                  <div className="text-sm font-bold mb-3">Details of Proposed Firm are as under:</div>
-                  <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
-                    <div className="text-sm font-bold mb-2">Case name: M/S {editableData.company}</div>
-                    <div className="space-y-1 text-xs">
+                <div className="mb-4">
+                  <div className="text-sm font-bold mb-3">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Details header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      Details of Proposed Firm are as under:
+                    </span>
+                  </div>
+                  <div className="bg-blue-100 rounded-lg p-4 mb-2 w-1/2 border border-blue-300 shadow-lg pdf-box-styled">
+                    <div className="text-sm font-bold mb-2">
+                      Case name: <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                          const newCompany = e.target.textContent?.replace('M/S ', '') || '';
+                          setEditableData(prev => ({ ...prev, company: newCompany }));
+                        }}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        M/S {editableData.company}
+                      </span>
+                    </div>
+                    <div className="space-y-0 text-xs">
                       {editableData.typeOfCase && (
                         <div className="flex">
                           <span className="font-bold w-32">Type of Case:</span>
-                          <span>{editableData.typeOfCase}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              setEditableData(prev => ({ ...prev, typeOfCase: e.target.textContent || '' }));
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.typeOfCase}
+                          </span>
                         </div>
                       )}
                       {editableData.category && (
                         <div className="flex">
                           <span className="font-bold w-32">Taluka Category:</span>
-                          <span>{editableData.category}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              setEditableData(prev => ({ ...prev, category: e.target.textContent || '' }));
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.category}
+                          </span>
                         </div>
                       )}
                       {editableData.projectCost && (
                         <div className="flex">
                           <span className="font-bold w-32">Cost of Project:</span>
-                          <span>₹. {editableData.projectCost} (Approx.)</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              const newCost = e.target.textContent?.replace('₹. ', '').replace(' (Approx.)', '') || '';
+                              setEditableData(prev => ({ ...prev, projectCost: newCost }));
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            ₹. {editableData.projectCost} (Approx.)
+                          </span>
                         </div>
                       )}
                       {editableData.industriesType && (
                         <div className="flex">
                           <span className="font-bold w-32">Industries Type:</span>
-                          <span>{editableData.industriesType}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              setEditableData(prev => ({ ...prev, industriesType: e.target.textContent || '' }));
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.industriesType}
+                          </span>
                         </div>
                       )}
                       {editableData.termLoanAmount && (
                         <div className="flex">
                           <span className="font-bold w-32">Term Loan Amount:</span>
-                          <span>₹. {editableData.termLoanAmount}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              const newAmount = e.target.textContent?.replace('₹. ', '') || '';
+                              setEditableData(prev => ({ ...prev, termLoanAmount: newAmount }));
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            ₹. {editableData.termLoanAmount}
+                          </span>
                         </div>
                       )}
                       {editableData.powerConnection && (
                         <div className="flex">
                           <span className="font-bold w-32">Power Connection:</span>
-                          <span>{editableData.powerConnection} KVA</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              const newConnection = e.target.textContent?.replace(' KVA', '') || '';
+                              setEditableData(prev => ({ ...prev, powerConnection: newConnection }));
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.powerConnection} KVA
+                          </span>
                         </div>
                       )}
                     </div>
@@ -557,20 +683,97 @@ export default function PDFPreviewModalStable({
 
                 {/* Proposed Benefits */}
                 <div className="mb-4">
-                  <div className="text-xs font-bold mb-2">WORK DESCRIPTION & PROPOSED BENEFITS</div>
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Benefits header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      WORK DESCRIPTION & PROPOSED BENEFITS
+                    </span>
+                  </div>
                   <div className="border border-black rounded bg-blue-100">
                     {/* Merged Header Row */}
                     <div className="bg-blue-100 border-b border-black">
-                      <div className="text-xs font-bold p-2 text-center">{getPolicyHeaderText()}</div>
+                      <div className="text-xs font-bold p-2 text-center">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('Policy header updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {getPolicyHeaderText()}
+                        </span>
+                      </div>
                     </div>
                     
                       {/* Table Header */}
                       <div className="flex border-b border-black bg-blue-100">
-                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">Benefits </div>
-                        <div className="w-32 text-xs font-bold p-2 border-r border-black text-center">Subsidy Name</div>
-                        <div className="flex-1 text-xs font-bold p-2 border-r border-black text-center">Benefit Details</div>
-                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">Duration</div>
-                        <div className="flex-1 text-xs font-bold p-2 text-center">Application Time Line</div>
+                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              console.log('Benefits column header updated:', e.target.textContent);
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            Benefits
+                          </span>
+                        </div>
+                        <div className="w-32 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              console.log('Subsidy name column header updated:', e.target.textContent);
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            Subsidy Name
+                          </span>
+                        </div>
+                        <div className="flex-1 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              console.log('Benefit details column header updated:', e.target.textContent);
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            Benefit Details
+                          </span>
+                        </div>
+                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              console.log('Duration column header updated:', e.target.textContent);
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            Duration
+                          </span>
+                        </div>
+                        <div className="flex-1 text-xs font-bold p-2 text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              console.log('Application timeline column header updated:', e.target.textContent);
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            Application Time Line
+                          </span>
+                        </div>
                       </div>
                     
                     {/* Table Rows */}
@@ -587,16 +790,54 @@ export default function PDFPreviewModalStable({
                               {benefitCategory}
                             </div>
                             <div className="w-32 text-xs p-2 border-r border-black bg-white">
-                              {schemeDesc?.title || scheme}
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  const newSchemes = [...editableData.schemes];
+                                  newSchemes[index] = e.target.textContent || scheme;
+                                  setEditableData(prev => ({ ...prev, schemes: newSchemes }));
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {schemeDesc?.title || scheme}
+                              </span>
                             </div>
                             <div className="flex-1 text-xs p-2 border-r border-black bg-white">
-                              {getBenefitDetails(scheme, editableData.category)}
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  console.log('Benefit details updated for', scheme, ':', e.target.textContent);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {getBenefitDetails(scheme, editableData.category)}
+                              </span>
                             </div>
                             <div className="w-20 text-xs p-2 border-r border-black text-center bg-white">
-                              {getDuration(scheme, editableData.category)}
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  console.log('Duration updated for', scheme, ':', e.target.textContent);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {getDuration(scheme, editableData.category)}
+                              </span>
                             </div>
                             <div className="flex-1 text-xs p-2 text-center bg-white">
-                              {getApplicationTimeline(scheme)}
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  console.log('Application timeline updated for', scheme, ':', e.target.textContent);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {getApplicationTimeline(scheme)}
+                              </span>
                             </div>
                           </div>
                         );
@@ -606,7 +847,16 @@ export default function PDFPreviewModalStable({
                     {/* Note Row - Merged */}
                     <div className="border-b border-black bg-blue-100">
                       <div className="text-xs p-2 text-center font-bold text-red-600">
-                        Note: - DOCP means Date of commercial production
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('Note updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Note: - DOCP means Date of commercial production
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -615,41 +865,204 @@ export default function PDFPreviewModalStable({
                 {/* SGST Subsidy Benefits - Only show when SGST Subsidy is selected */}
                 {editableData.schemes.includes('SGST Subsidy') && (
                   <div className="mb-3">
-                    <div className="text-xs font-bold mb-2">SGST Application Procedure Stages</div>
-                    <div className="text-xs">
-                      <div>Stage 1 Registration for FEC Certificate</div>
-                      <div>Stage 2 Department issue FEC certificate.</div>
-                      <div>Stage 3 Claims for benefits.</div>
+                    <div className="text-xs font-bold mb-2">
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                          console.log('SGST procedure header updated:', e.target.textContent);
+                        }}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        SGST Application Procedure Stages
+                      </span>
+                    </div>
+                    <div className="text-xs space-y-1">
+                      <div>
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('SGST Stage 1 updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Stage 1 Registration for FEC Certificate
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('SGST Stage 2 updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Stage 2 Department issue FEC certificate.
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('SGST Stage 3 updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Stage 3 Claims for benefits.
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Work Scope */}
                 <div className="mb-4 work-scope-section">
-                  <div className="text-xs font-bold mb-2">WORK SCOPE</div>
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Work scope header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      WORK SCOPE
+                    </span>
+                  </div>
                   <div className="border border-black rounded bg-blue-100">
                     {/* Table Header */}
                     <div className="flex bg-blue-100 border-b border-black">
                       <div className="w-16 text-xs font-bold p-2 border-r border-black text-center">Sr. No</div>
-                      <div className="w-[30%] text-xs font-bold p-2 border-r border-black text-center">Work description</div>
-                      <div className="w-[70%] text-xs font-bold p-2 text-center">Work scope</div>
+                      <div className="w-[30%] text-xs font-bold p-2 border-r border-black text-center">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('Work description header updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Work description
+                        </span>
+                      </div>
+                      <div className="w-[70%] text-xs font-bold p-2 text-center">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('Work scope header updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Work scope
+                        </span>
+                      </div>
                     </div>
                     
                     {/* Table Row */}
                     <div className="flex border-b border-black bg-white">
                       <div className="w-16 text-xs p-2 border-r border-black text-center bg-white">1</div>
                       <div className="w-[30%] text-xs p-2 border-r border-black bg-white">
-                        {getDynamicWorkDescription()}
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('Work description updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {getDynamicWorkDescription()}
+                        </span>
                       </div>
                       <div className="w-[70%] text-xs p-2 bg-white">
-                        <div className="space-y-1">
-                          <div>• Basic doc&apos;s collection as per check list.</div>
-                          <div>• Check eligibility as per scheme norms.</div>
-                          <div>• Application to concern dept. online in Govt portal within stipulated time line.</div>
-                          <div>• Query solving & hearing support as and when required.</div>
-                          <div>• Liaison with dept. as and when required.</div>
-                          <div>• Support in inspection.</div>
-                          <div>• Exemption certificate issuance.</div>
+                        <div className="space-y-0">
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 1 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Basic doc&apos;s collection as per check list.
+                            </span>
+                          </div>
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 2 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Check eligibility as per scheme norms.
+                            </span>
+                          </div>
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 3 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Application to concern dept. online in Govt portal within stipulated time line.
+                            </span>
+                          </div>
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 4 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Query solving & hearing support as and when required.
+                            </span>
+                          </div>
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 5 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Liaison with dept. as and when required.
+                            </span>
+                          </div>
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 6 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Support in inspection.
+                            </span>
+                          </div>
+                          <div>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                console.log('Work scope item 7 updated:', e.target.textContent);
+                              }}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                            >
+                              • Exemption certificate issuance.
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -658,16 +1071,60 @@ export default function PDFPreviewModalStable({
 
                 {/* Our Fees */}
                 <div className="mb-4">
-                  <div className="text-xs font-bold mb-2">OUR FEES</div>
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Our fees header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      OUR FEES
+                    </span>
+                  </div>
                   
                   {editableData.schemes.length > 0 ? (
                     <div className="border border-black rounded bg-blue-100">
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="bg-blue-100">
-                            <th className="text-xs font-bold p-2 border border-black text-left">Scheme Name</th>
-                            <th className="text-xs font-bold p-2 border border-black text-right">Our Fees</th>
-                            <th className="text-xs font-bold p-2 border border-black text-center">Description</th>
+                            <th className="text-xs font-bold p-2 border border-black text-left">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  console.log('Scheme name header updated:', e.target.textContent);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                Scheme Name
+                              </span>
+                            </th>
+                            <th className="text-xs font-bold p-2 border border-black text-right">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  console.log('Our fees column header updated:', e.target.textContent);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                Our Fees
+                              </span>
+                            </th>
+                            <th className="text-xs font-bold p-2 border border-black text-center">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  console.log('Description header updated:', e.target.textContent);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                Description
+                              </span>
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -685,10 +1142,39 @@ export default function PDFPreviewModalStable({
                                   {index + 1}. {scheme}
                                 </td>
                                 <td className="text-xs p-2 border border-black text-right bg-white">
-                                  {displayValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{displaySymbol}
+                                  <span
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                      const value = parseInt(e.target.textContent?.replace(/[₹%,]/g, '') || '0') || 0;
+                                      if (feeType === 'fee') {
+                                        setEditableData(prev => ({
+                                          ...prev,
+                                          fees: { ...prev.fees, [scheme]: value }
+                                        }));
+                                      } else {
+                                        setEditableData(prev => ({
+                                          ...prev,
+                                          percentages: { ...prev.percentages, [scheme]: value }
+                                        }));
+                                      }
+                                    }}
+                                    className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                                  >
+                                    {displayValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{displaySymbol}
+                                  </span>
                                 </td>
                                 <td className="text-xs p-2 border border-black text-center bg-white">
-                                  {feeType === 'fee' ? 'One time' : 'Of subsidy amount'}
+                                  <span
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                      console.log('Description updated for', scheme, ':', e.target.textContent);
+                                    }}
+                                    className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                                  >
+                                    {feeType === 'fee' ? 'One time' : 'Of subsidy amount'}
+                                  </span>
                                 </td>
                               </tr>
                             );
@@ -714,7 +1200,7 @@ export default function PDFPreviewModalStable({
                           
                           while ((match = stagePattern.exec(customFeeText)) !== null) {
                             const stageNumber = match[1];
-                            const stageContent = match[2].trim();
+                            const stageContent = match[2]?.trim();
                             if (stageContent) {
                               stages.push({ number: stageNumber, content: stageContent });
                             }
@@ -760,7 +1246,7 @@ export default function PDFPreviewModalStable({
                   {editableData.additionalFees && editableData.additionalFees.length > 0 && (
                     <div className="mt-4 text-xs additional-fees-section">
                       <div className="font-bold mb-2">Additional Fees:</div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-0 text-xs">
                         {editableData.additionalFees.map((fee, index) => {
                           const displayValue = fee.feeType === 'fee' ? fee.amount : fee.amount;
                           const displaySymbol = fee.feeType === 'fee' ? '₹' : '%';
@@ -780,24 +1266,64 @@ export default function PDFPreviewModalStable({
                 {/* Payment Method */}
                 {(editableData.applicationFees > 0 && editableData.sanctioningFees > 0) && (
                   <div className="mb-4 payment-method-section">
-                    <div className="text-xs font-bold mb-2">PAYMENT METHOD</div>
+                    <div className="text-xs font-bold mb-2">
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                          console.log('Payment method header updated:', e.target.textContent);
+                        }}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        PAYMENT METHOD
+                      </span>
+                    </div>
                     
                     <div className="text-xs">
-                      Processing fees application to sanctions of Rs.{editableData.applicationFees.toLocaleString('en-IN')}/- (non-adjustable) at the time of assignment finalization, Rs.{editableData.sanctioningFees.toLocaleString('en-IN')}/- (adjustable) against sanction of subsidy and rest against fund release.
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                          console.log('Payment method text updated:', e.target.textContent);
+                        }}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        Processing fees application to sanctions of Rs.{editableData.applicationFees.toLocaleString('en-IN')}/- (non-adjustable) at the time of assignment finalization, Rs.{editableData.sanctioningFees.toLocaleString('en-IN')}/- (adjustable) against sanction of subsidy and rest against fund release.
+                      </span>
                     </div>
                   </div>
                 )}
 
                 {/* Eligibility Criteria */}
                 <div className="mb-4">
-                  <div className="text-xs font-bold mb-2">ELIGIBILITY CRITERIA</div>
-                  <div className="space-y-1 text-xs">
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Eligibility criteria header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      ELIGIBILITY CRITERIA
+                    </span>
+                  </div>
+                  <div className="space-y-0 text-xs">
                     {getDynamicEligibilityCriteria().map((item, index) => (
                       <div key={index} className="pdf-input-min-height">
                         {item.includes('<span') ? (
                           <div dangerouslySetInnerHTML={{ __html: item }} />
                         ) : (
-                          item
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                              console.log('Eligibility criteria item', index, 'updated:', e.target.textContent);
+                            }}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {item}
+                          </span>
                         )}
                       </div>
                     ))}
@@ -806,20 +1332,73 @@ export default function PDFPreviewModalStable({
 
                 {/* Duty Of Client */}
                 <div className="mb-4">
-                  <div className="text-xs font-bold mb-2">DUTY OF CLIENT</div>
-                  <div className="space-y-1 text-xs">
-                    <div>1. To provide all required documents within stipulated timeline.</div>
-                    <div>2. To inform immediate once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.</div>
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Duty of client header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      DUTY OF CLIENT
+                    </span>
+                  </div>
+                  <div className="space-y-0 text-xs">
+                    <div>
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                          console.log('Duty of client item 1 updated:', e.target.textContent);
+                        }}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        1. To provide all required documents within stipulated timeline.
+                      </span>
+                    </div>
+                    <div>
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                          console.log('Duty of client item 2 updated:', e.target.textContent);
+                        }}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        2. To inform immediate once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Terms & Conditions */}
                 <div className="mb-4 page-break-before">
-                  <div className="text-xs font-bold mb-2">TERMS & CONDITIONS</div>
-                  <div className="space-y-1 text-xs">
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Terms and conditions header updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      TERMS & CONDITIONS
+                    </span>
+                  </div>
+                  <div className="space-y-0 text-xs">
                     {getDynamicTermsAndConditions().map((item, index) => (
                       <div key={index} className="pdf-input-min-height">
-                        {item}
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                            console.log('Terms and conditions item', index, 'updated:', e.target.textContent);
+                          }}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {item}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -827,7 +1406,18 @@ export default function PDFPreviewModalStable({
 
                 {/* Footer */}
                 <div className="text-center">
-                  <div className="text-xs font-bold">APPROVED & AUTHORIZED BY (Sign and Stamp)</div>
+                  <div className="text-xs font-bold">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                        console.log('Footer text updated:', e.target.textContent);
+                      }}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      APPROVED & AUTHORIZED BY (Sign and Stamp)
+                    </span>
+                  </div>
                 </div>
               </div>
 

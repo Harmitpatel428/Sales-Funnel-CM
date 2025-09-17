@@ -438,7 +438,7 @@ export const printPreview = async (): Promise<void> => {
 };
 
 // Setup Ctrl+P keyboard shortcut
-export const setupPrintShortcut = (): void => {
+export const setupPrintShortcut = (): (() => void) => {
   const handleKeyDown = (event: KeyboardEvent) => {
     // Check for Ctrl+P (Windows/Linux) or Cmd+P (Mac)
     if ((event.ctrlKey || event.metaKey) && event.key === 'p') {

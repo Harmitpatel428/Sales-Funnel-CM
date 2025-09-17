@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { MandateData, ConsultantInfo } from '../services/pdfServiceSimple';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 import { generatePDF, generateWord } from '../utils/pdfGenerator';
 import { setupPrintShortcut } from '../utils/printUtils';
+import LoadingSpinner from './LoadingSpinner';
 import '../styles/pdf-styles.css';
 import '../styles/print-styles.css';
 // DocumentGenerator will be imported dynamically to avoid SSR issues
@@ -32,6 +33,16 @@ export default function PDFPreviewModal({
   const [editableConsultantInfo, setEditableConsultantInfo] = useState<ConsultantInfo>(consultantInfo);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const formatDate = (): string => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+  
   const [editableContent, setEditableContent] = useState({
     subjectLine: '',
     salutation: 'Dear Sir,',
@@ -68,7 +79,19 @@ export default function PDFPreviewModal({
       'To provide all required documents within stipulated timeline.',
       'To inform immediate once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.'
     ],
-    proposedBenefits: 'Various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022 including Capital Subsidy, Interest Subsidy, Electric Duty Exemption, and other applicable benefits.'
+    proposedBenefits: 'Various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022 including Capital Subsidy, Interest Subsidy, Electric Duty Exemption, and other applicable benefits.',
+    sgstProcedureHeader: 'SGST Application Procedure Stages',
+    sgstStage1: 'Stage 1 Registration for FEC Certificate',
+    sgstStage2: 'Stage 2 Department issue FEC certificate.',
+    sgstStage3: 'Stage 3 Claims for benefits.',
+    paymentMethodHeader: 'PAYMENT METHOD',
+    paymentMethodText: '',
+    additionalFeesHeader: 'Additional Fees:',
+    footerText: 'APPROVED & AUTHORIZED BY (Sign and Stamp)',
+    commercialOfferHeader: 'Commercial Offer for Subsidy Work',
+    companyName: 'V4U',
+    companyTagline: 'Biz Solutions',
+    documentDate: formatDate()
   });
 
   // Function to convert number to Roman numeral
@@ -123,15 +146,7 @@ export default function PDFPreviewModal({
 
   if (!isOpen) return null;
 
-  const formatDate = (): string => {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
-  const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number }) => {
+  const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number } | any[]) => {
     setEditableData((prev: MandateData) => ({
       ...prev,
       [field]: value
@@ -220,7 +235,8 @@ export default function PDFPreviewModal({
     
     try {
       setIsGeneratingPDF(true);
-      console.log('Starting pixel-perfect PDF generation...');
+      setError(null); // Clear any previous errors
+      // Starting PDF generation
       
       // Check if we're in browser environment
       if (typeof window === 'undefined') {
@@ -230,12 +246,12 @@ export default function PDFPreviewModal({
       // Use pixel-perfect generator for exact styling match
       await generatePDF(editableData, editableConsultantInfo, editableContent, `Commercial_Offer_${editableData.company}_${formatDate()}.pdf`);
       
-      console.log('Pixel-perfect PDF generation completed successfully');
+      // PDF generation completed successfully
       
     } catch (error) {
       console.error('PDF generation failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Error generating PDF: ${errorMessage}. Please try again.`);
+      setError(`PDF generation failed: ${errorMessage}. Please try again.`);
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -246,7 +262,8 @@ export default function PDFPreviewModal({
     
     try {
       setIsGeneratingWord(true);
-      console.log('Starting Word document generation...');
+      setError(null); // Clear any previous errors
+      // Starting Word document generation
       
       // Check if we're in browser environment
       if (typeof window === 'undefined') {
@@ -256,19 +273,19 @@ export default function PDFPreviewModal({
       // Use pixel-perfect generator for Word generation
       await generateWord(editableData, editableConsultantInfo, editableContent, `Commercial_Offer_${editableData.company}_${formatDate()}.docx`);
       
-      console.log('Word document generation completed successfully');
+      // Word document generation completed successfully
       
     } catch (error) {
       console.error('Word generation failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Error generating Word document: ${errorMessage}. Please try again.`);
+      setError(`Word generation failed: ${errorMessage}. Please try again.`);
     } finally {
       setIsGeneratingWord(false);
     }
   };
 
   // Function to get benefit details based on scheme and taluka category
-  const getBenefitDetails = (scheme: string, category: string): string => {
+  const getBenefitDetails = useCallback((scheme: string, category: string): string => {
     // Handle Capital Subsidy with category-specific details
     if (scheme === 'Capital Subsidy' && category) {
       switch (category) {
@@ -343,10 +360,10 @@ export default function PDFPreviewModal({
     // For other schemes, use the scheme description or default
     const schemeDesc = getSchemeDescription(scheme);
     return schemeDesc?.description[0] || 'Benefit details';
-  };
+  }, []);
 
   // Function to get duration based on scheme and taluka category
-  const getDuration = (scheme: string, category: string): string => {
+  const getDuration = useCallback((scheme: string, category: string): string => {
     // Handle Interest Subsidy with category-specific durations
     if (scheme === 'Interest Subsidy' && category) {
       switch (category) {
@@ -391,10 +408,10 @@ export default function PDFPreviewModal({
     if (scheme === 'Rent') return '5 Years';
     
     return 'As per scheme';
-  };
+  }, []);
 
   // Function to get application timeline based on scheme
-  const getApplicationTimeline = (scheme: string): string => {
+  const getApplicationTimeline = useCallback((scheme: string): string => {
     // Handle Capital Subsidy and Interest Subsidy with updated timeline
     if (scheme === 'Capital Subsidy' || scheme === 'Interest Subsidy') {
       return 'Within 1 year from DOCP or First disbursement';
@@ -408,10 +425,10 @@ export default function PDFPreviewModal({
     if (scheme === 'Solar Subsidy') return 'Within 1 year from commissioning';
     
     return 'As per scheme guidelines';
-  };
+  }, []);
 
   // Function to generate dynamic work description based on current benefits
-  const getDynamicWorkDescription = (): string => {
+  const getDynamicWorkDescription = useMemo((): string => {
     if (editableData.schemes.length === 0) {
       return 'MSME Various Applications as per above stated benefit & Issuance of Electric duty exemption certificate from concerned Dept.';
     }
@@ -429,10 +446,10 @@ export default function PDFPreviewModal({
     } else {
       return `MSME Various Applications as per above stated benefit ${benefitLetters}`;
     }
-  };
+  }, [editableData.schemes]);
 
   // Function to get dynamic eligibility criteria based on selected schemes
-  const getDynamicEligibilityCriteria = (): string[] => {
+  const getDynamicEligibilityCriteria = useMemo((): string[] => {
     const criteria: string[] = [];
     
     // Check if Power Connection Charges is selected
@@ -485,7 +502,7 @@ export default function PDFPreviewModal({
     }
     
     return criteria;
-  };
+  }, [editableData.schemes, editableContent.eligibilityCriteria]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -573,8 +590,26 @@ export default function PDFPreviewModal({
                   <div className="text-center mb-6 -mt-4">
                     <div className="mb-1">
                       <div className="text-5xl font-bold text-blue-600">
-                        <div>V4U</div>
-                        <div className="text-base -mt-2">Biz Solutions</div>
+                        <div>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('companyName', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            V4U
+                          </span>
+                        </div>
+                        <div className="text-base -mt-2">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('companyTagline', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            Biz Solutions
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -582,13 +617,29 @@ export default function PDFPreviewModal({
                   {/* Commercial Offer Container */}
                   <div className="mb-4 -mx-8">
                     <div className="text-base font-bold text-gray-800 py-2 px-4 w-full text-center pdf-commercial-offer-header">
-                      Commercial Offer for Subsidy Work
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('commercialOfferHeader', e.target.textContent || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        Commercial Offer for Subsidy Work
+                      </span>
                     </div>
                   </div>
 
                   {/* Date */}
                   <div className="text-right mb-4">
-                    <span className="text-xs font-medium">Date: {formatDate()}</span>
+                    <span className="text-xs font-medium">
+                      Date: <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('documentDate', e.target.textContent || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        {formatDate()}
+                      </span>
+                    </span>
                   </div>
 
                 </div>
@@ -935,11 +986,47 @@ export default function PDFPreviewModal({
                 {/* SGST Subsidy Benefits - Only show when SGST Subsidy is selected */}
                 {editableData.schemes.includes('SGST Subsidy') && (
                   <div className="mb-3">
-                    <div className="text-xs font-bold mb-2">SGST Application Procedure Stages</div>
-                    <div className="text-xs">
-                      <div>Stage 1 Registration for FEC Certificate</div>
-                      <div>Stage 2 Department issue FEC certificate.</div>
-                      <div>Stage 3 Claims for benefits.</div>
+                    <div className="text-xs font-bold mb-2">
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('sgstProcedureHeader', e.target.textContent || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        SGST Application Procedure Stages
+                      </span>
+                    </div>
+                    <div className="text-xs space-y-1">
+                      <div className="flex items-center group">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('sgstStage1', e.target.textContent || '')}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height flex-1"
+                        >
+                          Stage 1 Registration for FEC Certificate
+                        </span>
+                      </div>
+                      <div className="flex items-center group">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('sgstStage2', e.target.textContent || '')}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height flex-1"
+                        >
+                          Stage 2 Department issue FEC certificate.
+                        </span>
+                      </div>
+                      <div className="flex items-center group">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('sgstStage3', e.target.textContent || '')}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height flex-1"
+                        >
+                          Stage 3 Claims for benefits.
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -973,7 +1060,7 @@ export default function PDFPreviewModal({
                           onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('proposedBenefits', e.target.textContent || '')}
                           className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
                         >
-                          {getDynamicWorkDescription()}
+                          {getDynamicWorkDescription}
                         </span>
                       </div>
                       <div className="w-[70%] text-xs p-2 bg-white">
@@ -1074,23 +1161,52 @@ export default function PDFPreviewModal({
                   {/* Additional Fees - Only show when there are additional fees */}
                   {((editableData.additionalFees && editableData.additionalFees.length > 0) || editableData.customFeeName) && (
                     <div className="mt-4 text-xs additional-fees-section">
-                      <div className="font-bold mb-2">Additional Fees:</div>
+                      <div className="font-bold mb-2">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('additionalFeesHeader', e.target.textContent || '')}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          Additional Fees:
+                        </span>
+                      </div>
                       <div className="space-y-1 text-xs">
                         {editableData.additionalFees && editableData.additionalFees.map((fee, index) => {
                           const displayValue = fee.feeType === 'fee' ? fee.amount : fee.amount;
                           const displaySymbol = fee.feeType === 'fee' ? '₹' : '%';
                           
                           return (
-                            <div key={fee.id} className="text-xs">
-                              {index + 1}. {fee.name} {displayValue.toLocaleString('en-IN')}{displaySymbol}
+                            <div key={fee.id} className="text-xs flex items-center group">
+                              <span className="mr-2">{index + 1}.</span>
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  const newAdditionalFees = [...(editableData.additionalFees || [])];
+                                  newAdditionalFees[index] = { ...fee, name: e.target.textContent || fee.name };
+                                  handleFieldChange('additionalFees', newAdditionalFees);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height flex-1"
+                              >
+                                {fee.name} {displayValue.toLocaleString('en-IN')}{displaySymbol}
+                              </span>
                             </div>
                           );
                         })}
                         
                         {/* Custom Fee */}
                         {editableData.customFeeName && (
-                          <div className="text-xs">
-                            {(editableData.additionalFees ? editableData.additionalFees.length : 0) + 1}. {editableData.customFeeName}
+                          <div className="text-xs flex items-center group">
+                            <span className="mr-2">{(editableData.additionalFees ? editableData.additionalFees.length : 0) + 1}.</span>
+                            <span
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('customFeeName', e.target.textContent || '')}
+                              className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height flex-1"
+                            >
+                              {editableData.customFeeName}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -1101,10 +1217,26 @@ export default function PDFPreviewModal({
                 {/* Payment Method */}
                 {(editableData.applicationFees > 0 && editableData.sanctioningFees > 0) && (
                   <div className="mb-4 payment-method-section">
-                    <div className="text-xs font-bold mb-2">PAYMENT METHOD</div>
+                    <div className="text-xs font-bold mb-2">
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('paymentMethodHeader', e.target.textContent || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        PAYMENT METHOD
+                      </span>
+                    </div>
                     
                     <div className="text-xs">
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('paymentMethodText', e.target.textContent || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
                       Processing fees application to sanctions of Rs.{editableData.applicationFees.toLocaleString('en-IN')}/- (non-adjustable) at the time of assignment finalization, Rs.{editableData.sanctioningFees.toLocaleString('en-IN')}/- (adjustable) against sanction of subsidy and rest against fund release.
+                      </span>
                     </div>
                   </div>
                 )}
@@ -1146,7 +1278,7 @@ export default function PDFPreviewModal({
                         </div>
                       ))
                     ) : (
-                      getDynamicEligibilityCriteria().map((item, index) => (
+                      getDynamicEligibilityCriteria.map((item: string, index: number) => (
                         <div
                           key={index}
                           className="pdf-input-min-height"
@@ -1304,7 +1436,16 @@ export default function PDFPreviewModal({
 
                 {/* Footer */}
                 <div className="text-center">
-                  <div className="text-xs font-bold">APPROVED & AUTHORIZED BY (Sign and Stamp)</div>
+                  <div className="text-xs font-bold">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('footerText', e.target.textContent || '')}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      APPROVED & AUTHORIZED BY (Sign and Stamp)
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -1322,6 +1463,28 @@ export default function PDFPreviewModal({
 
         {/* Modal Footer */}
         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+          {/* Error Display */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span className="text-sm text-red-700">{error}</span>
+                <button
+                  onClick={() => setError(null)}
+                  className="ml-auto text-red-400 hover:text-red-600"
+                  title="Close error message"
+                  aria-label="Close error message"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+          
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
@@ -1343,11 +1506,8 @@ export default function PDFPreviewModal({
               >
                 {isGeneratingPDF ? (
                   <>
-                    <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generating PDF...
+                    <LoadingSpinner size="sm" text="" />
+                    <span className="ml-2">Generating PDF...</span>
                   </>
                 ) : (
                   <>
@@ -1369,11 +1529,8 @@ export default function PDFPreviewModal({
               >
                 {isGeneratingWord ? (
                   <>
-                    <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generating Word...
+                    <LoadingSpinner size="sm" text="" />
+                    <span className="ml-2">Generating Word...</span>
                   </>
                 ) : (
                   <>
