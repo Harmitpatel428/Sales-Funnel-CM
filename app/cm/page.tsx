@@ -4,13 +4,12 @@ import React, { useState, useEffect } from 'react';
 // import { useRouter } from 'next/navigation'; // Not used currently
 import { useLeads, Lead } from '../context/LeadContext';
 import { useMandates, Mandate } from '../context/MandateContext';
-import { MandateData, ConsultantInfo, DEFAULT_CONSULTANT_INFO, EditableContent } from '../services/pdfServiceSimple';
-import PDFPreviewModal from '../components/PDFPreviewModal';
+import { ConsultantInfo, DEFAULT_CONSULTANT_INFO } from '../services/pdfServiceSimple';
+import PDFPreviewModalStable from '../components/PDFPreviewModalStable';
 
 export default function CMPage() {
   // const router = useRouter(); // Not used currently
   const { leads } = useLeads();
-  const { addMandate } = useMandates();
   
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -74,9 +73,9 @@ export default function CMPage() {
   // Filter leads based on search term
   const filteredLeads = leads.filter(lead => 
     !lead.isDeleted && 
-    (lead.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     lead.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     lead.kva.toLowerCase().includes(searchTerm.toLowerCase()))
+    (lead.clientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     lead.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     lead.kva?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
 
@@ -189,7 +188,10 @@ export default function CMPage() {
       policy: '',
       fees: {},
       percentages: {},
-      feeTypes: {}
+      feeTypes: {},
+      applicationFees: 0,
+      sanctioningFees: 0,
+      customFeeName: ''
     });
     setShowCreateForm(true);
   };
@@ -206,44 +208,9 @@ export default function CMPage() {
   };
 
   // Handle PDF preview confirmation and download
-  const handlePDFConfirm = async (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: EditableContent) => {
-    try {
-      console.log('📄 Starting PDF generation for download...');
-      
-      // Update consultant info
-      setConsultantInfo(updatedConsultantInfo);
-      
-      // Create mandate record
-      const newMandate: Mandate = {
-        mandateId: generateId(),
-        leadId: selectedLead?.id || undefined,
-        mandateName: `${updatedData.clientName} - ${updatedData.company}`,
-        clientName: updatedData.clientName,
-        company: updatedData.company,
-        kva: updatedData.kva,
-        address: updatedData.address,
-        schemes: updatedData.schemes,
-        typeOfCase: updatedData.typeOfCase,
-        category: updatedData.category,
-        projectCost: updatedData.projectCost,
-        industriesType: updatedData.industriesType,
-        termLoanAmount: updatedData.termLoanAmount,
-        powerConnection: updatedData.powerConnection,
-        createdAt: new Date().toISOString(),
-        status: 'draft',
-        isDeleted: false
-      };
 
-      addMandate(newMandate);
-
-      // Generate and download PDF
-      const { pdfServiceSimple } = await import('../services/pdfServiceSimple');
-      console.log('📥 Calling downloadPDF...');
-      pdfServiceSimple.downloadPDF(updatedData, updatedConsultantInfo, undefined, editableContent);
-      console.log('✅ PDF download initiated');
-      
-      // Close modal and reset form
-      setShowPDFPreview(false);
+  // Handle cancel
+  const handleCancel = () => {
       setFormData({
         clientName: '',
         company: '',
@@ -259,37 +226,11 @@ export default function CMPage() {
         policy: '',
         fees: {},
         percentages: {},
-        feeTypes: {}
+        feeTypes: {},
+        applicationFees: 0,
+        sanctioningFees: 0,
+        customFeeName: ''
       });
-      setSelectedLead(null);
-      setShowCreateForm(false);
-      
-      alert('Mandate created and PDF generated successfully!');
-    } catch (error) {
-      console.error('❌ Error generating PDF:', error);
-      alert('Mandate created successfully, but there was an error generating the PDF.');
-    }
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    setFormData({
-      clientName: '',
-      company: '',
-      kva: '',
-      address: '',
-      schemes: [],
-      typeOfCase: '',
-      category: '',
-      projectCost: '',
-      industriesType: '',
-      termLoanAmount: '',
-      powerConnection: '',
-      policy: '',
-      fees: {},
-      percentages: {},
-      feeTypes: {}
-    });
     setSelectedLead(null);
     setShowCreateForm(false);
     setShowMandatesList(false);
@@ -299,10 +240,19 @@ export default function CMPage() {
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Handle number fields specially
+    if (name === 'applicationFees' || name === 'sanctioningFees') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value === '' ? 0 : parseFloat(value) || 0
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   // Handle scheme selection changes
@@ -659,7 +609,9 @@ export default function CMPage() {
                                       type="number"
                                       step="0.01"
                                       min="0"
-                                      value={formData.feeTypes[scheme] === 'fee' ? (formData.fees[scheme] || '') : (formData.percentages[scheme] || '')}
+                                      value={formData.feeTypes[scheme] === 'fee' 
+                                        ? (formData.fees[scheme] === 0 ? '' : formData.fees[scheme] || '') 
+                                        : (formData.percentages[scheme] === 0 ? '' : formData.percentages[scheme] || '')}
                                       onChange={(e) => {
                                         const value = e.target.value;
                                         if (formData.feeTypes[scheme] === 'fee') {
@@ -668,7 +620,7 @@ export default function CMPage() {
                                           handlePercentageChange(scheme, value === '' ? 0 : parseFloat(value) || 0);
                                         }
                                       }}
-                                      className="w-full px-3 py-1.5 pr-6 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                      className="w-full px-3 py-1.5 pr-6 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       placeholder="Enter amount"
                                     />
                                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
@@ -746,7 +698,7 @@ export default function CMPage() {
                                         type="number"
                                         step="0.01"
                                         min="0"
-                                        value={fee.amount}
+                                        value={fee.amount === 0 ? '' : fee.amount}
                                         onChange={(e) => handleAdditionalFeeChange(fee.id, 'amount', parseFloat(e.target.value) || 0)}
                                         className="w-full px-2 py-2 pr-5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         placeholder="0"
@@ -803,7 +755,7 @@ export default function CMPage() {
                                   type="number"
                                   id="applicationFees"
                                   name="applicationFees"
-                                  value={formData.applicationFees}
+                                  value={formData.applicationFees === 0 ? '' : formData.applicationFees}
                                   onChange={handleChange}
                                   className="w-full px-3 py-2 pl-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
                                   placeholder="Enter application fees"
@@ -820,7 +772,7 @@ export default function CMPage() {
                                   type="number"
                                   id="sanctioningFees"
                                   name="sanctioningFees"
-                                  value={formData.sanctioningFees}
+                                  value={formData.sanctioningFees === 0 ? '' : formData.sanctioningFees}
                                   onChange={handleChange}
                                   className="w-full px-3 py-2 pl-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
                                   placeholder="Enter sanctioning fees"
@@ -1109,10 +1061,9 @@ export default function CMPage() {
         </div>
 
         {/* PDF Preview Modal */}
-        <PDFPreviewModal
+        <PDFPreviewModalStable
           isOpen={showPDFPreview}
           onClose={() => setShowPDFPreview(false)}
-          onConfirm={handlePDFConfirm}
           mandateData={{
             clientName: formData.clientName,
             company: formData.company,
@@ -1393,7 +1344,7 @@ function MandatesListView({ onBack }: { onBack: () => void }) {
                       </td>
                     </tr>
                   ) : (
-                    filteredMandates.map((mandate) => (
+                    filteredMandates.map((mandate: Mandate) => (
                       <tr key={mandate.mandateId} className="hover:bg-gray-50">
                         <td className="px-3 sm:px-6 py-4">
                           <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{mandate.mandateName}</div>

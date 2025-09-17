@@ -1,13 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MandateData, ConsultantInfo, EditableContent } from '../services/pdfServiceSimple';
+import { MandateData, ConsultantInfo } from '../services/pdfServiceSimple';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
+import { generatePDF, generateWord } from '../utils/pdfGenerator';
+import { setupPrintShortcut } from '../utils/printUtils';
+import '../styles/pdf-styles.css';
+import '../styles/print-styles.css';
+// DocumentGenerator will be imported dynamically to avoid SSR issues
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (updatedData: MandateData, updatedConsultantInfo: ConsultantInfo, editableContent: EditableContent) => void;
   mandateData: MandateData;
   consultantInfo: ConsultantInfo;
 }
@@ -15,7 +19,6 @@ interface PDFPreviewModalProps {
 export default function PDFPreviewModal({
   isOpen,
   onClose,
-  onConfirm,
   mandateData,
   consultantInfo
 }: PDFPreviewModalProps) {
@@ -27,8 +30,20 @@ export default function PDFPreviewModal({
     customFeeName: mandateData.customFeeName || ''
   });
   const [editableConsultantInfo, setEditableConsultantInfo] = useState<ConsultantInfo>(consultantInfo);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [editableContent, setEditableContent] = useState({
     subjectLine: '',
+    salutation: 'Dear Sir,',
+    openingParagraph: 'With reference to above said subject & as per discussion with Mr {clientName} sir hereby we are sending our commercial offer and scope of work.',
+    detailsHeader: 'Details of Proposed Firm are as under:',
+    benefitsHeader: 'WORK DESCRIPTION & PROPOSED BENEFITS',
+    policyHeader: '',
+    benefitsColumnHeader: 'Benefits',
+    subsidyNameColumnHeader: 'Subsidy Name',
+    benefitDetailsColumnHeader: 'Benefit Details',
+    durationColumnHeader: 'Duration',
+    applicationTimelineColumnHeader: 'Application Time Line',
     workScope: [
       'Assessment of eligibility for various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022.',
       'Preparation and submission of all required documents and applications.',
@@ -48,69 +63,13 @@ export default function PDFPreviewModal({
       'This mandate is valid for 90 days from the date of signing.',
       'Payment terms: 50% advance, 50% on completion of work.',
       'We are not responsible for delays caused by government departments or policy changes.'
-    ]
+    ],
+    dutyOfClient: [
+      'To provide all required documents within stipulated timeline.',
+      'To inform immediate once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.'
+    ],
+    proposedBenefits: 'Various government subsidy schemes under Atmanirbhar Gujarat Scheme 2022 including Capital Subsidy, Interest Subsidy, Electric Duty Exemption, and other applicable benefits.'
   });
-
-  // Update editable data when mandateData changes
-  useEffect(() => {
-    setEditableData({
-      ...mandateData,
-      applicationFees: mandateData.applicationFees || 0,
-      sanctioningFees: mandateData.sanctioningFees || 0,
-      additionalFees: mandateData.additionalFees || [],
-      customFeeName: mandateData.customFeeName || ''
-    });
-    setEditableContent((prev: EditableContent) => ({
-      ...prev,
-      subjectLine: formatSubjectLine(mandateData.schemes, mandateData.policy, mandateData.typeOfCase)
-    }));
-  }, [mandateData]);
-
-  useEffect(() => {
-    setEditableConsultantInfo(consultantInfo);
-  }, [consultantInfo]);
-
-  if (!isOpen) return null;
-
-  const formatDate = (): string => {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
-  const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number }) => {
-    setEditableData((prev: MandateData) => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Update subject line when schemes or typeOfCase change
-    if (field === 'schemes' || field === 'typeOfCase') {
-      const updatedData = { ...editableData, [field]: value };
-      setEditableContent((prev: EditableContent) => ({
-        ...prev,
-        subjectLine: formatSubjectLine(updatedData.schemes, updatedData.policy, updatedData.typeOfCase)
-      }));
-    }
-  };
-
-
-  // Note: Scheme selection is now handled in the main form, not in the preview modal
-
-  const handleContentChange = (field: keyof typeof editableContent, value: string | string[]) => {
-    setEditableContent((prev: EditableContent) => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  // Removed unused handleListEdit function
-
-  const handleConfirm = () => {
-    onConfirm(editableData, editableConsultantInfo, editableContent);
-  };
 
   // Function to convert number to Roman numeral
   const toRomanNumeral = (num: number): string => {
@@ -131,6 +90,181 @@ export default function PDFPreviewModal({
     }
     
     return policyText;
+  };
+
+  // Update editable data when mandateData changes
+  useEffect(() => {
+    setEditableData({
+      ...mandateData,
+      applicationFees: mandateData.applicationFees || 0,
+      sanctioningFees: mandateData.sanctioningFees || 0,
+      additionalFees: mandateData.additionalFees || [],
+      customFeeName: mandateData.customFeeName || ''
+    });
+    setEditableContent((prev) => ({
+      ...prev,
+      subjectLine: formatSubjectLine(mandateData.schemes, mandateData.policy, mandateData.typeOfCase),
+      policyHeader: getPolicyHeaderText()
+    }));
+  }, [mandateData]);
+
+  useEffect(() => {
+    setEditableConsultantInfo(consultantInfo);
+  }, [consultantInfo]);
+
+  // Add keyboard event listener for Ctrl+P/Cmd+P
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const cleanup = setupPrintShortcut();
+    
+    return cleanup;
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const formatDate = (): string => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number }) => {
+    setEditableData((prev: MandateData) => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Update subject line when schemes or typeOfCase change
+    if (field === 'schemes' || field === 'typeOfCase') {
+      const updatedData = { ...editableData, [field]: value };
+      setEditableContent((prev) => ({
+        ...prev,
+        subjectLine: formatSubjectLine(updatedData.schemes, updatedData.policy, updatedData.typeOfCase)
+      }));
+    }
+  };
+
+
+  // Note: Scheme selection is now handled in the main form, not in the preview modal
+
+  const handleContentChange = (field: keyof typeof editableContent, value: string | string[]) => {
+    setEditableContent((prev) => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Helper functions for managing editable lists
+  const addListItem = (field: 'workScope' | 'termsAndConditions' | 'dutyOfClient' | 'eligibilityCriteria', item: string = '') => {
+    setEditableContent((prev) => ({
+      ...prev,
+      [field]: [...(prev[field] as string[]), item]
+    }));
+  };
+
+  const removeListItem = (field: 'workScope' | 'termsAndConditions' | 'dutyOfClient' | 'eligibilityCriteria', index: number) => {
+    setEditableContent((prev) => ({
+      ...prev,
+      [field]: (prev[field] as string[]).filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateListItem = (field: 'workScope' | 'termsAndConditions' | 'dutyOfClient' | 'eligibilityCriteria', index: number, value: string) => {
+    setEditableContent((prev) => ({
+      ...prev,
+      [field]: (prev[field] as string[]).map((item, i) => i === index ? value : item)
+    }));
+  };
+
+  // Handle scheme selection within modal
+  const handleSchemeToggle = (scheme: string) => {
+    const isSelected = editableData.schemes.includes(scheme);
+    let newSchemes: string[];
+    let newFees: { [schemeName: string]: number };
+    let newPercentages: { [schemeName: string]: number };
+    let newFeeTypes: { [schemeName: string]: 'fee' | 'percentage' };
+
+    if (isSelected) {
+      // Remove scheme
+      newSchemes = editableData.schemes.filter(s => s !== scheme);
+      newFees = { ...editableData.fees };
+      newPercentages = { ...editableData.percentages };
+      newFeeTypes = { ...editableData.feeTypes };
+      delete newFees[scheme];
+      delete newPercentages[scheme];
+      delete newFeeTypes[scheme];
+    } else {
+      // Add scheme
+      newSchemes = [...editableData.schemes, scheme];
+      newFees = { ...editableData.fees, [scheme]: 0 };
+      newPercentages = { ...editableData.percentages, [scheme]: 0 };
+      newFeeTypes = { ...editableData.feeTypes, [scheme]: 'percentage' };
+    }
+
+    setEditableData(prev => ({
+      ...prev,
+      schemes: newSchemes,
+      fees: newFees,
+      percentages: newPercentages,
+      feeTypes: newFeeTypes
+    }));
+  };
+
+  // Removed unused handleListEdit function
+
+  const handleDownloadPDF = async () => {
+    if (isGeneratingPDF) return; // Prevent multiple simultaneous generations
+    
+    try {
+      setIsGeneratingPDF(true);
+      console.log('Starting pixel-perfect PDF generation...');
+      
+      // Check if we're in browser environment
+      if (typeof window === 'undefined') {
+        throw new Error('PDF generation only available in browser environment');
+      }
+      
+      // Use pixel-perfect generator for exact styling match
+      await generatePDF(editableData, editableConsultantInfo, editableContent, `Commercial_Offer_${editableData.company}_${formatDate()}.pdf`);
+      
+      console.log('Pixel-perfect PDF generation completed successfully');
+      
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Error generating PDF: ${errorMessage}. Please try again.`);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const handleDownloadWord = async () => {
+    if (isGeneratingWord) return; // Prevent multiple simultaneous generations
+    
+    try {
+      setIsGeneratingWord(true);
+      console.log('Starting Word document generation...');
+      
+      // Check if we're in browser environment
+      if (typeof window === 'undefined') {
+        throw new Error('Word generation only available in browser environment');
+      }
+      
+      // Use pixel-perfect generator for Word generation
+      await generateWord(editableData, editableConsultantInfo, editableContent, `Commercial_Offer_${editableData.company}_${formatDate()}.docx`);
+      
+      console.log('Word document generation completed successfully');
+      
+    } catch (error) {
+      console.error('Word generation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Error generating Word document: ${errorMessage}. Please try again.`);
+    } finally {
+      setIsGeneratingWord(false);
+    }
   };
 
   // Function to get benefit details based on scheme and taluka category
@@ -359,7 +493,12 @@ export default function PDFPreviewModal({
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">PDF Preview - Mandate Document</h2>
+            <div className="flex items-center space-x-4">
+              <h2 className="text-xl font-semibold text-gray-900">PDF Preview - Mandate Document</h2>
+              <div className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                Press <kbd className="px-1 py-0.5 bg-white border border-gray-300 rounded text-xs">Ctrl+P</kbd> to print
+              </div>
+            </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -371,18 +510,65 @@ export default function PDFPreviewModal({
               </svg>
             </button>
           </div>
+          
+          {/* Scheme Selection */}
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-700">Edit Schemes</h3>
+              <span className="text-xs text-gray-500">{editableData.schemes.length} selected</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                'Capital Subsidy',
+                'Interest Subsidy',
+                'SGST Subsidy',
+                'Rent',
+                'Power Connection Charges',
+                'Electric Duty Exemption',
+                'Solar Subsidy'
+              ].map((scheme) => (
+                <button
+                  key={scheme}
+                  onClick={() => handleSchemeToggle(scheme)}
+                  className={`px-3 py-1 text-xs rounded-full border transition-colors duration-200 ${
+                    editableData.schemes.includes(scheme)
+                      ? 'bg-purple-600 text-white border-purple-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {scheme}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Modal Content - Scrollable PDF Preview */}
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6">
             {/* PDF Preview Container */}
-            <div className="border border-gray-300 shadow-lg mx-auto pdf-preview-container pdf-modal-bg">
+            <div id="pdf-preview" className="border border-gray-300 shadow-lg mx-auto pdf-preview-container pdf-modal-bg pdf-preview-styled">
+              
+              {/* Fixed Header for Print/PDF */}
+              <header className="pdf-header hidden print:block">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">
+                    V4U
+                  </div>
+                  <div className="text-sm text-blue-600 mb-2">
+                    Biz Solutions
+                  </div>
+                  <div className="text-base font-bold text-gray-800">
+                    Commercial Offer for Subsidy Work
+                  </div>
+                </div>
+              </header>
+
               {/* PDF Content */}
-              <div className="p-8 text-black pdf-content pdf-modal-bg">
+              <div className="p-8 text-black pdf-content pdf-modal-bg pdf-content-styled">
                 
-                {/* Document Header */}
-                <div className="mb-6">
+                {/* Document Header - Hidden in print/PDF */}
+                <div className="mb-6 print:hidden">
                   {/* Company Logo */}
                   <div className="text-center mb-6 -mt-4">
                     <div className="mb-1">
@@ -412,9 +598,25 @@ export default function PDFPreviewModal({
                   <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
                     <div className="text-sm font-bold mb-2">To,</div>
                     <div className="text-sm font-bold mb-1">
-                      M/S {editableData.company}
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('company', e.target.textContent?.replace('M/S ', '') || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        M/S {editableData.company}
+                      </span>
                     </div>
-                    <div className="text-sm font-bold mb-1">Address: {editableData.address}</div>
+                    <div className="text-sm font-bold mb-1">
+                      Address: <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('address', e.target.textContent || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        {editableData.address}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -435,56 +637,132 @@ export default function PDFPreviewModal({
 
                 {/* Salutation */}
                 <div className="mb-0">
-                  <div className="text-sm">Dear Sir,</div>
+                  <div className="text-sm">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('salutation', e.target.textContent || '')}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      Dear Sir,
+                    </span>
+                  </div>
                 </div>
 
                 {/* Opening Paragraph */}
                 <div className="mb-6">
                   <div className="text-sm">
-                    With reference to above said subject & as per discussion with <span className="font-bold underline">Mr {editableData.clientName} sir</span> hereby we are sending our commercial offer and scope of work.
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('openingParagraph', e.target.textContent || '')}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      {editableContent.openingParagraph.replace('{clientName}', editableData.clientName)}
+                    </span>
                   </div>
                 </div>
 
                 {/* Commercial Offer */}
                 <div className="mb-6">
-                  <div className="text-sm font-bold mb-3">Details of Proposed Firm are as under:</div>
+                  <div className="text-sm font-bold mb-3">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('detailsHeader', e.target.textContent || '')}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      {editableContent.detailsHeader}
+                    </span>
+                  </div>
                   <div className="bg-blue-100 rounded-lg p-4 mb-4 w-1/2 border border-blue-300 shadow-lg">
-                    <div className="text-sm font-bold mb-2">Case name: M/S {editableData.company}</div>
+                    <div className="text-sm font-bold mb-2">
+                      Case name: <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('company', e.target.textContent?.replace('M/S ', '') || '')}
+                        className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                      >
+                        M/S {editableData.company}
+                      </span>
+                    </div>
                     <div className="space-y-1 text-xs">
                       {editableData.typeOfCase && (
                         <div className="flex">
                           <span className="font-bold w-32">Type of Case:</span>
-                          <span>{editableData.typeOfCase}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('typeOfCase', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.typeOfCase}
+                          </span>
                         </div>
                       )}
                       {editableData.category && (
                         <div className="flex">
                           <span className="font-bold w-32">Taluka Category:</span>
-                          <span>{editableData.category}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('category', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.category}
+                          </span>
                         </div>
                       )}
                       {editableData.projectCost && (
                         <div className="flex">
                           <span className="font-bold w-32">Cost of Project:</span>
-                          <span>₹. {editableData.projectCost} (Approx.)</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('projectCost', e.target.textContent?.replace('₹. ', '').replace(' (Approx.)', '') || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            ₹. {editableData.projectCost} (Approx.)
+                          </span>
                         </div>
                       )}
                       {editableData.industriesType && (
                         <div className="flex">
                           <span className="font-bold w-32">Industries Type:</span>
-                          <span>{editableData.industriesType}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('industriesType', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.industriesType}
+                          </span>
                         </div>
                       )}
                       {editableData.termLoanAmount && (
                         <div className="flex">
                           <span className="font-bold w-32">Term Loan Amount:</span>
-                          <span>₹. {editableData.termLoanAmount}</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('termLoanAmount', e.target.textContent?.replace('₹. ', '') || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            ₹. {editableData.termLoanAmount}
+                          </span>
                         </div>
                       )}
                       {editableData.powerConnection && (
                         <div className="flex">
                           <span className="font-bold w-32">Power Connection:</span>
-                          <span>{editableData.powerConnection} KVA</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleFieldChange('powerConnection', e.target.textContent?.replace(' KVA', '') || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableData.powerConnection} KVA
+                          </span>
                         </div>
                       )}
                     </div>
@@ -493,21 +771,84 @@ export default function PDFPreviewModal({
 
 
                 {/* Proposed Benefits */}
-                <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">WORK DESCRIPTION & PROPOSED BENEFITS</div>
+                <div className="mb-4">
+                  <div className="text-xs font-bold mb-2">
+                    <span
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('benefitsHeader', e.target.textContent || '')}
+                      className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                    >
+                      {editableContent.benefitsHeader}
+                    </span>
+                  </div>
                   <div className="border border-black rounded bg-blue-100">
                     {/* Merged Header Row */}
                     <div className="bg-blue-100 border-b border-black">
-                      <div className="text-xs font-bold p-2 text-center">{getPolicyHeaderText()}</div>
+                      <div className="text-xs font-bold p-2 text-center">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('policyHeader', e.target.textContent || '')}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {editableContent.policyHeader || getPolicyHeaderText()}
+                        </span>
+                      </div>
                     </div>
                     
                       {/* Table Header */}
                       <div className="flex border-b border-black bg-blue-100">
-                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">Benefits </div>
-                        <div className="w-32 text-xs font-bold p-2 border-r border-black text-center">Subsidy Name</div>
-                        <div className="flex-1 text-xs font-bold p-2 border-r border-black text-center">Benefit Details</div>
-                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">Duration</div>
-                        <div className="flex-1 text-xs font-bold p-2 text-center">Application Time Line</div>
+                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('benefitsColumnHeader', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableContent.benefitsColumnHeader}
+                          </span>
+                        </div>
+                        <div className="w-32 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('subsidyNameColumnHeader', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableContent.subsidyNameColumnHeader}
+                          </span>
+                        </div>
+                        <div className="flex-1 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('benefitDetailsColumnHeader', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableContent.benefitDetailsColumnHeader}
+                          </span>
+                        </div>
+                        <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('durationColumnHeader', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableContent.durationColumnHeader}
+                          </span>
+                        </div>
+                        <div className="flex-1 text-xs font-bold p-2 text-center">
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('applicationTimelineColumnHeader', e.target.textContent || '')}
+                            className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {editableContent.applicationTimelineColumnHeader}
+                          </span>
+                        </div>
                       </div>
                     
                     {/* Table Rows */}
@@ -519,21 +860,63 @@ export default function PDFPreviewModal({
                         const benefitCategory = `Benefit - ${String.fromCharCode(65 + index)}`; // A, B, C, etc.
                         
                         return (
-                          <div key={scheme} className="flex border-b border-black bg-blue-100">
-                            <div className="w-20 text-xs p-2 border-r border-black text-center font-bold">
+                          <div key={scheme} className="flex border-b border-black bg-white">
+                            <div className="w-20 text-xs p-2 border-r border-black text-center font-bold bg-white">
                               {benefitCategory}
                             </div>
-                            <div className="w-32 text-xs p-2 border-r border-black">
-                              {schemeDesc?.title || scheme}
+                            <div className="w-32 text-xs p-2 border-r border-black bg-white">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => {
+                                  // Update scheme name in the schemes array
+                                  const newSchemes = [...editableData.schemes];
+                                  newSchemes[index] = e.target.textContent || scheme;
+                                  handleFieldChange('schemes', newSchemes);
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {schemeDesc?.title || scheme}
+                              </span>
                             </div>
-                            <div className="flex-1 text-xs p-2 border-r border-black">
-                              {getBenefitDetails(scheme, editableData.category)}
+                            <div className="flex-1 text-xs p-2 border-r border-black bg-white">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={() => {
+                                  // Store custom benefit details - this would need to be added to state
+                                  // For now, we'll just update the display
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {getBenefitDetails(scheme, editableData.category)}
+                              </span>
                             </div>
-                            <div className="w-20 text-xs p-2 border-r border-black text-center">
-                              {getDuration(scheme, editableData.category)}
+                            <div className="w-20 text-xs p-2 border-r border-black text-center bg-white">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={() => {
+                                  // Store custom duration - this would need to be added to state
+                                  // For now, we'll just update the display
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {getDuration(scheme, editableData.category)}
+                              </span>
                             </div>
-                            <div className="flex-1 text-xs p-2 text-center">
-                              {getApplicationTimeline(scheme)}
+                            <div className="flex-1 text-xs p-2 text-center bg-white">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={() => {
+                                  // Store custom application timeline - this would need to be added to state
+                                  // For now, we'll just update the display
+                                }}
+                                className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                {getApplicationTimeline(scheme)}
+                              </span>
                             </div>
                           </div>
                         );
@@ -551,8 +934,8 @@ export default function PDFPreviewModal({
 
                 {/* SGST Subsidy Benefits - Only show when SGST Subsidy is selected */}
                 {editableData.schemes.includes('SGST Subsidy') && (
-                  <div className="mb-6">
-                    <div className="text-xs font-bold mb-3">SGST Application Procedure Stages</div>
+                  <div className="mb-3">
+                    <div className="text-xs font-bold mb-2">SGST Application Procedure Stages</div>
                     <div className="text-xs">
                       <div>Stage 1 Registration for FEC Certificate</div>
                       <div>Stage 2 Department issue FEC certificate.</div>
@@ -562,8 +945,16 @@ export default function PDFPreviewModal({
                 )}
 
                 {/* Work Scope */}
-                <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">WORK SCOPE</div>
+                <div className="mb-4 work-scope-section">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-bold">WORK SCOPE</div>
+                    <button
+                      onClick={() => addListItem('workScope', '')}
+                      className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+                    >
+                      + Add Item
+                    </button>
+                  </div>
                   <div className="border border-black rounded bg-blue-100">
                     {/* Table Header */}
                     <div className="flex bg-blue-100 border-b border-black">
@@ -573,20 +964,42 @@ export default function PDFPreviewModal({
                     </div>
                     
                     {/* Table Row */}
-                    <div className="flex border-b border-black">
-                      <div className="w-16 text-xs p-2 border-r border-black text-center">1</div>
-                      <div className="w-[30%] text-xs p-2 border-r border-black">
-                        {getDynamicWorkDescription()}
+                    <div className="flex border-b border-black bg-white">
+                      <div className="w-16 text-xs p-2 border-r border-black text-center bg-white">1</div>
+                      <div className="w-[30%] text-xs p-2 border-r border-black bg-white">
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => handleContentChange('proposedBenefits', e.target.textContent || '')}
+                          className="pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {getDynamicWorkDescription()}
+                        </span>
                       </div>
-                      <div className="w-[70%] text-xs p-2">
+                      <div className="w-[70%] text-xs p-2 bg-white">
                         <div className="space-y-1">
-                          <div>• Basic doc&apos;s collection as per check list.</div>
-                          <div>• Check eligibility as per scheme norms.</div>
-                          <div>• Application to concern dept. online in Govt portal within stipulated time line.</div>
-                          <div>• Query solving & hearing support as and when required.</div>
-                          <div>• Liaison with dept. as and when required.</div>
-                          <div>• Support in inspection.</div>
-                          <div>• Exemption certificate issuance.</div>
+                          {editableContent.workScope.map((item, index) => (
+                            <div key={index} className="flex items-center group">
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                onBlur={(e: React.FocusEvent<HTMLSpanElement>) => updateListItem('workScope', index, e.target.textContent || '')}
+                                className="flex-1 pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                              >
+                                • {item}
+                              </span>
+                              <button
+                                onClick={() => removeListItem('workScope', index)}
+                                className="ml-2 opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-800 transition-all duration-200"
+                                title="Remove item"
+                                aria-label="Remove item"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -594,8 +1007,8 @@ export default function PDFPreviewModal({
                 </div>
 
                 {/* Our Fees */}
-                <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">OUR FEES</div>
+                <div className="mb-4">
+                  <div className="text-xs font-bold mb-2">OUR FEES</div>
                   
                   {editableData.schemes.length > 0 ? (
                     <div className="border border-black rounded bg-blue-100">
@@ -618,11 +1031,11 @@ export default function PDFPreviewModal({
                             const displaySymbol = feeType === 'fee' ? '₹' : '%';
                             
                             return (
-                              <tr key={scheme} className="bg-blue-100">
-                                <td className="text-xs p-2 border border-black">
+                              <tr key={scheme} className="bg-white">
+                                <td className="text-xs p-2 border border-black bg-white">
                                   {index + 1}. {scheme}
                                 </td>
-                                <td className="text-xs p-2 border border-black text-right">
+                                <td className="text-xs p-2 border border-black text-right bg-white">
                                   <div
                                     contentEditable
                                     suppressContentEditableWarning
@@ -645,7 +1058,7 @@ export default function PDFPreviewModal({
                                     {displayValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{displaySymbol}
                                   </div>
                                 </td>
-                                <td className="text-xs p-2 border border-black text-center">
+                                <td className="text-xs p-2 border border-black text-center bg-white">
                                   {feeType === 'fee' ? 'One time' : 'Of subsidy amount'}
                                 </td>
                               </tr>
@@ -658,79 +1071,165 @@ export default function PDFPreviewModal({
                     <div className="text-xs text-gray-500">No schemes selected</div>
                   )}
                   
-                  {/* Payment Method Text - Only show when both fees have values */}
-                  {(editableData.applicationFees > 0 && editableData.sanctioningFees > 0) && (
-                    <div className="mt-4 text-xs">
-                      <div className="font-bold mb-2">Payment Method:</div>
-                      <div className="text-xs">
-                        Processing fees application to sanctions of Rs.{editableData.applicationFees.toLocaleString('en-IN')}/- (non-adjustable) at the time of assignment finalization, Rs.{editableData.sanctioningFees.toLocaleString('en-IN')}/- (adjustable) against sanction of subsidy and rest against fund release.
+                  {/* Additional Fees - Only show when there are additional fees */}
+                  {((editableData.additionalFees && editableData.additionalFees.length > 0) || editableData.customFeeName) && (
+                    <div className="mt-4 text-xs additional-fees-section">
+                      <div className="font-bold mb-2">Additional Fees:</div>
+                      <div className="space-y-1 text-xs">
+                        {editableData.additionalFees && editableData.additionalFees.map((fee, index) => {
+                          const displayValue = fee.feeType === 'fee' ? fee.amount : fee.amount;
+                          const displaySymbol = fee.feeType === 'fee' ? '₹' : '%';
+                          
+                          return (
+                            <div key={fee.id} className="text-xs">
+                              {index + 1}. {fee.name} {displayValue.toLocaleString('en-IN')}{displaySymbol}
+                            </div>
+                          );
+                        })}
+                        
+                        {/* Custom Fee */}
+                        {editableData.customFeeName && (
+                          <div className="text-xs">
+                            {(editableData.additionalFees ? editableData.additionalFees.length : 0) + 1}. {editableData.customFeeName}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Additional Fees */}
-                {((editableData.additionalFees && editableData.additionalFees.length > 0) || editableData.customFeeName) && (
-                  <div className="mb-6">
-                    <div className="text-xs font-bold mb-3">ADDITIONAL FEES</div>
+                {/* Payment Method */}
+                {(editableData.applicationFees > 0 && editableData.sanctioningFees > 0) && (
+                  <div className="mb-4 payment-method-section">
+                    <div className="text-xs font-bold mb-2">PAYMENT METHOD</div>
                     
-                    <div className="space-y-1 text-xs">
-                      {editableData.additionalFees && editableData.additionalFees.map((fee, index) => {
-                        const displayValue = fee.feeType === 'fee' ? fee.amount : fee.amount;
-                        const displaySymbol = fee.feeType === 'fee' ? '₹' : '%';
-                        
-                        return (
-                          <div key={fee.id} className="text-xs">
-                            {index + 1}. {fee.name} {displayValue.toLocaleString('en-IN')}{displaySymbol}
-                          </div>
-                        );
-                      })}
-                      
-                      {/* Custom Fee */}
-                      {editableData.customFeeName && (
-                        <div className="text-xs">
-                          {(editableData.additionalFees ? editableData.additionalFees.length : 0) + 1}. {editableData.customFeeName}
-                        </div>
-                      )}
+                    <div className="text-xs">
+                      Processing fees application to sanctions of Rs.{editableData.applicationFees.toLocaleString('en-IN')}/- (non-adjustable) at the time of assignment finalization, Rs.{editableData.sanctioningFees.toLocaleString('en-IN')}/- (adjustable) against sanction of subsidy and rest against fund release.
                     </div>
                   </div>
                 )}
 
                 {/* Eligibility Criteria */}
-                <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">ELIGIBILITY CRITERIA</div>
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-bold">ELIGIBILITY CRITERIA</div>
+                    <button
+                      onClick={() => addListItem('eligibilityCriteria', '')}
+                      className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+                    >
+                      + Add Item
+                    </button>
+                  </div>
                   <div className="space-y-1 text-xs">
-                    {getDynamicEligibilityCriteria().map((item, index) => (
-                      <div
-                        key={index}
-                        className="pdf-input-min-height"
-                        dangerouslySetInnerHTML={{ __html: item }}
-                      />
-                    ))}
+                    {editableContent.eligibilityCriteria.length > 0 ? (
+                      editableContent.eligibilityCriteria.map((item, index) => (
+                        <div key={index} className="flex items-center group">
+                          <span className="mr-2">•</span>
+                          <span
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={(e: React.FocusEvent<HTMLSpanElement>) => updateListItem('eligibilityCriteria', index, e.target.textContent || '')}
+                            className="flex-1 pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                          >
+                            {item}
+                          </span>
+                          <button
+                            onClick={() => removeListItem('eligibilityCriteria', index)}
+                            className="ml-2 opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-800 transition-all duration-200"
+                            title="Remove item"
+                            aria-label="Remove item"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      getDynamicEligibilityCriteria().map((item, index) => (
+                        <div
+                          key={index}
+                          className="pdf-input-min-height"
+                          dangerouslySetInnerHTML={{ __html: item }}
+                        />
+                      ))
+                    )}
                   </div>
                 </div>
 
                 {/* Duty Of Client */}
-                <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">DUTY OF CLIENT</div>
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-bold">DUTY OF CLIENT</div>
+                    <button
+                      onClick={() => addListItem('dutyOfClient', '')}
+                      className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+                    >
+                      + Add Item
+                    </button>
+                  </div>
                   <div className="space-y-1 text-xs">
-                    <div>1. To provide all required documents within stipulated timeline.</div>
-                    <div>2. To inform immediate once you receive the query letter from concern department and to give support in personal hearing if any technical clarification required.</div>
+                    {editableContent.dutyOfClient.map((item, index) => (
+                      <div key={index} className="flex items-center group">
+                        <span className="mr-2">{index + 1}.</span>
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => updateListItem('dutyOfClient', index, e.target.textContent || '')}
+                          className="flex-1 pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {item}
+                        </span>
+                        <button
+                          onClick={() => removeListItem('dutyOfClient', index)}
+                          className="ml-2 opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-800 transition-all duration-200"
+                          title="Remove item"
+                          aria-label="Remove item"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Terms & Conditions */}
-                <div className="mb-6">
-                  <div className="text-xs font-bold mb-3">TERMS & CONDITIONS</div>
+                <div className="mb-4 page-break-before">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-bold">TERMS & CONDITIONS</div>
+                    <button
+                      onClick={() => addListItem('termsAndConditions', '')}
+                      className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+                    >
+                      + Add Item
+                    </button>
+                  </div>
                   <div className="space-y-1 text-xs">
-                    <div>1. Once the FEE is finalized, there will be NO CHANGES made to it and it will be considered as full and final.</div>
-                    <div>2. We will affix your company&apos;s authorized seal on all documents related to the subsidy and then sign them. This is exclusively for the subsidy.</div>
-                    <div>3. We shall strive maximum to avail benefit under the said scheme however we do not guarantee the end results or outcome as this is a Government Scheme, which depends upon the policy framework and changes coming from time to time, as well as the documents provided to us.</div>
-                    <div>4. This offer is valid till 7 days from the date of initial communication.</div>
-                    <div>5. Subsidy will be as per Govt norms – Main GR of particular scheme is base for any clarification.</div>
-                    <div>6. All the required document and certification must provide by client side. If any extra docs/Certificate (Chartered accountant) is required then expenses will be bear by client.</div>
-                    <div>7. Above fees consist our consulting fees and out of pocket expenses/ liaison cost.</div>
-                    <div>8. We as consultant is not responsible for lesser/higher subsidy amount released, it will be based on Government Norms and calculation as per Portal.</div>
+                    {editableContent.termsAndConditions.map((item, index) => (
+                      <div key={index} className="flex items-center group">
+                        <span className="mr-2">{index + 1}.</span>
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e: React.FocusEvent<HTMLSpanElement>) => updateListItem('termsAndConditions', index, e.target.textContent || '')}
+                          className="flex-1 pdf-input focus:outline-none focus:bg-blue-50 focus:border focus:border-blue-300 rounded px-1 py-0.5 pdf-input-min-height"
+                        >
+                          {item}
+                        </span>
+                        <button
+                          onClick={() => removeListItem('termsAndConditions', index)}
+                          className="ml-2 opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-800 transition-all duration-200"
+                          title="Remove item"
+                          aria-label="Remove item"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
                     {(() => {
                       let termNumber = 9;
                       const terms = [];
@@ -808,6 +1307,15 @@ export default function PDFPreviewModal({
                   <div className="text-xs font-bold">APPROVED & AUTHORIZED BY (Sign and Stamp)</div>
                 </div>
               </div>
+
+              {/* Fixed Footer for Print/PDF */}
+              <footer className="pdf-footer hidden print:block">
+                <div className="text-center">
+                  <div className="text-xs text-gray-500">
+                    Confidential – V4U Biz Solutions
+                  </div>
+                </div>
+              </footer>
             </div>
           </div>
         </div>
@@ -821,14 +1329,64 @@ export default function PDFPreviewModal({
             >
               Back / Edit Form
             </button>
-            <button
-              onClick={handleConfirm}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium"
-            >
-              Confirm & Download PDF
-            </button>
+            
+            {/* Download Buttons */}
+            <div className="flex space-x-2">
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isGeneratingPDF}
+                className={`px-4 py-2 rounded-lg transition-colors duration-200 font-medium flex items-center ${
+                  isGeneratingPDF 
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'bg-red-600 text-white hover:bg-red-700'
+                }`}
+              >
+                {isGeneratingPDF ? (
+                  <>
+                    <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                    Download PDF
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleDownloadWord}
+                disabled={isGeneratingWord}
+                className={`px-4 py-2 rounded-lg transition-colors duration-200 font-medium flex items-center ${
+                  isGeneratingWord 
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {isGeneratingWord ? (
+                  <>
+                    <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Generating Word...
+                  </>
+                ) : (
+                  <>
+                    <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                    Download Word
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-        </div>Lead Information
+        </div>
       </div>
     </div>
   );

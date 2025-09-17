@@ -1,0 +1,154 @@
+/* Simple PDF Generation Styles */
+
+/* Page break class for multi-page PDFs */
+.page-break {
+  page-break-before: always;
+}
+
+/* Ensure proper styling for PDF generation - A4 specifications */
+#pdf-preview {
+  width: 210mm;
+  min-height: 297mm;
+  background-color: #E6F3FF;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1.4;
+  color: black;
+  box-sizing: border-box;
+  padding: 10mm;
+}
+
+/* Header styling - exact specifications */
+#pdf-preview .flex.flex-col.items-center.text-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#pdf-preview .flex.flex-col.items-center.text-center img {
+  height: 48px;
+  margin-bottom: 4px;
+}
+
+#pdf-preview .flex.flex-col.items-center.text-center h1 {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 0;
+}
+
+#pdf-preview .flex.flex-col.items-center.text-center hr {
+  border-top: 1px solid #d1d5db;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* Ensure colors are preserved - Override OKLCH colors with RGB */
+#pdf-preview .bg-blue-100 {
+  background-color: #dbeafe !important;
+}
+
+#pdf-preview .bg-blue-50 {
+  background-color: #eff6ff !important;
+}
+
+#pdf-preview .text-blue-600 {
+  color: #2563eb !important;
+}
+
+#pdf-preview .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+#pdf-preview .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+#pdf-preview .text-gray-700 {
+  color: #374151 !important;
+}
+
+#pdf-preview .text-gray-800 {
+  color: #1f2937 !important;
+}
+
+#pdf-preview .text-gray-900 {
+  color: #111827 !important;
+}
+
+#pdf-preview .bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+#pdf-preview .bg-gray-100 {
+  background-color: #f3f4f6 !important;
+}
+
+#pdf-preview .border-gray-300 {
+  border-color: #d1d5db !important;
+}
+
+#pdf-preview .border-gray-300 {
+  border-color: #d1d5db !important;
+}
+
+/* Ensure borders are visible */
+#pdf-preview .border {
+  border: 1px solid #000 !important;
+}
+
+/* Table rendering - prevent row splitting */
+#pdf-preview table {
+  page-break-inside: avoid !important;
+  border-collapse: collapse !important;
+  width: 100% !important;
+}
+
+#pdf-preview tr {
+  page-break-inside: avoid !important;
+  page-break-after: avoid !important;
+}
+
+#pdf-preview thead {
+  page-break-inside: avoid !important;
+  page-break-after: avoid !important;
+}
+
+#pdf-preview tbody {
+  page-break-inside: avoid !important;
+}
+
+#pdf-preview td, #pdf-preview th {
+  page-break-inside: avoid !important;
+  border: 1px solid #000 !important;
+  padding: 4px !important;
+}
+
+/* Ensure equal column widths */
+#pdf-preview table td,
+#pdf-preview table th {
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+/* Print-specific styles */
+@media print {
+  #pdf-preview {
+    width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 32px !important;
+    background-color: #ffffff !important;
+  }
+  
+  /* Ensure colors print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Page breaks */
+  .page-break { page-break-before: always !important; }
+}

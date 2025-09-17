@@ -7,6 +7,9 @@ export const useCard3D = () => {
   const cursorBlobRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') return;
+    
     const cursorBlob = cursorBlobRef.current;
     if (!cursorBlob) return;
 

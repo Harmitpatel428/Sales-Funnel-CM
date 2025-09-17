@@ -489,3 +489,76 @@ input, textarea, select, button {
   background-color: #E6F3FF;
   border: 1px solid #B3D9FF;
 }
+
+/* Page break utility class */
+.page-break { 
+  page-break-before: always; 
+}
+
+/* Print-specific styles for PDF Preview Modal */
+@media print {
+  /* Hide everything except the preview content */
+  body * {
+    visibility: hidden;
+  }
+  
+  .pdf-preview-container,
+  .pdf-preview-container * {
+    visibility: visible;
+  }
+  
+  .pdf-preview-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 32px !important;
+    background-color: #E6F3FF !important;
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+    color: black !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Ensure colors print correctly */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Page setup for A4 */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  
+  /* Hide modal overlay and controls */
+  .fixed,
+  .bg-black,
+  .bg-opacity-50,
+  .z-50,
+  .px-6,
+  .py-4,
+  .border-b,
+  .border-t,
+  .bg-gray-50,
+  .flex,
+  .justify-between,
+  .items-center,
+  .space-x-3,
+  .space-x-2,
+  button {
+    display: none !important;
+  }
+  
+  /* Ensure only the preview content is visible */
+  .pdf-preview-container {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: visible !important;
+  }
+}
