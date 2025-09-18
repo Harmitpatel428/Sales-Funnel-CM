@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useLeads, Lead } from '../context/LeadContext';
+import { useNavigation } from '../context/NavigationContext';
 import { useRouter } from 'next/navigation';
 import LeadTable from '../components/LeadTable';
 // XLSX is imported dynamically to avoid turbopack issues
@@ -9,6 +10,7 @@ import LeadTable from '../components/LeadTable';
 export default function AllLeadsPage() {
   const router = useRouter();
   const { leads, setLeads } = useLeads();
+  const { activeFilters } = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,9 +72,18 @@ export default function AllLeadsPage() {
     }
   };
 
-  // Filter leads based on status and search term
+  // Filter leads based on status, search term, and global Discom filter
   const allLeads = useMemo(() => {
     let filtered = leads; // Show all leads regardless of status or deletion status
+    
+    // Apply global Discom filter first
+    if (activeFilters.discom && activeFilters.discom !== '') {
+      filtered = filtered.filter(lead => {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        return leadDiscom === filterDiscom;
+      });
+    }
     
     if (searchTerm) {
       filtered = filtered.filter(lead => {
@@ -136,7 +147,7 @@ export default function AllLeadsPage() {
       const dateB = new Date(b.lastActivityDate).getTime();
       return dateB - dateA; // Most recent first
     });
-  }, [leads, searchTerm]);
+  }, [leads, searchTerm, activeFilters.discom]);
 
 
   // Modal functions

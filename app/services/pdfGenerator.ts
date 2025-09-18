@@ -3,12 +3,12 @@ import { getSchemeDescription } from '../utils/schemeUtils';
 
 export class PDFGenerator {
   private mandateData: MandateData;
-  private _consultantInfo: ConsultantInfo; // TODO: Use in future implementations
+  // private _consultantInfo: ConsultantInfo; // TODO: Use in future implementations
   private editableContent: EditableContent;
 
-  constructor(mandateData: MandateData, consultantInfo: ConsultantInfo, editableContent: EditableContent) {
+  constructor(mandateData: MandateData, _consultantInfo: ConsultantInfo, editableContent: EditableContent) {
     this.mandateData = mandateData;
-    this._consultantInfo = consultantInfo;
+    // this._consultantInfo = consultantInfo; // TODO: Use in future implementations
     this.editableContent = editableContent;
   }
 
@@ -254,7 +254,10 @@ export class PDFGenerator {
     doc.setFillColor(200, 200, 255);
     doc.rect(15, yPosition, 180, 8, 'F');
     headers.forEach((header, index) => {
-      doc.text(header, colPositions[index] + 2, yPosition + 6);
+      const position = colPositions[index];
+      if (position !== undefined) {
+        doc.text(header, position + 2, yPosition + 6);
+      }
     });
     yPosition += 15;
 
@@ -266,15 +269,24 @@ export class PDFGenerator {
       doc.setFillColor(200, 200, 255);
       doc.rect(15, yPosition, 180, 8, 'F');
       
-      doc.text(benefitCategory, colPositions[0] + 2, yPosition + 6);
-      doc.text(schemeDesc?.title || scheme, colPositions[1] + 2, yPosition + 6);
+      const pos0 = colPositions[0];
+      const pos1 = colPositions[1];
+      const pos2 = colPositions[2];
+      const pos3 = colPositions[3];
+      const pos4 = colPositions[4];
+      const width2 = colWidths[2];
+      
+      if (pos0 !== undefined) doc.text(benefitCategory, pos0 + 2, yPosition + 6);
+      if (pos1 !== undefined) doc.text(schemeDesc?.title || scheme, pos1 + 2, yPosition + 6);
       
       const benefitDetails = this.getBenefitDetails(scheme, this.mandateData.category);
-      const detailsLines = doc.splitTextToSize(benefitDetails, colWidths[2] - 4);
-      doc.text(detailsLines, colPositions[2] + 2, yPosition + 6);
+      if (width2 !== undefined) {
+        const detailsLines = doc.splitTextToSize(benefitDetails, width2 - 4);
+        if (pos2 !== undefined) doc.text(detailsLines, pos2 + 2, yPosition + 6);
+      }
       
-      doc.text(this.getDuration(scheme, this.mandateData.category), colPositions[3] + 2, yPosition + 6);
-      doc.text(this.getApplicationTimeline(scheme), colPositions[4] + 2, yPosition + 6);
+      if (pos3 !== undefined) doc.text(this.getDuration(scheme, this.mandateData.category), pos3 + 2, yPosition + 6);
+      if (pos4 !== undefined) doc.text(this.getApplicationTimeline(scheme), pos4 + 2, yPosition + 6);
       
       yPosition += 8;
     });

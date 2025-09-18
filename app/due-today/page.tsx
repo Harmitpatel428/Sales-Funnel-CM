@@ -2,12 +2,14 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useLeads, Lead } from '../context/LeadContext';
+import { useNavigation } from '../context/NavigationContext';
 import { useRouter } from 'next/navigation';
 import LeadTable from '../components/LeadTable';
 
 export default function DueTodayPage() {
   const router = useRouter();
   const { leads, deleteLead } = useLeads();
+  const { activeFilters } = useNavigation();
   const [activeTab, setActiveTab] = useState<'today' | 'overdue'>('today');
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -68,7 +70,7 @@ export default function DueTodayPage() {
     }
   };
 
-  // Filter leads based on follow-up dates
+  // Filter leads based on follow-up dates and global Discom filter
   const todayLeads = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -76,13 +78,20 @@ export default function DueTodayPage() {
     return leads.filter(lead => {
       if (lead.isDeleted || lead.isDone || !lead.followUpDate) return false;
       
+      // Apply global Discom filter
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
       const followUpDate = parseFollowUpDate(lead.followUpDate);
       if (!followUpDate) return false;
       
       followUpDate.setHours(0, 0, 0, 0);
       return followUpDate.getTime() === today.getTime();
     });
-  }, [leads]);
+  }, [leads, activeFilters.discom]);
 
   const overdueLeads = useMemo(() => {
     const today = new Date();
@@ -91,13 +100,20 @@ export default function DueTodayPage() {
     return leads.filter(lead => {
       if (lead.isDeleted || lead.isDone || !lead.followUpDate) return false;
       
+      // Apply global Discom filter
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
       const followUpDate = parseFollowUpDate(lead.followUpDate);
       if (!followUpDate) return false;
       
       followUpDate.setHours(0, 0, 0, 0);
       return followUpDate < today;
     });
-  }, [leads]);
+  }, [leads, activeFilters.discom]);
 
   // Modal functions
   const openModal = (lead: Lead) => {
@@ -229,11 +245,12 @@ export default function DueTodayPage() {
     localStorage.setItem('editingLead', JSON.stringify(lead));
     // Store modal return data for ESC key functionality
     localStorage.setItem('modalReturnData', JSON.stringify({
-      sourcePage: 'due-today',
+      sourcePage: activeTab === 'today' ? 'due-today' : 'due-today-overdue',
       leadId: lead.id
     }));
     // Navigate to add-lead page with a flag to indicate we're editing
-    router.push(`/add-lead?mode=edit&id=${lead.id}&from=due-today`);
+    const sourcePage = activeTab === 'today' ? 'due-today' : 'due-today-overdue';
+    router.push(`/add-lead?mode=edit&id=${lead.id}&from=${sourcePage}`);
   };
 
   // Action buttons for the table
@@ -242,8 +259,8 @@ export default function DueTodayPage() {
       onClick={(e) => {
         e.stopPropagation();
         localStorage.setItem('editingLead', JSON.stringify(lead));
-        // Include source page information for proper navigation back
-        const sourcePage = activeTab === 'today' ? 'due-today' : 'due-today';
+        // Include source page information for proper navigation back with tab info
+        const sourcePage = activeTab === 'today' ? 'due-today' : 'due-today-overdue';
         router.push(`/add-lead?mode=edit&id=${lead.id}&from=${sourcePage}`);
       }}
       className={`px-3 py-1 text-sm rounded-md transition-colors ${

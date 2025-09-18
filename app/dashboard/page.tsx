@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useLeads, Lead, LeadFilters } from '../context/LeadContext';
+import { useLeads, Lead } from '../context/LeadContext';
 import { useNavigation } from '../context/NavigationContext';
 import LeadTable from '../components/LeadTable';
 import { useRouter } from 'next/navigation';
@@ -9,10 +9,7 @@ import { useRouter } from 'next/navigation';
 export default function DashboardPage() {
   const router = useRouter();
   const { leads, deleteLead, getFilteredLeads, updateLead } = useLeads();
-  const { discomFilter, setDiscomFilter, setOnExportClick } = useNavigation();
-  const [activeFilters, setActiveFilters] = useState<LeadFilters>({
-    status: ['New'] // Show "New" leads by default
-  });
+  const { setOnExportClick, activeFilters, setActiveFilters } = useNavigation();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,6 +75,24 @@ export default function DashboardPage() {
     }
   }, [leads, activeFilters.status, getFilteredLeads]);
 
+  // Restore filters from URL on component mount (only once)
+  useEffect(() => {
+    // Only restore if we have a filter parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterParam = urlParams.get('filter');
+    
+    if (filterParam) {
+      try {
+        const filters = JSON.parse(decodeURIComponent(filterParam));
+        setActiveFilters(filters);
+      } catch (error) {
+        console.error('Error parsing filter from URL:', error);
+        // Fallback to default
+        setActiveFilters({ status: ['New'] });
+      }
+    }
+  }, []); // Empty dependency array to run only once
+
   // Handle return from edit page - refresh the view
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -105,20 +120,7 @@ export default function DashboardPage() {
     setOnExportClick(() => handleExportExcel);
   }, [setOnExportClick]);
 
-  // Handle discom filter changes
-  useEffect(() => {
-    if (discomFilter === '') {
-      setActiveFilters({
-        status: ['New'] // Show "New" leads from all discoms when selecting "All Discoms"
-      });
-    } else {
-      setActiveFilters(prev => ({
-        ...prev,
-        discom: discomFilter,
-        status: ['New'] // Automatically show New status when discom is selected
-      }));
-    }
-  }, [discomFilter]);
+  // Handle discom filter changes - now handled globally through activeFilters
 
   // Check for updated leads and clear main dashboard view if needed
   useEffect(() => {
@@ -248,6 +250,13 @@ export default function DashboardPage() {
     let totalLeads = 0;
 
     leads.forEach(lead => {
+      // Apply Discom filter first
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return; // Skip this lead if Discom doesn't match
+      }
+
       if (!lead.isDeleted && !lead.isDone) {
         totalLeads++;
       }
@@ -281,7 +290,7 @@ export default function DashboardPage() {
       overdue,
       followUpMandate
     };
-  }, [leads]);
+  }, [leads, activeFilters.discom]);
 
   // Calculate status counts with memoization - use filtered leads based on current filters
   const statusCounts = useMemo(() => {
@@ -700,7 +709,6 @@ export default function DashboardPage() {
   // Clear all filters
   const clearAllFilters = () => {
     setSearchTerm('');
-    setDiscomFilter('');
     setActiveFilters({
       status: [] // Clear to show no leads - user must select a status
     });
@@ -938,8 +946,13 @@ export default function DashboardPage() {
       sourcePage: 'dashboard',
       leadId: lead.id
     }));
-    // Navigate to add-lead page with a flag to indicate we're editing
-    router.push(`/add-lead?mode=edit&id=${lead.id}&from=dashboard`);
+    
+    // Preserve current filter state in URL
+    const filterParam = encodeURIComponent(JSON.stringify(activeFilters));
+    const url = `/add-lead?mode=edit&id=${lead.id}&from=dashboard&filter=${filterParam}`;
+    
+    // Navigate to add-lead page with filter state preserved
+    router.push(url);
   };
 
 

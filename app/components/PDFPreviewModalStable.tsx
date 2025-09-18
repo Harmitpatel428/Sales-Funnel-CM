@@ -5,8 +5,7 @@ import { MandateData, ConsultantInfo } from '../services/pdfServiceSimple';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
 import { generatePDF, generateWord } from '../utils/pdfGenerator';
 import { setupPrintShortcut } from '../utils/printUtils';
-import '../styles/pdf-styles.css';
-import '../styles/print-styles.css';
+import '../styles/print.css';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
@@ -427,7 +426,7 @@ export default function PDFPreviewModalStable({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden pdf-modal-bg">
+      <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden bg-white">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
@@ -454,7 +453,7 @@ export default function PDFPreviewModalStable({
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6">
             {/* PDF Preview Container */}
-            <div id="pdf-preview" className="border border-gray-300 shadow-lg mx-auto pdf-preview-container pdf-modal-bg pdf-preview-styled">
+            <div id="pdf-preview" className="border border-gray-300 shadow-lg mx-auto pdf-preview-styled">
               
               {/* Fixed Header for Print/PDF */}
               <header className="pdf-header hidden print:block">
@@ -472,7 +471,7 @@ export default function PDFPreviewModalStable({
               </header>
 
               {/* PDF Content */}
-              <div className="p-6 text-black pdf-content pdf-modal-bg pdf-content-styled">
+              <div className="p-6 text-black pdf-content pdf-content-styled">
                 
                 {/* Document Header - Hidden in print/PDF */}
                 <div className="mb-4 print:hidden">

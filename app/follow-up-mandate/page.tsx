@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLeads, Lead } from '../context/LeadContext';
+import { useNavigation } from '../context/NavigationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import LeadTable from '../components/LeadTable';
 
@@ -9,6 +10,7 @@ export default function FollowUpMandatePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { leads, deleteLead } = useLeads();
+  const { activeFilters } = useNavigation();
   const [activeTab, setActiveTab] = useState<'pending' | 'signed'>('pending');
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -25,14 +27,36 @@ export default function FollowUpMandatePage() {
     }
   }, [searchParams]);
 
-  // Filter leads based on status
-  const documentation = leads.filter(lead => 
-    !lead.isDeleted && lead.status === 'Documentation' && !lead.isDone
-  );
+  // Filter leads based on status and global Discom filter
+  const documentation = useMemo(() => {
+    return leads.filter(lead => {
+      if (lead.isDeleted || lead.isDone || lead.status !== 'Documentation') return false;
+      
+      // Apply global Discom filter
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
+      return true;
+    });
+  }, [leads, activeFilters.discom]);
 
-  const mandateSent = leads.filter(lead => 
-    !lead.isDeleted && lead.status === 'Mandate Sent' && !lead.isDone
-  );
+  const mandateSent = useMemo(() => {
+    return leads.filter(lead => {
+      if (lead.isDeleted || lead.isDone || lead.status !== 'Mandate Sent') return false;
+      
+      // Apply global Discom filter
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
+      return true;
+    });
+  }, [leads, activeFilters.discom]);
 
   // Modal functions
   const openModal = (lead: Lead) => {

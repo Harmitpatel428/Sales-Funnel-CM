@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { MandateData, ConsultantInfo } from '../services/pdfServiceSimple';
 import { formatSubjectLine, getSchemeDescription } from '../utils/schemeUtils';
-import { generatePDF, generateWord } from '../utils/pdfGenerator';
-import { setupPrintShortcut } from '../utils/printUtils';
+import { generatePDF, generateWord, printPreview } from '../utils/pdfGenerator';
 import LoadingSpinner from './LoadingSpinner';
-import '../styles/pdf-styles.css';
-import '../styles/print-styles.css';
+import AccessibleModal from './AccessibleModal';
+import ModalErrorBoundary from './ModalErrorBoundary';
+import '../styles/print.css';
 // DocumentGenerator will be imported dynamically to avoid SSR issues
 
 interface PDFPreviewModalProps {
@@ -139,12 +139,21 @@ export default function PDFPreviewModal({
   useEffect(() => {
     if (!isOpen) return;
     
-    const cleanup = setupPrintShortcut();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'p') {
+        event.preventDefault();
+        handlePrint();
+      }
+    };
     
-    return cleanup;
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
+
 
   const handleFieldChange = (field: keyof MandateData, value: string | string[] | { [schemeName: string]: number } | any[]) => {
     setEditableData((prev: MandateData) => ({
@@ -236,17 +245,29 @@ export default function PDFPreviewModal({
     try {
       setIsGeneratingPDF(true);
       setError(null); // Clear any previous errors
-      // Starting PDF generation
       
       // Check if we're in browser environment
       if (typeof window === 'undefined') {
         throw new Error('PDF generation only available in browser environment');
       }
       
+      // Verify PDF preview element exists and has content
+      const pdfElement = document.getElementById("pdf-preview");
+      if (!pdfElement) {
+        throw new Error("PDF preview element not found");
+      }
+      
+      // Log content verification
+      const tables = pdfElement.querySelectorAll('table, .print-flex-table');
+      const sections = pdfElement.querySelectorAll('.print-content > div');
+      console.log(`PDF Preview contains: ${tables.length} tables, ${sections.length} sections`);
+      console.log(`PDF Preview height: ${pdfElement.scrollHeight}px`);
+      
       // Use pixel-perfect generator for exact styling match
       await generatePDF(editableData, editableConsultantInfo, editableContent, `Commercial_Offer_${editableData.company}_${formatDate()}.pdf`);
       
       // PDF generation completed successfully
+      console.log('PDF generation completed successfully');
       
     } catch (error) {
       console.error('PDF generation failed:', error);
@@ -254,6 +275,15 @@ export default function PDFPreviewModal({
       setError(`PDF generation failed: ${errorMessage}. Please try again.`);
     } finally {
       setIsGeneratingPDF(false);
+    }
+  };
+
+  const handlePrint = () => {
+    try {
+      printPreview();
+    } catch (error) {
+      console.error('Print failed:', error);
+      setError('Print failed. Please try again.');
     }
   };
 
@@ -505,8 +535,15 @@ export default function PDFPreviewModal({
   }, [editableData.schemes, editableContent.eligibilityCriteria]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden pdf-modal-bg">
+    <ModalErrorBoundary>
+      <AccessibleModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="PDF Preview - Mandate Document"
+        size="xl"
+        className="max-h-[90vh] overflow-hidden"
+      >
+        <div className="rounded-lg shadow-xl w-full max-h-[90vh] overflow-hidden bg-white">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
@@ -564,16 +601,16 @@ export default function PDFPreviewModal({
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6">
             {/* PDF Preview Container */}
-            <div id="pdf-preview" className="border border-gray-300 shadow-lg mx-auto pdf-preview-container pdf-modal-bg pdf-preview-styled">
+            <div id="pdf-preview" className="border border-gray-300 shadow-lg mx-auto print-container">
               
               {/* Fixed Header for Print/PDF */}
-              <header className="pdf-header hidden print:block">
+              <header className="print-header">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">
-                    V4U
+                  <div className="print-title text-blue-600 mb-1">
+                    V4U Biz Solutions
                   </div>
-                  <div className="text-sm text-blue-600 mb-2">
-                    Biz Solutions
+                  <div className="print-subtitle text-blue-600 mb-2">
+                    Commercial Offer & Mandate Document
                   </div>
                   <div className="text-base font-bold text-gray-800">
                     Commercial Offer for Subsidy Work
@@ -582,7 +619,7 @@ export default function PDFPreviewModal({
               </header>
 
               {/* PDF Content */}
-              <div className="p-8 text-black pdf-content pdf-modal-bg pdf-content-styled">
+              <div className="p-8 text-black print-content">
                 
                 {/* Document Header - Hidden in print/PDF */}
                 <div className="mb-6 print:hidden">
@@ -849,7 +886,7 @@ export default function PDFPreviewModal({
                     </div>
                     
                       {/* Table Header */}
-                      <div className="flex border-b border-black bg-blue-100">
+                      <div className="print-flex-table border-b border-black bg-blue-100">
                         <div className="w-20 text-xs font-bold p-2 border-r border-black text-center">
                           <span
                             contentEditable
@@ -911,7 +948,7 @@ export default function PDFPreviewModal({
                         const benefitCategory = `Benefit - ${String.fromCharCode(65 + index)}`; // A, B, C, etc.
                         
                         return (
-                          <div key={scheme} className="flex border-b border-black bg-white">
+                          <div key={scheme} className="print-flex-table border-b border-black bg-white">
                             <div className="w-20 text-xs p-2 border-r border-black text-center font-bold bg-white">
                               {benefitCategory}
                             </div>
@@ -1044,14 +1081,14 @@ export default function PDFPreviewModal({
                   </div>
                   <div className="border border-black rounded bg-blue-100">
                     {/* Table Header */}
-                    <div className="flex bg-blue-100 border-b border-black">
+                    <div className="print-flex-table bg-blue-100 border-b border-black">
                       <div className="w-16 text-xs font-bold p-2 border-r border-black text-center">Sr. No</div>
                       <div className="w-[30%] text-xs font-bold p-2 border-r border-black text-center">Work description</div>
                       <div className="w-[70%] text-xs font-bold p-2 text-center">Work scope</div>
                     </div>
                     
                     {/* Table Row */}
-                    <div className="flex border-b border-black bg-white">
+                    <div className="print-flex-table border-b border-black bg-white">
                       <div className="w-16 text-xs p-2 border-r border-black text-center bg-white">1</div>
                       <div className="w-[30%] text-xs p-2 border-r border-black bg-white">
                         <span
@@ -1099,7 +1136,7 @@ export default function PDFPreviewModal({
                   
                   {editableData.schemes.length > 0 ? (
                     <div className="border border-black rounded bg-blue-100">
-                      <table className="w-full border-collapse">
+                      <table className="print-table w-full">
                         <thead>
                           <tr className="bg-blue-100">
                             <th className="text-xs font-bold p-2 border border-black text-left">Scheme Name</th>
@@ -1450,9 +1487,9 @@ export default function PDFPreviewModal({
               </div>
 
               {/* Fixed Footer for Print/PDF */}
-              <footer className="pdf-footer hidden print:block">
+              <footer className="print-footer">
                 <div className="text-center">
-                  <div className="text-xs text-gray-500">
+                  <div className="print-body text-gray-500">
                     Confidential – V4U Biz Solutions
                   </div>
                 </div>
@@ -1495,6 +1532,15 @@ export default function PDFPreviewModal({
             
             {/* Download Buttons */}
             <div className="flex space-x-2">
+              <button
+                onClick={handlePrint}
+                className="px-4 py-2 rounded-lg transition-colors duration-200 font-medium flex items-center bg-green-600 text-white hover:bg-green-700"
+              >
+                <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+                </svg>
+                Print (Ctrl+P)
+              </button>
               <button
                 onClick={handleDownloadPDF}
                 disabled={isGeneratingPDF}
@@ -1544,7 +1590,8 @@ export default function PDFPreviewModal({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        </div>
+      </AccessibleModal>
+    </ModalErrorBoundary>
   );
 }

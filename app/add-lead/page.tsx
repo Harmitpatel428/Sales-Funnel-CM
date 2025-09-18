@@ -71,6 +71,7 @@ export default function AddLeadPage() {
     const searchParams = new URLSearchParams(window.location.search);
     const mode = searchParams.get('mode');
     const from = searchParams.get('from');
+    const filterParam = searchParams.get('filter');
     
     // Check if user came from home page
     if (from === 'home') {
@@ -80,6 +81,11 @@ export default function AddLeadPage() {
     // Store source page for navigation back
     if (from) {
       setSourcePage(from);
+    }
+    
+    // Store filter state for navigation back
+    if (filterParam) {
+      localStorage.setItem('preservedFilter', filterParam);
     }
     
     if (mode === 'edit') {
@@ -117,13 +123,19 @@ export default function AddLeadPage() {
           }
           
           console.log('Mobile numbers being set:', mobileNumbers); // Debug log
+          console.log('DISCOM value being set:', leadData.discom); // Debug log for DISCOM
+          
+          // Normalize DISCOM value to match select options
+          const normalizedDiscom = leadData.discom ? String(leadData.discom).trim().toUpperCase() : '';
+          console.log('Normalized DISCOM:', normalizedDiscom);
+          
           setFormData({
             kva: leadData.kva || '',
             connectionDate: leadData.connectionDate || '',
             consumerNumber: leadData.consumerNumber || '',
             company: leadData.company || '',
             clientName: leadData.clientName || '',
-            discom: leadData.discom || '',
+            discom: normalizedDiscom,
             gidc: leadData.gidc || '',
             gstNumber: leadData.gstNumber || '',
             mobileNumber: leadData.mobileNumber || '', // Keep for backward compatibility
@@ -144,6 +156,16 @@ export default function AddLeadPage() {
     
     setIsHydrated(true);
   }, []);
+
+  // Debug log to see form data changes
+  useEffect(() => {
+    if (isHydrated && isEditMode) {
+      console.log('Form data after hydration:', formData);
+      console.log('DISCOM in form data:', formData.discom);
+      console.log('DISCOM type:', typeof formData.discom);
+      console.log('DISCOM length:', formData.discom ? formData.discom.length : 'undefined');
+    }
+  }, [isHydrated, isEditMode, formData.discom]);
 
   // Auto-detect client name when leads are loaded and first mobile number is complete
   useEffect(() => {
@@ -523,7 +545,7 @@ export default function AddLeadPage() {
         // Clear stored editing data
         localStorage.removeItem('editingLead');
         
-        // Navigate back to appropriate page
+        // Navigate back to appropriate page (without reopening modal)
         if (cameFromHome) {
           router.push('/');
         } else if (sourcePage) {
@@ -532,16 +554,37 @@ export default function AddLeadPage() {
             'documentation': '/follow-up-mandate?tab=pending',
             'mandate-sent': '/follow-up-mandate?tab=signed',
             'due-today': '/due-today',
+            'due-today-overdue': '/due-today?tab=overdue',
             'upcoming': '/upcoming',
             'all-leads': '/all-leads',
             'dashboard': '/dashboard'
           };
           const targetRoute = routeMap[sourcePage] || '/dashboard';
-          router.push(targetRoute);
+          
+          // Restore filter state if available
+          const preservedFilter = localStorage.getItem('preservedFilter');
+          if (preservedFilter) {
+            const url = new URL(targetRoute, window.location.origin);
+            url.searchParams.set('filter', preservedFilter);
+            router.push(url.pathname + url.search);
+            localStorage.removeItem('preservedFilter');
+          } else {
+            router.push(targetRoute);
+          }
         } else {
           // Add a flag to indicate successful update
           localStorage.setItem('leadUpdated', 'true');
-          router.push('/dashboard');
+          
+          // Restore filter state if available
+          const preservedFilter = localStorage.getItem('preservedFilter');
+          if (preservedFilter) {
+            const url = new URL('/dashboard', window.location.origin);
+            url.searchParams.set('filter', preservedFilter);
+            router.push(url.pathname + url.search);
+            localStorage.removeItem('preservedFilter');
+          } else {
+            router.push('/dashboard');
+          }
         }
       } else {
         // Add new lead
@@ -623,7 +666,7 @@ export default function AddLeadPage() {
           notes: '',
         });
         
-        // Navigate back to appropriate page
+        // Navigate back to appropriate page (without reopening modal)
         if (cameFromHome) {
           router.push('/');
         } else if (sourcePage) {
@@ -637,9 +680,28 @@ export default function AddLeadPage() {
             'dashboard': '/dashboard'
           };
           const targetRoute = routeMap[sourcePage] || '/dashboard';
-          router.push(targetRoute);
+          
+          // Restore filter state if available
+          const preservedFilter = localStorage.getItem('preservedFilter');
+          if (preservedFilter) {
+            const url = new URL(targetRoute, window.location.origin);
+            url.searchParams.set('filter', preservedFilter);
+            router.push(url.pathname + url.search);
+            localStorage.removeItem('preservedFilter');
+          } else {
+            router.push(targetRoute);
+          }
         } else {
-          router.push('/dashboard');
+          // Restore filter state if available
+          const preservedFilter = localStorage.getItem('preservedFilter');
+          if (preservedFilter) {
+            const url = new URL('/dashboard', window.location.origin);
+            url.searchParams.set('filter', preservedFilter);
+            router.push(url.pathname + url.search);
+            localStorage.removeItem('preservedFilter');
+          } else {
+            router.push('/dashboard');
+          }
         }
       }
       
@@ -657,12 +719,12 @@ export default function AddLeadPage() {
       localStorage.removeItem('editingLead');
     }
     
-    // Check if we came from a modal and should return to it
+    // Check if we came from a modal and should return to it (without reopening modal)
     const modalReturnData = localStorage.getItem('modalReturnData');
     if (modalReturnData) {
       try {
-        const { sourcePage: modalSourcePage, leadId } = JSON.parse(modalReturnData);
-        // Navigate back to the specific source page with modal return flag
+        const { sourcePage: modalSourcePage } = JSON.parse(modalReturnData);
+        // Navigate back to the specific source page WITHOUT modal return flag
         const routeMap: { [key: string]: string } = {
           'documentation': '/follow-up-mandate?tab=pending',
           'mandate-sent': '/follow-up-mandate?tab=signed',
@@ -672,11 +734,18 @@ export default function AddLeadPage() {
           'dashboard': '/dashboard'
         };
         const targetRoute = routeMap[modalSourcePage] || '/dashboard';
-        // Add modal return parameters while preserving existing parameters
-        const url = new URL(targetRoute, window.location.origin);
-        url.searchParams.set('returnToModal', 'true');
-        url.searchParams.set('leadId', leadId);
-        router.push(url.pathname + url.search);
+        
+        // Restore filter state if available
+        const preservedFilter = localStorage.getItem('preservedFilter');
+        if (preservedFilter) {
+          const url = new URL(targetRoute, window.location.origin);
+          url.searchParams.set('filter', preservedFilter);
+          router.push(url.pathname + url.search);
+          localStorage.removeItem('preservedFilter');
+        } else {
+          router.push(targetRoute);
+        }
+        
         localStorage.removeItem('modalReturnData');
         return;
       } catch (error) {
@@ -699,9 +768,28 @@ export default function AddLeadPage() {
         'dashboard': '/dashboard'
       };
       const targetRoute = routeMap[sourcePage] || '/dashboard';
-      router.push(targetRoute);
+      
+      // Restore filter state if available
+      const preservedFilter = localStorage.getItem('preservedFilter');
+      if (preservedFilter) {
+        const url = new URL(targetRoute, window.location.origin);
+        url.searchParams.set('filter', preservedFilter);
+        router.push(url.pathname + url.search);
+        localStorage.removeItem('preservedFilter');
+      } else {
+        router.push(targetRoute);
+      }
     } else {
-      router.push('/dashboard');
+      // Restore filter state if available
+      const preservedFilter = localStorage.getItem('preservedFilter');
+      if (preservedFilter) {
+        const url = new URL('/dashboard', window.location.origin);
+        url.searchParams.set('filter', preservedFilter);
+        router.push(url.pathname + url.search);
+        localStorage.removeItem('preservedFilter');
+      } else {
+        router.push('/dashboard');
+      }
     }
   };
 

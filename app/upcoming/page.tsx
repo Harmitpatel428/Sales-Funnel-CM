@@ -2,12 +2,14 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useLeads, Lead } from '../context/LeadContext';
+import { useNavigation } from '../context/NavigationContext';
 import { useRouter } from 'next/navigation';
 import LeadTable from '../components/LeadTable';
 
 export default function UpcomingPage() {
   const router = useRouter();
   const { leads, deleteLead } = useLeads();
+  const { activeFilters } = useNavigation();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'thisWeek'>('upcoming');
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -58,7 +60,7 @@ export default function UpcomingPage() {
     }
   };
 
-  // Filter leads based on follow-up dates
+  // Filter leads based on follow-up dates and global Discom filter
   const upcomingLeads = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -68,13 +70,20 @@ export default function UpcomingPage() {
     return leads.filter(lead => {
       if (lead.isDeleted || lead.isDone || !lead.followUpDate) return false;
       
+      // Apply global Discom filter
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
       const followUpDate = parseFollowUpDate(lead.followUpDate);
       if (!followUpDate) return false;
       
       followUpDate.setHours(0, 0, 0, 0);
       return followUpDate > today && followUpDate <= sevenDaysLater;
     });
-  }, [leads]);
+  }, [leads, activeFilters.discom]);
 
   const thisWeekLeads = useMemo(() => {
     const today = new Date();
@@ -85,13 +94,20 @@ export default function UpcomingPage() {
     return leads.filter(lead => {
       if (lead.isDeleted || lead.isDone || !lead.followUpDate) return false;
       
+      // Apply global Discom filter
+      if (activeFilters.discom && activeFilters.discom !== '') {
+        const leadDiscom = String(lead.discom || '').trim().toUpperCase();
+        const filterDiscom = String(activeFilters.discom).trim().toUpperCase();
+        if (leadDiscom !== filterDiscom) return false;
+      }
+      
       const followUpDate = parseFollowUpDate(lead.followUpDate);
       if (!followUpDate) return false;
       
       followUpDate.setHours(0, 0, 0, 0);
       return followUpDate > today && followUpDate <= endOfWeek;
     });
-  }, [leads]);
+  }, [leads, activeFilters.discom]);
 
   // Modal functions
   const openModal = (lead: Lead) => {
